@@ -10,38 +10,40 @@ import ServerConfig from '../../ServerConfig';
 // DB Container id
 const SESSION = 'session';
 
+interface Meeting {
+  buildingName: string;
+  room: string;
+  meetingDaysList: string[];
+  meetingType: string;
+  startTime: {
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+  };
+  endTime: {
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+  };
+  instructors: {
+    campusId: string;
+    email: string;
+    name: {
+      first: string;
+      middle: string;
+      last: string;
+    };
+  }[];
+};
+
 export default class Session {
   id: string;
   courseId: string;
   termCode: string;
   sessionId: string;
-  meetings: {
-    buildingName: string;
-    room: string;
-    meetingDaysList: string[];
-    meetingType: string;
-    startTime: {
-      month: number;
-      day: number;
-      hour: number;
-      minute: number;
-    };
-    endTime: {
-      month: number;
-      day: number;
-      hour: number;
-      minute: number;
-    };
-    instructors: {
-      campusId: string;
-      email: string;
-      name: {
-        first: string;
-        middle: string;
-        last: string;
-      };
-    }[];
-  }[];
+  meetings: Meeting[];
   credit: number;
   isAsyncronous: boolean;
   onlineOnly: boolean;
@@ -52,33 +54,7 @@ export default class Session {
     courseId: string,
     termCode: string,
     sessionId: string,
-    meetings: {
-      buildingName: string;
-      room: string;
-      meetingDaysList: string[];
-      meetingType: string;
-      startTime: {
-        month: number;
-        day: number;
-        hour: number;
-        minute: number;
-      };
-      endTime: {
-        month: number;
-        day: number;
-        hour: number;
-        minute: number;
-      };
-      instructors: {
-        campusId: string;
-        email: string;
-        name: {
-          first: string;
-          middle: string;
-          last: string;
-        };
-      }[];
-    }[],
+    meetings: Meeting[],
     credit: number,
     isAsyncronous: boolean,
     onlineOnly: boolean,

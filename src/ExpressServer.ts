@@ -44,7 +44,6 @@ export default class ExpressServer {
     // Origin and Application Key
     this.app.set('webpageOrigin', config.webpageOrigin);
     this.app.set('applicationKey', config.applicationKey);
-    this.app.set('serverApplicationKey', config.serverApplicationKey);
     this.app.set('serverAdminKey', config.serverAdminKey);
 
     // Only Allow GET, POST, DELETE, PUT, PATCH method
@@ -67,8 +66,8 @@ export default class ExpressServer {
       }
     );
 
-    // TODO: Routers
-    this.app.use('/user', scheduleRouter);
+    // Routers
+    this.app.use('/schedule', scheduleRouter);
 
     // Default Error Handler
     this.app.use(

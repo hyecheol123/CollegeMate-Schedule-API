@@ -14,7 +14,6 @@ export interface ConfigObj {
   jwtKeys: JwtKeyObj; // indicate jwt token credentials
   serverDomainPath: ServerDomainPathObj; // indicate server's domain and path
   webpageOrigin: string; // indicate our website Origin
-  serverApplicationKey: string; // Indicate application key to verify requests from server
   applicationKey: string[]; // Indicate the list of applicationKey (Mobile Application Origin Check)
   serverAdminKey: string; // Indicate unique key for this server
 }
