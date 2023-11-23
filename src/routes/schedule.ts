@@ -5,8 +5,8 @@
  */
 
 import * as express from 'express';
-import * as Cosmos from '@azure/cosmos';
-import ServerConfig from '../ServerConfig';
+// import * as Cosmos from '@azure/cosmos';
+// import ServerConfig from '../ServerConfig';
 
 const scheduleRouter = express.Router();
 

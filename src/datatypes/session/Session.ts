@@ -4,11 +4,11 @@
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
  */
 
-import * as Cosmos from '@azure/cosmos';
-import ServerConfig from '../../ServerConfig';
+// import * as Cosmos from '@azure/cosmos';
+// import ServerConfig from '../../ServerConfig';
 
 // DB Container id
-const SESSION = 'session';
+// const SESSION = 'session';
 
 interface Meeting {
   buildingName: string;
@@ -36,7 +36,7 @@ interface Meeting {
       last: string;
     };
   }[];
-};
+}
 
 export default class Session {
   id: string;

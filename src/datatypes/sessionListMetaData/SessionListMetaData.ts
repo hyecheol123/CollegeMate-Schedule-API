@@ -4,11 +4,11 @@
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
  */
 
-import * as Cosmos from '@azure/cosmos';
-import ServerConfig from '../../ServerConfig';
+// import * as Cosmos from '@azure/cosmos';
+// import ServerConfig from '../../ServerConfig';
 
 // DB Container id
-const SESSION_LIST_META_DATA = 'sessionListMetaData';
+// const SESSION_LIST_META_DATA = 'sessionListMetaData';
 
 export default class SessionListMetaData {
   id: string;
