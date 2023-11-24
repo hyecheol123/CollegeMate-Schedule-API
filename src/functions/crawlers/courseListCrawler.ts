@@ -18,10 +18,10 @@ export default async function courseListCrawler(termId: string) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            "selectedTerm": termId,
-            "queryString": "*",
-            "page": 1,
-            "pageSize": 1
+            'selectedTerm': termId,
+            'queryString': '*',
+            'page': 1,
+            'pageSize': 1
         })
     })
     .then(res => res.json())
@@ -36,17 +36,17 @@ export default async function courseListCrawler(termId: string) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            "selectedTerm": termId,
-            "queryString": "*",
-            "page": 1,
-            "pageSize": found
+            'selectedTerm': termId,
+            'queryString': '*',
+            'page': 1,
+            'pageSize': found
         })
     })
     .then(res => res.json())
     .then(json => {
         const courseInfo = json.hits.map((course: any) => {
             return {
-                id: termId + "-" + course.courseId,
+                id: termId + '-' + course.courseId,
                 courseName: course.courseDesignation,
                 courseId: course.courseId,
                 subjectCode: course.subject.subjectCode,
@@ -63,4 +63,4 @@ export default async function courseListCrawler(termId: string) {
     return courseList;
 }
 
-// courseListCrawler("1244");
+// courseListCrawler('1244');
