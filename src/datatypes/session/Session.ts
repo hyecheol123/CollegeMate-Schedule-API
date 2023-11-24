@@ -10,9 +10,9 @@
 // DB Container id
 // const SESSION = 'session';
 
-interface Meeting {
-  buildingName: string;
-  room: string;
+export interface Meeting {
+  buildingName: string | undefined;
+  room: string | undefined;
   meetingDaysList: string[];
   meetingType: string;
   startTime: {
@@ -28,11 +28,11 @@ interface Meeting {
     minute: number;
   };
   instructors: {
-    campusId: string;
+    campusId: string | undefined;
     email: string;
     name: {
       first: string;
-      middle: string;
+      middle: string | undefined;
       last: string;
     };
   }[];
@@ -47,7 +47,7 @@ export default class Session {
   credit: number;
   isAsyncronous: boolean;
   onlineOnly: boolean;
-  topic: string;
+  topic: string | undefined;
 
   constructor(
     id: string,
@@ -58,7 +58,7 @@ export default class Session {
     credit: number,
     isAsyncronous: boolean,
     onlineOnly: boolean,
-    topic: string
+    topic: string | undefined
   ) {
     this.id = id;
     this.courseId = courseId;
