@@ -6,7 +6,7 @@
  * 
  */
 
-export default async function courseListCrawler(termId: string) {
+export default async function courseListCrawler(termId: string) : Promise<any> {
     const url = 'https://public.enroll.wisc.edu/api/search/v1';
     let found = 0;
     const courseList: any[] = [];
@@ -62,5 +62,4 @@ export default async function courseListCrawler(termId: string) {
     console.log(courseList);
     return courseList;
 }
-
 // courseListCrawler('1244');
