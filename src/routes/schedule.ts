@@ -5,7 +5,6 @@
  * @author Jeonghyeon Park <fishbox0923@gmail.com>
  */
 
-import { CosmosClient } from '@azure/cosmos';
 import * as express from 'express';
 import * as Cosmos from '@azure/cosmos';
 import ForbiddenError from '../exceptions/ForbiddenError';
@@ -25,11 +24,10 @@ scheduleRouter.get('/available-semesters', async (req, res, next) => {
     ) {
       throw new ForbiddenError();
     }
-    
+
     const termList = await CourseListMetaData.getTermList(dbClient);
     res.json(termList);
-  }
-  catch (e) {
+  } catch (e) {
     next(e);
   }
 });

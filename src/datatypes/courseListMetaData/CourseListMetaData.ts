@@ -22,12 +22,12 @@ export default class CourseListMetaData {
     this.lastChecked = lastChecked;
   }
 
-   /**
+  /**
    * Get a list of all available terms
    *
    * @param {Cosmos.Database} dbClient Cosmos DB Client
    */
-   static async getTermList(dbClient: Cosmos.Database): Promise<string[]> {
+  static async getTermList(dbClient: Cosmos.Database): Promise<string[]> {
     return (
       await dbClient
         .container(COURSE_LIST_META_DATA)

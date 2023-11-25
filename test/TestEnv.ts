@@ -14,6 +14,7 @@ import * as crypto from 'crypto';
 import * as Cosmos from '@azure/cosmos';
 import TestConfig from './TestConfig';
 import ExpressServer from '../src/ExpressServer';
+import CourseListMetaData from '../src/datatypes/courseListMetaData/CourseListMetaData';
 
 /**
  * Class for Test Environment
@@ -63,11 +64,50 @@ export default class TestEnv {
     this.dbClient = dbClient.database(this.testConfig.db.databaseId);
 
     // TODO: Setup Containers
+    //create a COURSE_LIST_META_DATA container
+    const containerOps = await this.dbClient.containers.create({
+      id: 'courseListMetaData',
+      indexingPolicy: {
+        indexingMode: 'consistent',
+        automatic: true,
+        includedPaths: [{path: '/*'}],
+        excludedPaths: [
+          {
+            path: '/"_etag"/?',
+          },
+        ],
+      },
+    });
 
     /* istanbul ignore next */
-    // if (containerOps.statusCode !== 201) {
-    //   throw new Error(JSON.stringify(containerOps));
-    // }
+    if (containerOps.statusCode !== 201) {
+      throw new Error(JSON.stringify(containerOps));
+    }
+
+    const courseListMetaDataSample: CourseListMetaData[] = [];
+    courseListMetaDataSample.push(
+      {
+        termCode: '1234',
+        hash: 'hash',
+        lastChecked: new Date().toISOString(),
+      },
+      {
+        termCode: '5678',
+        hash: 'hash',
+        lastChecked: new Date().toISOString(),
+      },
+      {
+        termCode: '9012',
+        hash: 'hash',
+        lastChecked: new Date().toISOString(),
+      }
+    );
+
+    for (const courseListMetaData of courseListMetaDataSample) {
+      await this.dbClient
+        .container('courseListMetaData')
+        .items.create(courseListMetaData);
+    }
 
     // Setup Express Server
     this.expressServer = new ExpressServer(this.testConfig);
