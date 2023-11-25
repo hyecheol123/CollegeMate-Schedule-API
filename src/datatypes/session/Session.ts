@@ -2,13 +2,14 @@
  * Define type and used CRUD methods for each courses
  *
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
+ * @author Jeonghyeon Park <fishbox0923@gmail.com>
  */
 
-// import * as Cosmos from '@azure/cosmos';
+import * as Cosmos from '@azure/cosmos';
 // import ServerConfig from '../../ServerConfig';
 
 // DB Container id
-// const SESSION = 'session';
+const SESSION = 'session';
 
 interface Meeting {
   buildingName: string;
@@ -70,4 +71,29 @@ export default class Session {
     this.onlineOnly = onlineOnly;
     this.topic = topic;
   }
+
+  static async getAllSessions(dbClient: Cosmos.Database, termCode: string, courseId: string) {
+    try {
+      // Get courseList from DB with the corresponding termCode and courseName
+      const sessionList: Session[] = (
+        await dbClient.container(SESSION).items.query({
+          query: 'SELECT * FROM c WHERE c.termCode = @termCode AND c.courseId = @courseId',
+          parameters: [
+            {
+              name: '@termCode',
+              value: termCode,
+            },
+            {
+              name: '@courseId',
+              value: courseId,
+            }
+          ],
+        }).fetchAll()
+      ).resources;
+
+      return sessionList;
+    } catch (err) {
+      throw err;
+    }
+  };
 }
