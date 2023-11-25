@@ -4,16 +4,16 @@
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
  */
 
-// import * as Cosmos from '@azure/cosmos';
+import * as Cosmos from '@azure/cosmos';
 // import ServerConfig from '../../ServerConfig';
 
 // DB Container id
-// const SCHEDULE = 'schedule';
+const SCHEDULE = 'schedule';
 
 interface Event {
   id: string;
   title: string;
-  location: string;
+  location: string | undefined;
   meetingDaysList: string[];
   startTime: {
     month: number;
@@ -56,5 +56,15 @@ export default class Schedule {
     this.termCode = termCode;
     this.sessionList = sessionList;
     this.eventList = eventList;
+  }
+
+  /**
+   * Create a new schedule
+   * 
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {Schedule} schedule Schedule object to create
+   */
+  static async create(dbClient: Cosmos.Database, schedule: Schedule) {
+    await dbClient.container(SCHEDULE).items.create(schedule);
   }
 }
