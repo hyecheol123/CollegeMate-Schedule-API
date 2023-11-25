@@ -23,7 +23,6 @@ import session004289 from './testData/session1242-266-004289.json';
 import session000803 from './testData/session1244-156-000803.json';
 import session024684 from './testData/session1244-180-024684.13.json';
 
-
 /**
  * Class for Test Environment
  */
@@ -234,7 +233,9 @@ export default class TestEnv {
     });
     // Create a new session entries on test DB
     for (let index = 0; index < sessionSample.length; ++index) {
-      await this.dbClient.container('session').items.create(sessionSample[index]);
+      await this.dbClient
+        .container('session')
+        .items.create(sessionSample[index]);
     }
 
     // sessionListMetaData container

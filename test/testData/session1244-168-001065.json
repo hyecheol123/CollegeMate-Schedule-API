@@ -1,0 +1,248 @@
+[
+  {
+    "id": "1244-001065-67368",
+    "courseId": "001065",
+    "termCode": "1244",
+    "sessionId": "67368",
+    "meetings": [
+      {
+        "buildingName": "Mosse Humanities Building",
+        "room": "6231",
+        "meetingDaysList": [
+          "TUESDAY",
+          "THURSDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 11,
+          "minute": 0
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 13,
+          "minute": 30
+        },
+        "instructors": [
+          {
+            "email": "CHOUSER2@WISC.EDU",
+            "name": {
+              "first": "Cullen",
+              "last": "Houser"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 3,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1244-001065-67367",
+    "courseId": "001065",
+    "termCode": "1244",
+    "sessionId": "67367",
+    "meetings": [
+      {
+        "buildingName": "Mosse Humanities Building",
+        "room": "6231",
+        "meetingDaysList": [
+          "TUESDAY",
+          "THURSDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 8,
+          "minute": 15
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "TLI457@WISC.EDU",
+            "name": {
+              "first": "Tiange",
+              "last": "Li"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 3,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1244-001065-64857",
+    "courseId": "001065",
+    "termCode": "1244",
+    "sessionId": "64857",
+    "meetings": [
+      {
+        "buildingName": "Mosse Humanities Building",
+        "room": "6101",
+        "meetingDaysList": [
+          "MONDAY",
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 16,
+          "minute": 30
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 19,
+          "minute": 0
+        },
+        "instructors": [
+          {
+            "email": "SINGH294@WISC.EDU",
+            "name": {
+              "first": "Anamika",
+              "last": "Singh"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 3,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1244-001065-63942",
+    "courseId": "001065",
+    "termCode": "1244",
+    "sessionId": "63942",
+    "meetings": [
+      {
+        "buildingName": "Mosse Humanities Building",
+        "room": "6101",
+        "meetingDaysList": [
+          "MONDAY",
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 13,
+          "minute": 45
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 16,
+          "minute": 15
+        },
+        "instructors": [
+          {
+            "email": "SINGH294@WISC.EDU",
+            "name": {
+              "first": "Anamika",
+              "last": "Singh"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 3,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1244-001065-60957",
+    "courseId": "001065",
+    "termCode": "1244",
+    "sessionId": "60957",
+    "meetings": [
+      {
+        "buildingName": "Mosse Humanities Building",
+        "room": "6101",
+        "meetingDaysList": [
+          "MONDAY",
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 11,
+          "minute": 0
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 13,
+          "minute": 30
+        },
+        "instructors": [
+          {
+            "email": "CHOUSER2@WISC.EDU",
+            "name": {
+              "first": "Cullen",
+              "last": "Houser"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 3,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1244-001065-60956",
+    "courseId": "001065",
+    "termCode": "1244",
+    "sessionId": "60956",
+    "meetings": [
+      {
+        "buildingName": "Mosse Humanities Building",
+        "room": "6101",
+        "meetingDaysList": [
+          "MONDAY",
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 8,
+          "minute": 15
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "CHOUSER2@WISC.EDU",
+            "name": {
+              "first": "Cullen",
+              "last": "Houser"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 3,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  }
+]
