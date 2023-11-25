@@ -11,8 +11,8 @@ import * as Cosmos from '@azure/cosmos';
 const SESSION = 'session';
 
 export interface Meeting {
-  buildingName: string | undefined;
-  room: string | undefined;
+  buildingName?: string;
+  room?: string;
   meetingDaysList: string[];
   meetingType: string;
   startTime: {
@@ -28,11 +28,11 @@ export interface Meeting {
     minute: number;
   };
   instructors: {
-    campusId: string | undefined;
+    campusId?: string;
     email: string;
     name: {
       first: string;
-      middle: string | undefined;
+      middle?: string;
       last: string;
     };
   }[];
@@ -47,7 +47,7 @@ export default class Session {
   credit: number;
   isAsyncronous: boolean;
   onlineOnly: boolean;
-  topic: string | undefined;
+  topic?: string;
 
   constructor(
     id: string,
@@ -58,7 +58,7 @@ export default class Session {
     credit: number,
     isAsyncronous: boolean,
     onlineOnly: boolean,
-    topic: string | undefined
+    topic?: string
   ) {
     this.id = id;
     this.courseId = courseId;

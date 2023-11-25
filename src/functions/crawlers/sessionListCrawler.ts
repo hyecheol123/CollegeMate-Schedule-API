@@ -70,11 +70,15 @@ export default async function sessionListCrawler(
             }[] = [];
             section.instructors.forEach((instructor: any) => {
               instructors.push({
-                campusId: instructor.campusid,
+                campusId: !instructor.campusid
+                  ? undefined
+                  : instructor.campusId,
                 email: instructor.email,
                 name: {
                   first: instructor.name.first,
-                  middle: instructor.name.middle,
+                  middle: !instructor.name.middle
+                    ? undefined
+                    : instructor.name.middle,
                   last: instructor.name.last,
                 },
               });
@@ -83,7 +87,7 @@ export default async function sessionListCrawler(
               buildingName: !meeting.building
                 ? undefined
                 : meeting.building.buildingName,
-              room: meeting.room,
+              room: !meeting.room ? undefined : meeting.room,
               meetingDaysList: meeting.meetingDaysList,
               meetingType: meeting.meetingType,
               startTime: startTimeObj,
@@ -99,7 +103,7 @@ export default async function sessionListCrawler(
             session.termCode,
             session.id,
             meetingList,
-            session.creditRange,
+            parseInt(session.creditRange),
             session.isAsynchronous,
             session.onlineOnly,
             topic

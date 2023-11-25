@@ -15,8 +15,15 @@ export default class CourseListMetaData {
   hash: string;
   lastChecked: Date | string;
 
-  constructor(termCode: string, hash: string, lastChecked: Date | string) {
-    this.id = termCode;
+  /**
+   * Constructor for CourseListMetaData
+   *
+   * @param {string} id Term Code
+   * @param {string} hash Hash of the course list
+   * @param {Date | string} lastChecked Last time the course list was updated
+   */
+  constructor(id: string, hash: string, lastChecked: Date | string) {
+    this.id = id;
     this.hash = hash;
     this.lastChecked = lastChecked;
   }
@@ -48,12 +55,18 @@ export default class CourseListMetaData {
    * Create a new course list meta data
    *
    * @param {Cosmos.Database} dbClient Cosmos DB Client
-   * @param {CourseListMetaData} courseListMetaData course list meta data to be created
+   *
    */
   static async create(
     dbClient: Cosmos.Database,
-    courseListMetaData: CourseListMetaData
+    id: string,
+    hash: string
   ): Promise<void> {
+    const courseListMetaData = new CourseListMetaData(
+      id,
+      hash,
+      new Date().toISOString()
+    );
     await dbClient
       .container(COURSE_LIST_META_DATA)
       .items.create(courseListMetaData);
@@ -63,12 +76,20 @@ export default class CourseListMetaData {
    * Update a course list meta data
    *
    * @param {Cosmos.Database} dbClient Cosmos DB Client
-   * @param {CourseListMetaData} courseListMetaData course list meta data to be updated
+   * @param {id} id Term Code
+   * @param {hash} hash Hash of the course list
    */
   static async update(
     dbClient: Cosmos.Database,
-    courseListMetaData: CourseListMetaData
+    id: string,
+    hash: string
   ): Promise<void> {
+    const courseListMetaData = new CourseListMetaData(
+      id,
+      hash,
+      new Date().toISOString()
+    );
+
     await dbClient
       .container(COURSE_LIST_META_DATA)
       .item(courseListMetaData.id)

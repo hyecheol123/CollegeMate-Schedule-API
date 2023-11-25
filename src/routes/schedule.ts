@@ -78,16 +78,11 @@ scheduleRouter.post('/course-list/:termCode/update', async (req, res, next) => {
     }
     // Update course list meta data
     if (!courseListMetaData) {
-      const newCourseListMetaData = new CourseListMetaData(
-        termCode,
-        courseListHash,
-        currentTime
-      );
-      await CourseListMetaData.create(dbClient, newCourseListMetaData);
+      await CourseListMetaData.create(dbClient, termCode, courseListHash);
     } else {
       courseListMetaData.hash = courseListHash;
       courseListMetaData.lastChecked = currentTime;
-      await CourseListMetaData.update(dbClient, courseListMetaData);
+      await CourseListMetaData.update(dbClient, termCode, courseListHash);
     }
 
     // For each course, update session list and its meta data if courseListHash is different

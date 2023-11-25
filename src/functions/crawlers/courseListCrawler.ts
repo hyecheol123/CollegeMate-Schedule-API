@@ -9,11 +9,11 @@
 import Course from '../../datatypes/course/Course';
 
 export default async function courseListCrawler(
-  termId: string
+  termCode: string
 ): Promise<Course[]> {
   const url = 'https://public.enroll.wisc.edu/api/search/v1';
   let courseCount = 0;
-  const courseList: Course[] = [];
+  let courseList: Course[] = [];
 
   // Look for the size of the course list
   await fetch(url, {
@@ -22,7 +22,7 @@ export default async function courseListCrawler(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      selectedTerm: termId,
+      selectedTerm: termCode,
       queryString: '*',
       page: 1,
       pageSize: 1,
@@ -40,7 +40,7 @@ export default async function courseListCrawler(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      selectedTerm: termId,
+      selectedTerm: termCode,
       queryString: '*',
       page: 1,
       pageSize: courseCount,
@@ -48,19 +48,18 @@ export default async function courseListCrawler(
   })
     .then(res => res.json())
     .then(json => {
-      const courseInfo: Course = json.hits.map((course: any) => {
+      courseList = json.hits.map((course: any) => {
         return {
-          id: termId + '-' + course.courseId,
+          id: termCode + '-' + course.courseId,
           courseName: course.courseDesignation,
           courseId: course.courseId,
           subjectCode: course.subject.subjectCode,
           description: course.description,
           fullCourseName: course.fullCourseDesignation,
-          termCode: termId,
+          termCode: termCode,
           title: course.title,
         };
       });
-      courseList.push(courseInfo);
     });
 
   return courseList;
