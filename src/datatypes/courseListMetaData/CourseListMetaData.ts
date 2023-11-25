@@ -63,17 +63,4 @@ export default class CourseListMetaData {
       throw e;
     }
   }
-
 }
-
-
-// const querySpec: Cosmos.SqlQuerySpec = {
-//   query: 'SELECT * FROM c WHERE c.termCode = @termCode',
-//   parameters: [
-//     {
-//       name: '@termCode',
-//       value: termCode,
-//     },
-//   ],
-// };
-// await dbClient.container(COURSE_LIST_META_DATA).items.query(querySpec).fetchAll();
