@@ -4,11 +4,11 @@
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
  */
 
-// import * as Cosmos from '@azure/cosmos';
+import * as Cosmos from '@azure/cosmos';
 // import ServerConfig from '../../ServerConfig';
 
 // DB Container id
-// const SESSION = 'session';
+const SESSION = 'session';
 
 export interface Meeting {
   buildingName: string | undefined;
@@ -69,5 +69,46 @@ export default class Session {
     this.isAsyncronous = isAsyncronous;
     this.onlineOnly = onlineOnly;
     this.topic = topic;
+  }
+
+  /**
+   * Create a new session
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {Session} session session to be created
+   */
+  static async create(
+    dbClient: Cosmos.Database,
+    session: Session
+  ): Promise<void> {
+    await dbClient.container(SESSION).items.create(session);
+  }
+
+  /**
+   * Delete all sessions in a course
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} courseId course id of the sessions to be deleted
+   */
+  static async deleteAll(
+    dbClient: Cosmos.Database,
+    courseId: string
+  ): Promise<void> {
+    const dbOps = await dbClient
+      .container(SESSION)
+      .items.query({
+        query: `SELECT * FROM ${SESSION} s WHERE s.courseId = @courseId`,
+        parameters: [
+          {
+            name: '@courseId',
+            value: courseId,
+          },
+        ],
+      })
+      .fetchAll();
+
+    for (const session of dbOps.resources) {
+      await dbClient.container(SESSION).item(session.id).delete();
+    }
   }
 }
