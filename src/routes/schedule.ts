@@ -13,6 +13,8 @@ import BadRequestError from '../exceptions/BadRequestError';
 import * as Cosmos from '@azure/cosmos';
 import ServerConfig from '../ServerConfig';
 import Schedule from '../datatypes/schedule/Schedule';
+import { validateCreateScheduleRequest } from '../functions/inputValidator/validateCreateScheduleRequest';
+import ConflictError from '../exceptions/ConflictError';
 
 // Path: /schedule
 const scheduleRouter = express.Router();
@@ -39,21 +41,24 @@ scheduleRouter.post('/', async (req, res, next) => {
       accessToken,
       req.app.get('jwtAccessKey')
     );
-    
+
     // Validate termCode
-    const termCode = req.body.termCode;
-    const termList = await CourseListMetaData.getTermList(dbClient);
-    if (!termList.includes(termCode)) {
+    if (!validateCreateScheduleRequest(req.body) || !(await CourseListMetaData.checkTermCodeExists(dbClient, req.body.termCode))) {
       throw new BadRequestError();
     }
+    const termCode = req.body.termCode;
 
-    // DB Operation: Create a new schedule
+    // Check if the user already has a schedule for the term
     const email = tokenContents.id;
+    if (await Schedule.checkExists(dbClient, email, termCode)) {
+      throw new ConflictError();
+    }
+    // DB Operation: Create a new schedule
     const requestCreatedDate = new Date();
     const scheduleId = ServerConfig.hash(
       `${email}/${termCode}/${requestCreatedDate.toISOString()}`,
       email,
-      termCode,
+      termCode
     );
     const schedule = {
       id: scheduleId,

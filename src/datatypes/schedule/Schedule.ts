@@ -60,11 +60,35 @@ export default class Schedule {
 
   /**
    * Create a new schedule
-   * 
+   *
    * @param {Cosmos.Database} dbClient Cosmos DB Client
    * @param {Schedule} schedule Schedule object to create
    */
-  static async create(dbClient: Cosmos.Database, schedule: Schedule) {
+  static async create(
+    dbClient: Cosmos.Database,
+    schedule: Schedule
+  ): Promise<void> {
     await dbClient.container(SCHEDULE).items.create(schedule);
+  }
+
+  /**
+   * Check if the schedule with the email and termCode exists in the database
+   * 
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} email User's email
+   * @param {string} termCode Term code
+   */
+  static async checkExists(
+    dbClient: Cosmos.Database,
+    email: string,
+    termCode: string
+  ): Promise<boolean> {
+    const dbOps = await dbClient
+      .container(SCHEDULE)
+      .items.query({
+        query: `SELECT * FROM c WHERE c.email = "${email}" AND c.termCode = "${termCode}"`,
+      })
+      .fetchAll();
+    return dbOps.resources.length !== 0;
   }
 }

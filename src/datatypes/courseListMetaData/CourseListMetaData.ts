@@ -22,15 +22,20 @@ export default class CourseListMetaData {
   }
 
   /**
-   * Get a list of all available terms
-   * 
+   * Check if the termCode exists in the database
+   *
    * @param {Cosmos.Database} dbClient Cosmos DB Client
    */
-  static async getTermList(dbClient: Cosmos.Database) {
-    return (
-      await dbClient.container(COURSE_LIST_META_DATA).items.query({
-        query: 'SELECT c.termCode FROM c'
-      }).fetchAll()
-    ).resources.map((term: { termCode: string }) => term.termCode);
+  static async checkTermCodeExists(
+    dbClient: Cosmos.Database,
+    termCode: string
+  ): Promise<boolean> {
+    const dbOps = await dbClient
+      .container(COURSE_LIST_META_DATA)
+      .items.query({
+        query: `SELECT * FROM c WHERE c.termCode = "${termCode}"`,
+      })
+      .fetchAll();
+    return dbOps.resources.length !== 0;
   }
 }
