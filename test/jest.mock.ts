@@ -5,7 +5,7 @@
  *
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
  */
-import session001065 from './testData/session1244-168-001065.json';
+import * as session001065 from './testData/session1244-168-001065.json';
 
 // Major List Mock Data
 jest.mock('../src/functions/crawlers/courseListCrawler', () => ({

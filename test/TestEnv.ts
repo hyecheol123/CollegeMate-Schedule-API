@@ -18,10 +18,10 @@ import ExpressServer from '../src/ExpressServer';
 import CourseListMetaData from '../src/datatypes/courseListMetaData/CourseListMetaData';
 import Course from '../src/datatypes/course/Course';
 import Session from '../src/datatypes/session/Session';
-import session000441 from './testData/session1242-112-000441.json';
-import session004289 from './testData/session1242-266-004289.json';
-import session000803 from './testData/session1244-156-000803.json';
-import session024684 from './testData/session1244-180-024684.13.json';
+import * as session000441 from './testData/session1242-112-000441.json';
+import * as session004289 from './testData/session1242-266-004289.json';
+import * as session000803 from './testData/session1244-156-000803.json';
+import * as session024684 from './testData/session1244-180-024684.13.json';
 
 /**
  * Class for Test Environment
