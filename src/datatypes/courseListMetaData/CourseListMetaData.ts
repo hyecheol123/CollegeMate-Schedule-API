@@ -8,6 +8,7 @@
 import * as Cosmos from '@azure/cosmos';
 // import ServerConfig from '../../ServerConfig';
 import BadRequestError from '../../exceptions/BadRequestError';
+import Course from '../course/Course';
 
 // DB Container id
 const COURSE_LIST_META_DATA = 'courseListMetaData';
@@ -36,28 +37,27 @@ export default class CourseListMetaData {
   static async searchCourse(dbClient: Cosmos.Database, termCode: string, courseName: string) {
     try {
       // check if the database has the data corresponding to the termCode and courseName
-      const querySpec: Cosmos.SqlQuerySpec = {
-        query: 'SELECT * FROM c WHERE c.termCode = @termCode AND c.courseName = @courseName',
-        parameters: [
-          {
-            name: '@termCode',
-            value: termCode,
-          },
-          {
-            name: '@courseName',
-            value: courseName,
-          },
-        ],
-      };
-      const courseListMetaData: CourseListMetaData[] = (
-        await dbClient.container(COURSE_LIST_META_DATA).items.query(querySpec).fetchAll()
+      const courseList: Course[] = (
+        await dbClient.container(COURSE_LIST_META_DATA).items.query({
+          query: 'SELECT * FROM c WHERE c.termCode = @termCode AND c.courseName = @courseName',
+          parameters: [
+            {
+              name: '@termCode',
+              value: termCode,
+            },
+            {
+              name: '@courseName',
+              value: courseName,
+            },
+          ],
+        }).fetchAll()
       ).resources;
 
-      if (courseListMetaData.length === 0) {
+      if (courseList.length === 0) {
         throw new BadRequestError();
-        
       }
-      return courseListMetaData;
+
+      return courseList;
     }
     catch (e) {
       throw e;
