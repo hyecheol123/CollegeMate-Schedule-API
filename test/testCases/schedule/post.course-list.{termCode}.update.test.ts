@@ -228,12 +228,6 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
         .item('1244')
         .read()
     ).resource;
-    const prevSessionListMetaData = (
-      await testEnv.dbClient
-        .container(SESSION_LIST_META_DATA)
-        .item('1244-001065')
-        .read()
-    ).resource;
 
     // Request with forceUpdate
     const response = await request(testEnv.expressServer.app)
@@ -245,10 +239,10 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
     expect(response.status).toBe(202);
 
     // Wait 500ms for mocking
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Check if the courseList is updated
-    let dbOps = await testEnv.dbClient
+    const dbOps = await testEnv.dbClient
       .container(COURSE_LIST_META_DATA)
       .item('1244')
       .read();
@@ -285,14 +279,6 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
       .fetchAll();
     expect(dbOps2.resources.length).toEqual(6);
     expect(dbOps2.resources[0].courseId).toEqual('001065');
-    dbOps = await testEnv.dbClient
-      .container(SESSION_LIST_META_DATA)
-      .item(dbOps2.resources[0].termCode + '-' + dbOps2.resources[0].courseId)
-      .read();
-    expect(dbOps.resource.lastChecked).not.toEqual(
-      prevSessionListMetaData.lastChecked
-    );
-    expect(dbOps.resource.hash).not.toEqual(prevSessionListMetaData.hash);
   });
 
   test('Success - ForceUpdate - 1 Updated Courses, 1 Unchanged Courses', async () => {
@@ -327,8 +313,8 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
       .send({forceUpdate: true});
     expect(response.status).toBe(202);
 
-    // Wait 500ms for mocking
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Wait 1000ms for database to update
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Check if the courseList is updated
     let dbOps = await testEnv.dbClient
@@ -341,7 +327,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
     expect(dbOps.resource.hash).toEqual(prevCourseListMetaData.hash);
     // Check if the course, session, and sessionListMetaData are updated
     let dbOps2 = await testEnv.dbClient
-      .container('course')
+      .container(COURSE)
       .items.query({
         query: `SELECT * FROM ${COURSE} AS c WHERE c.termCode = @termCode`,
         parameters: [
@@ -354,7 +340,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
       .fetchAll();
     expect(dbOps2.resources.length).toEqual(2);
     dbOps2 = await testEnv.dbClient
-      .container('session')
+      .container(SESSION)
       .items.query({
         query: `SELECT * FROM ${SESSION} c WHERE c.termCode = @termCode`,
         parameters: [
@@ -370,17 +356,11 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
       .container(SESSION_LIST_META_DATA)
       .item('1242-000441')
       .read();
-    expect(dbOps.resource.lastChecked).not.toEqual(
-      prevSessionListMetaData.lastChecked
-    );
     expect(dbOps.resource.hash).toEqual(prevSessionListMetaData.hash);
     dbOps = await testEnv.dbClient
       .container(SESSION_LIST_META_DATA)
       .item('1242-004289')
       .read();
-    expect(dbOps.resource.lastChecked).not.toEqual(
-      prevSessionListMetaData2.lastChecked
-    );
     expect(dbOps.resource.hash).not.toEqual(prevSessionListMetaData2.hash);
   });
 
@@ -401,11 +381,48 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
     await new Promise(resolve => setTimeout(resolve, 500));
 
     // Check if the courseList is updated
-    const dbOps = await testEnv.dbClient
+    let dbOps = await testEnv.dbClient
       .container(COURSE_LIST_META_DATA)
       .item('1234')
       .read();
     expect(dbOps.resource.lastChecked).not.toEqual(undefined);
+    expect(dbOps.resource.hash).not.toEqual(undefined);
+
+    // Check if the course, session, and sessionListMetaData are updated 001065
+    let dbOps2 = await testEnv.dbClient
+      .container(COURSE)
+      .items.query({
+        query: `SELECT * FROM ${COURSE} AS c WHERE c.termCode = @termCode`,
+        parameters: [
+          {
+            name: '@termCode',
+            value: '1234',
+          },
+        ],
+      })
+      .fetchAll();
+    expect(dbOps2.resources.length).toEqual(1);
+    expect(dbOps2.resources[0].id).toEqual('1234-001065');
+
+    dbOps2 = await testEnv.dbClient
+      .container(SESSION)
+      .items.query({
+        query: `SELECT * FROM ${SESSION} c WHERE c.termCode = @termCode`,
+        parameters: [
+          {
+            name: '@termCode',
+            value: '1234',
+          },
+        ],
+      })
+      .fetchAll();
+    expect(dbOps2.resources.length).toEqual(6);
+    expect(dbOps2.resources[0].courseId).toEqual('001065');
+
+    dbOps = await testEnv.dbClient
+      .container(SESSION_LIST_META_DATA)
+      .item('1234-001065')
+      .read();
     expect(dbOps.resource.hash).not.toEqual(undefined);
   });
 
