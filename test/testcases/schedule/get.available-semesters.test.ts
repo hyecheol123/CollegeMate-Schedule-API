@@ -58,6 +58,9 @@ describe('GET /schedule/available-semesters - Get Available Semesters', () => {
       .get('/schedule/available-semesters')
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(200);
+    expect(response.body.length).toBe(2);
+    expect(response.body[0]).toBe('1242');
+    expect(response.body[1]).toBe('1244');
 
     // DB check
     let termList = (
@@ -69,19 +72,21 @@ describe('GET /schedule/available-semesters - Get Available Semesters', () => {
         .fetchAll()
     ).resources.map((term: {termCode: string}) => term.termCode);
 
-    expect(termList).toEqual(['1234', '5678', '9012']);
-    expect(termList.length).toBe(3);
+    expect(termList).toEqual(['1242', '1244']);
+    expect(termList.length).toBe(2);
     expect(response.body).toEqual(termList);
-    expect(response.body.length).toBe(3);
-    expect(response.body[0]).toBe('1234');
-    expect(response.body[1]).toBe('5678');
-    expect(response.body[2]).toBe('9012');
+    expect(response.body.length).toBe(2);
+    expect(response.body[0]).toBe('1242');
+    expect(response.body[1]).toBe('1244');
 
     // Request From Android App
     response = await request(testEnv.expressServer.app)
       .get('/schedule/available-semesters')
       .set({'X-APPLICATION-KEY': '<Android-App-v1>'});
     expect(response.status).toBe(200);
+    expect(response.body.length).toBe(2);
+    expect(response.body[0]).toBe('1242');
+    expect(response.body[1]).toBe('1244');
 
     // DB check
     termList = (
@@ -93,12 +98,11 @@ describe('GET /schedule/available-semesters - Get Available Semesters', () => {
         .fetchAll()
     ).resources.map((term: {termCode: string}) => term.termCode);
 
-    expect(termList).toEqual(['1234', '5678', '9012']);
-    expect(termList.length).toBe(3);
+    expect(termList).toEqual(['1242', '1244']);
+    expect(termList.length).toBe(2);
     expect(response.body).toEqual(termList);
-    expect(response.body.length).toBe(3);
-    expect(response.body[0]).toBe('1234');
-    expect(response.body[1]).toBe('5678');
-    expect(response.body[2]).toBe('9012');
+    expect(response.body.length).toBe(2);
+    expect(response.body[0]).toBe('1242');
+    expect(response.body[1]).toBe('1244');
   });
 });
