@@ -13,6 +13,7 @@ import AuthToken from '../../../src/datatypes/Token/AuthToken';
 import * as jwt from 'jsonwebtoken';
 import TestConfig from '../../TestConfig';
 import CourseListMetaData from '../../../src/datatypes/courseListMetaData/CourseListMetaData';
+import Course from '../../../src/datatypes/course/Course';
 
 describe('POST /schedule/course-list/:termCode/update - Update Course List (API Use / Admin Use)', () => {
   let testEnv: TestEnv;
@@ -22,6 +23,10 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
     refresh: '',
     invalid: '',
   };
+  const COURSE = 'course';
+  const COURSE_LIST_META_DATA = 'courseListMetaData';
+  const SESSION = 'session';
+  const SESSION_LIST_META_DATA = 'sessionListMetaData';
 
   beforeEach(async () => {
     // Setup test environment
@@ -85,7 +90,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
 
     // Request with no serverToken
     const response = await request(testEnv.expressServer.app)
-      .post('/schedule/course-list/1244/update')
+      .post('/schedule/course-list/1234/update')
       .send({forceUpdate: true});
     expect(response.status).toBe(401);
     expect(response.body.error).toBe('Unauthenticated');
@@ -97,7 +102,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
 
     // Request with refresh token instead of serverAdminToken
     let response = await request(testEnv.expressServer.app)
-      .post('/schedule/course-list/1244/update')
+      .post('/schedule/course-list/1234/update')
       .set({
         'X-SERVER-TOKEN': tokenMap.refresh,
       })
@@ -107,7 +112,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
 
     // Request with wrong serverToken
     response = await request(testEnv.expressServer.app)
-      .post('/schedule/course-list/1244/update')
+      .post('/schedule/course-list/1234/update')
       .set({
         'X-SERVER-TOKEN': 'test',
       })
@@ -117,7 +122,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
 
     // Request with invalid serverToken
     response = await request(testEnv.expressServer.app)
-      .post('/schedule/course-list/1244/update')
+      .post('/schedule/course-list/1234/update')
       .set({
         'X-SERVER-TOKEN': tokenMap.invalid,
       })
@@ -132,7 +137,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
 
     // Request with no body
     let response = await request(testEnv.expressServer.app)
-      .post('/schedule/course-list/1244/update')
+      .post('/schedule/course-list/1234/update')
       .set({
         'X-SERVER-TOKEN': tokenMap.admin,
       });
@@ -141,7 +146,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
 
     // Request with additional body
     response = await request(testEnv.expressServer.app)
-      .post('/schedule/course-list/1244/update')
+      .post('/schedule/course-list/1234/update')
       .set({
         'X-SERVER-TOKEN': tokenMap.admin,
       })
@@ -151,7 +156,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
 
     // Request with only additional body
     response = await request(testEnv.expressServer.app)
-      .post('/schedule/course-list/1244/update')
+      .post('/schedule/course-list/1234/update')
       .set({
         'X-SERVER-TOKEN': tokenMap.admin,
       })
@@ -164,15 +169,6 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
 
-    // Create courseListMetaData in the database that has not passed 12 hours
-    const lastChecked = new Date(Date.now() - 1000 * 60 * 60 * 11).toISOString();
-    const courseList = new CourseListMetaData(
-      '1234',
-      TestConfig.hash('1234', '1234', JSON.stringify("test")),
-      lastChecked
-    );
-    await testEnv.dbClient.container('courseListMetaData').items.create(courseList);
-
     // Request with no forceUpdate
     const response = await request(testEnv.expressServer.app)
       .post('/schedule/course-list/1244/update')
@@ -182,14 +178,6 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
       .send({forceUpdate: false});
     expect(response.status).toBe(409);
     expect(response.body.error).toBe('Conflict');
-
-    // Check if the courseList is updated
-    const dbOps = await testEnv.dbClient
-      .container('courseListMetaData')
-      .item('1234')
-      .read();
-    expect(dbOps.resource.lastChecked).toEqual(lastChecked);
-    expect(dbOps.resource.hash).toEqual(courseList.hash);
   });
 
   test('Success - No ForceUpdate and Has passed 12 hours with change', async () => {
@@ -197,16 +185,273 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
 
     // Create courseListMetaData in the database that has passed 12 hours
-    const lastChecked = new Date(Date.now() - 1000 * 60 * 60 * 13).toISOString();
-        
+    const lastChecked = new Date(
+      Date.now() - 1000 * 60 * 60 * 13
+    ).toISOString();
+    const courseListMetaData = new CourseListMetaData(
+      '1234',
+      TestConfig.hash('1234', '1234', JSON.stringify('test')),
+      lastChecked
+    );
+    await testEnv.dbClient
+      .container('courseListMetaData')
+      .items.create(courseListMetaData);
+
+    // Request with no forceUpdate
+    const response = await request(testEnv.expressServer.app)
+      .post('/schedule/course-list/1234/update')
+      .set({
+        'X-SERVER-TOKEN': tokenMap.admin,
+      })
+      .send({forceUpdate: false});
+    expect(response.status).toBe(202);
+
+    // Wait 500ms for mocking
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Check if the courseList is updated
+    const dbOps = await testEnv.dbClient
+      .container(COURSE_LIST_META_DATA)
+      .item('1234')
+      .read();
+    expect(dbOps.resource.lastChecked).not.toEqual(lastChecked);
+    expect(dbOps.resource.hash).not.toEqual(courseListMetaData.hash);
   });
 
-  test('Success - ForceUpdate', async () => {
+  test('Success - ForceUpdate - 2 New Courses, 2 Deleted Courses', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+    testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
+
+    const prevCourseListMetaData = (
+      await testEnv.dbClient.container(COURSE_LIST_META_DATA).item('1244').read()
+    ).resource;
+    const prevSessionListMetaData = (
+      await testEnv.dbClient
+        .container(SESSION_LIST_META_DATA)
+        .item('1244-001065')
+        .read()
+    ).resource;
+
+    // Request with forceUpdate
+    const response = await request(testEnv.expressServer.app)
+      .post('/schedule/course-list/1244/update')
+      .set({
+        'X-SERVER-TOKEN': tokenMap.admin,
+      })
+      .send({forceUpdate: true});
+    expect(response.status).toBe(202);
+
+    // Wait 500ms for mocking
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Check if the courseList is updated
+    let dbOps = await testEnv.dbClient
+      .container(COURSE_LIST_META_DATA)
+      .item('1244')
+      .read();
+    expect(dbOps.resource.lastChecked).not.toEqual(
+      prevCourseListMetaData.lastChecked
+    );
+    expect(dbOps.resource.hash).not.toEqual(prevCourseListMetaData.hash);
+    // Check if the course, session, and sessionListMetaData are updated
+    let dbOps2 = await testEnv.dbClient
+      .container('course')
+      .items.query({
+        query: `SELECT * FROM ${COURSE} AS c WHERE c.termCode = @termCode`,
+        parameters: [
+          {
+            name: '@termCode',
+            value: '1244',
+          },
+        ],
+      })
+      .fetchAll();
+    expect(dbOps2.resources.length).toEqual(1);
+    expect(dbOps2.resources[0].id).toEqual('1244-001065');
+    dbOps2 = await testEnv.dbClient
+      .container('session')
+      .items.query({
+        query: `SELECT * FROM ${SESSION} c WHERE c.termCode = @termCode`,
+        parameters: [
+          {
+            name: '@termCode',
+            value: '1244',
+          },
+        ],
+      })
+      .fetchAll();
+    console.log(dbOps2.resources);
+    expect(dbOps2.resources.length).toEqual(6);
+    expect(dbOps2.resources[0].courseId).toEqual('001065');
+    dbOps = await testEnv.dbClient
+      .container(SESSION_LIST_META_DATA)
+      .item(dbOps2.resources[0].courseId)
+      .read();
+    expect(dbOps.resource.lastChecked).not.toEqual(
+      prevSessionListMetaData.lastChecked
+    );
+    expect(dbOps.resource.hash).not.toEqual(prevSessionListMetaData.hash);
+  });
+
+  test('Success - ForceUpdate - 1 Updated Courses, 1 Unchanged Courses', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+    testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
+
+    const prevCourseListMetaData = (
+      await testEnv.dbClient.container(COURSE_LIST_META_DATA).item('1242').read()
+    ).resource;
+    const prevSessionListMetaData = (
+      await testEnv.dbClient
+        .container(SESSION_LIST_META_DATA)
+        .item('1242-000441')
+        .read()
+    ).resource;
+    const prevSessionListMetaData2 = (
+      await testEnv.dbClient
+        .container(SESSION_LIST_META_DATA)
+        .item('1242-004289')
+        .read()
+    ).resource;
+
+    // Request with forceUpdate
+    const response = await request(testEnv.expressServer.app)
+      .post('/schedule/course-list/1242/update')
+      .set({
+        'X-SERVER-TOKEN': tokenMap.admin,
+      })
+      .send({forceUpdate: true});
+    expect(response.status).toBe(202);
+
+    // Wait 500ms for mocking
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Check if the courseList is updated
+    let dbOps = await testEnv.dbClient
+      .container(COURSE_LIST_META_DATA)
+      .item('1242')
+      .read();
+    expect(dbOps.resource.lastChecked).not.toEqual(
+      prevCourseListMetaData.lastChecked
+    );
+    expect(dbOps.resource.hash).toEqual(prevCourseListMetaData.hash);
+    // Check if the course, session, and sessionListMetaData are updated
+    let dbOps2 = await testEnv.dbClient
+      .container('course')
+      .items.query({
+        query: `SELECT * FROM ${COURSE} AS c WHERE c.termCode = @termCode`,
+        parameters: [
+          {
+            name: '@termCode',
+            value: '1242',
+          },
+        ],
+      })
+      .fetchAll();
+    expect(dbOps2.resources.length).toEqual(2);
+    dbOps2 = await testEnv.dbClient
+      .container('session')
+      .items.query({
+        query: `SELECT * FROM ${SESSION} c WHERE c.termCode = @termCode`,
+        parameters: [
+          {
+            name: '@termCode',
+            value: '1242',
+          },
+        ],
+      })
+      .fetchAll();
+    expect(dbOps2.resources.length).toEqual(16);
+    dbOps = await testEnv.dbClient
+      .container(SESSION_LIST_META_DATA)
+      .item('1242-000441')
+      .read();
+    expect(dbOps.resource.lastChecked).not.toEqual(
+      prevSessionListMetaData.lastChecked
+    );
+    expect(dbOps.resource.hash).toEqual(prevSessionListMetaData.hash);
+    dbOps = await testEnv.dbClient
+      .container(SESSION_LIST_META_DATA)
+      .item('1242-004289')
+      .read();
+    expect(dbOps.resource.lastChecked).not.toEqual(
+      prevSessionListMetaData2.lastChecked
+    );
+    expect(dbOps.resource.hash).not.toEqual(prevSessionListMetaData2.hash);
   });
 
   test('Success - No Previous CourseListMetaData', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+    testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
+
+    // Request
+    const response = await request(testEnv.expressServer.app)
+      .post('/schedule/course-list/1234/update')
+      .set({
+        'X-SERVER-TOKEN': tokenMap.admin,
+      })
+      .send({forceUpdate: false});
+    expect(response.status).toBe(202);
+
+    // Wait 500ms for mocking
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Check if the courseList is updated
+    const dbOps = await testEnv.dbClient
+      .container(COURSE_LIST_META_DATA)
+      .item('1234')
+      .read();
+    expect(dbOps.resource.lastChecked).not.toEqual(undefined);
+    expect(dbOps.resource.hash).not.toEqual(undefined);
   });
 
   test('Success - No change', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+    testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
+
+    // Create courseListMetaData in the database that has passed 12 hours
+    const lastChecked = new Date(
+      Date.now() - 1000 * 60 * 60 * 13
+    ).toISOString();
+    const courseList: Course[] = [
+      {
+        id: '1234-001065',
+        courseName: 'ART 102',
+        courseId: '001065',
+        subjectCode: '168',
+        description:
+          'Provides an introduction to the fundamentals of two-dimensional design. Develop a clear understanding of visual communication through problem-solving and formal and conceptual experimentation. Learn the elements and principles of design and manipulate those using analog and digital processes. Introduction to the Adobe Creative Suite of products, including InDesign, Illustrator, and (to a lesser degree) Photoshop. Serves as an introduction to professional presentation skills and techniques to hone craftsmanship. ',
+        fullCourseName: 'ART DEPARTMENT 102',
+        termCode: '1234',
+        title: 'Two-Dimensional Design',
+      },
+    ];
+    const courseListMetaData = new CourseListMetaData(
+      '1234',
+      TestConfig.hash('1234', '1234', JSON.stringify(courseList)),
+      lastChecked
+    );
+    await testEnv.dbClient
+      .container(COURSE_LIST_META_DATA)
+      .items.create(courseListMetaData);
+
+    // Request with no forceUpdate
+    const response = await request(testEnv.expressServer.app)
+      .post('/schedule/course-list/1234/update')
+      .set({
+        'X-SERVER-TOKEN': tokenMap.admin,
+      })
+      .send({forceUpdate: false});
+    expect(response.status).toBe(202);
+
+    // Wait 500ms for mocking
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Check if the courseList is updated
+    const dbOps = await testEnv.dbClient
+      .container(COURSE_LIST_META_DATA)
+      .item('1234')
+      .read();
+    expect(dbOps.resource.lastChecked).not.toEqual(lastChecked);
+    expect(dbOps.resource.hash).toEqual(courseListMetaData.hash);
   });
 });

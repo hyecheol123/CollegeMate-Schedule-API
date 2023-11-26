@@ -27,22 +27,24 @@ export default class SessionListMetaData {
    * Get the most recent session list meta data
    *
    * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {termCode} termCode term code of the session list meta data to be retrieved
+   * @param {string} courseId course id of the session list meta data to be retrieved
    */
-  static async getMostRecent(
-    dbClient: Cosmos.Database
+  static async get(
+    dbClient: Cosmos.Database,
+    termCode: string,
+    courseId: string
   ): Promise<SessionListMetaData | undefined> {
-    // if no entries exist, throw not found error
+    const id = `${termCode}-${courseId}`;
     const dbOps = await dbClient
       .container(SESSION_LIST_META_DATA)
-      .items.query(
-        `SELECT TOP 1 * FROM ${SESSION_LIST_META_DATA} ORDER BY ${SESSION_LIST_META_DATA}.id DESC`
-      )
-      .fetchAll();
+      .item(id)
+      .read();
 
-    if (dbOps.resources.length === 0) {
+    if (dbOps.statusCode === 404) {
       return undefined;
     } else {
-      return dbOps.resources[0];
+      return dbOps.resource as SessionListMetaData;
     }
   }
 

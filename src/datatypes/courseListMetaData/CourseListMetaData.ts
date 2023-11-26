@@ -32,22 +32,21 @@ export default class CourseListMetaData {
    * Get the most recent course list meta data
    *
    * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {id} id Term Code
    */
-  static async getMostRecent(
-    dbClient: Cosmos.Database
+  static async get(
+    dbClient: Cosmos.Database,
+    id: string
   ): Promise<CourseListMetaData | undefined> {
-    // if no entries exist, throw not found error
     const dbOps = await dbClient
       .container(COURSE_LIST_META_DATA)
-      .items.query(
-        `SELECT TOP 1 * FROM ${COURSE_LIST_META_DATA} ORDER BY ${COURSE_LIST_META_DATA}.lastChecked DESC`
-      )
-      .fetchAll();
+      .item(id)
+      .read();
 
-    if (dbOps.resources.length === 0) {
+    if (dbOps.statusCode === 404) {
       return undefined;
     } else {
-      return dbOps.resources[0];
+      return dbOps.resource as CourseListMetaData;
     }
   }
 

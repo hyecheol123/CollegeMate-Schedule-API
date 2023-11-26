@@ -80,4 +80,35 @@ export default class Course {
       await dbClient.container(COURSE).item(course.id).delete();
     }
   }
+
+  /**
+   * Get all courseIds in a term
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} termCode term code of the courses to be retrieved
+   */
+  static async getAll(
+    dbClient: Cosmos.Database,
+    termCode: string
+  ): Promise<string[]> {
+    const dbOps = await dbClient
+      .container(COURSE)
+      .items.query({
+        query: `SELECT * FROM ${COURSE} c WHERE c.termCode = @termCode`,
+        parameters: [
+          {
+            name: '@termCode',
+            value: termCode,
+          },
+        ],
+      })
+      .fetchAll();
+
+    const courseIds: string[] = [];
+    for (const course of dbOps.resources) {
+      courseIds.push(course.courseId);
+    }
+
+    return courseIds;
+  }
 }

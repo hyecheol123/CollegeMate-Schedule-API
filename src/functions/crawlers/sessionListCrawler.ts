@@ -26,11 +26,11 @@ export default async function sessionListCrawler(
   })
     .then(res => res.json())
     .then(data => {
-      data.forEach((session: any) => {
+      Array.from(data).forEach((session: any) => {
         const meetingList: Meeting[] = [];
-        session.sections.forEach((section: any) => {
+        Array.from(session.sections).forEach((section: any) => {
           if (section.topic) topic = section.topic;
-          section.classMeetings.forEach((meeting: any) => {
+          Array.from(section.classMeetings).forEach((meeting: any) => {
             const startDateTime = new Date(
               new Date(
                 section.startDate + meeting.meetingTimeStart - 21600000
@@ -68,7 +68,7 @@ export default async function sessionListCrawler(
                 last: string;
               };
             }[] = [];
-            section.instructors.forEach((instructor: any) => {
+            Array.from(section.instructors).forEach((instructor: any) => {
               instructors.push({
                 campusId: !instructor.campusid
                   ? undefined

@@ -43,8 +43,9 @@ scheduleRouter.post('/course-list/:termCode/update', async (req, res, next) => {
     }
 
     // Check if the course list has been updated within 12 hours if forceUpdate is false
+    const termCode = req.params.termCode;
     const courseListMetaData: CourseListMetaData | undefined =
-      await CourseListMetaData.getMostRecent(dbClient);
+      await CourseListMetaData.get(dbClient, termCode);
     const currentTime = new Date();
     if (courseListMetaData) {
       const lastChecked = new Date(courseListMetaData.lastChecked);
@@ -59,7 +60,6 @@ scheduleRouter.post('/course-list/:termCode/update', async (req, res, next) => {
     res.status(202).send();
 
     // Crawl and update course list and session list
-    const termCode = req.params.termCode;
     const courseList: Course[] = await courseListCrawler(termCode);
     // Compare Hash
     const courseListHash = ServerConfig.hash(
@@ -67,22 +67,34 @@ scheduleRouter.post('/course-list/:termCode/update', async (req, res, next) => {
       termCode,
       JSON.stringify(courseList)
     );
+
+    // If the course list has not been updated, update lastChecked and return
     if (courseListMetaData && courseListHash === courseListMetaData.hash) {
-      return;
-    }
-    // Delete all courses in the term
-    await Course.deleteAll(dbClient, termCode);
-    // Create new courses
-    for (const course of courseList) {
-      await Course.create(dbClient, course);
-    }
-    // Update course list meta data
-    if (!courseListMetaData) {
-      await CourseListMetaData.create(dbClient, termCode, courseListHash);
-    } else {
-      courseListMetaData.hash = courseListHash;
       courseListMetaData.lastChecked = currentTime;
       await CourseListMetaData.update(dbClient, termCode, courseListHash);
+    } else {
+      const previousCourseList: string[] = await Course.getAll(dbClient, termCode);
+      // Delete all courses in the term
+      await Course.deleteAll(dbClient, termCode);
+      // Create new courses
+      for (const course of courseList) {
+        await Course.create(dbClient, course);
+      }
+      // Update course list meta data
+      if (!courseListMetaData) {
+        await CourseListMetaData.create(dbClient, termCode, courseListHash);
+      } else {
+        courseListMetaData.hash = courseListHash;
+        courseListMetaData.lastChecked = currentTime;
+        await CourseListMetaData.update(dbClient, termCode, courseListHash);
+        // Before crawling session list, remove all sessions removed from the previous course list
+        const courseToBeDeleted: string[] = previousCourseList.filter(
+          courseId => !courseList.map(course => course.courseId).includes(courseId)
+        );
+        for (const courseId of courseToBeDeleted) {
+          await Session.deleteCourse(dbClient, courseId);
+        }
+      }
     }
 
     // For each course, update session list and its meta data if courseListHash is different
@@ -101,13 +113,14 @@ scheduleRouter.post('/course-list/:termCode/update', async (req, res, next) => {
         JSON.stringify(sessionList)
       );
       const sessionListMetaData: SessionListMetaData | undefined =
-        await SessionListMetaData.getMostRecent(dbClient);
+        await SessionListMetaData.get(dbClient, termCode, course.courseId);
       if (sessionListMetaData && sessionListHash === sessionListMetaData.hash) {
         continue;
       }
       // Delete all sessions in the course
-      await Session.deleteAll(dbClient, course.courseId);
+      await Session.deleteCourse(dbClient, course.courseId);
       // Create new sessions
+      // console.log(sessionList);
       for (const session of sessionList) {
         await Session.create(dbClient, session);
       }

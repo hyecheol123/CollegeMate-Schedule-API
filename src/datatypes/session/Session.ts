@@ -90,7 +90,7 @@ export default class Session {
    * @param {Cosmos.Database} dbClient Cosmos DB Client
    * @param {string} courseId course id of the sessions to be deleted
    */
-  static async deleteAll(
+  static async deleteCourse(
     dbClient: Cosmos.Database,
     courseId: string
   ): Promise<void> {
