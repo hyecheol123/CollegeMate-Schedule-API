@@ -12,6 +12,7 @@ import ExpressServer from '../../../src/ExpressServer';
 import AuthToken from '../../../src/datatypes/Token/AuthToken';
 import * as jwt from 'jsonwebtoken';
 import TestConfig from '../../TestConfig';
+import CourseListMetaData from '../../../src/datatypes/courseListMetaData/CourseListMetaData';
 
 describe('POST /schedule/course-list/:termCode/update - Update Course List (API Use / Admin Use)', () => {
   let testEnv: TestEnv;
@@ -84,7 +85,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
 
     // Request with no serverToken
     const response = await request(testEnv.expressServer.app)
-      .post('/schedule/course-list/:termCode/update')
+      .post('/schedule/course-list/1244/update')
       .send({forceUpdate: true});
     expect(response.status).toBe(401);
     expect(response.body.error).toBe('Unauthenticated');
@@ -96,7 +97,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
 
     // Request with refresh token instead of serverAdminToken
     let response = await request(testEnv.expressServer.app)
-      .post('/schedule/course-list/:termCode/update')
+      .post('/schedule/course-list/1244/update')
       .set({
         'X-SERVER-TOKEN': tokenMap.refresh,
       })
@@ -106,7 +107,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
 
     // Request with wrong serverToken
     response = await request(testEnv.expressServer.app)
-      .post('/schedule/course-list/:termCode/update')
+      .post('/schedule/course-list/1244/update')
       .set({
         'X-SERVER-TOKEN': 'test',
       })
@@ -116,7 +117,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
 
     // Request with invalid serverToken
     response = await request(testEnv.expressServer.app)
-      .post('/schedule/course-list/:termCode/update')
+      .post('/schedule/course-list/1244/update')
       .set({
         'X-SERVER-TOKEN': tokenMap.invalid,
       })
@@ -131,7 +132,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
 
     // Request with no body
     let response = await request(testEnv.expressServer.app)
-      .post('/schedule/course-list/:termCode/update')
+      .post('/schedule/course-list/1244/update')
       .set({
         'X-SERVER-TOKEN': tokenMap.admin,
       });
@@ -140,7 +141,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
 
     // Request with additional body
     response = await request(testEnv.expressServer.app)
-      .post('/schedule/course-list/:termCode/update')
+      .post('/schedule/course-list/1244/update')
       .set({
         'X-SERVER-TOKEN': tokenMap.admin,
       })
@@ -150,7 +151,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
 
     // Request with only additional body
     response = await request(testEnv.expressServer.app)
-      .post('/schedule/course-list/:termCode/update')
+      .post('/schedule/course-list/1244/update')
       .set({
         'X-SERVER-TOKEN': tokenMap.admin,
       })
@@ -163,35 +164,49 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
 
-    const tokenContent: AuthToken = {
-      id: 'test',
-      type: 'access',
-      tokenType: 'serverAdmin',
-      accountType: 'admin',
-    };
-
-    // Generate AccessToken
-    const serverAdminToken = jwt.sign(
-      tokenContent,
-      testEnv.testConfig.jwt.secretKey,
-      {
-        algorithm: 'HS512',
-        expiresIn: '60m',
-      }
+    // Create courseListMetaData in the database that has not passed 12 hours
+    const lastChecked = new Date(Date.now() - 1000 * 60 * 60 * 11).toISOString();
+    const courseList = new CourseListMetaData(
+      '1234',
+      TestConfig.hash('1234', '1234', JSON.stringify("test")),
+      lastChecked
     );
-
-    // TODO: Create courseListMetaData in the database that has not passed 12 hours
+    await testEnv.dbClient.container('courseListMetaData').items.create(courseList);
 
     // Request with no forceUpdate
     const response = await request(testEnv.expressServer.app)
-      .post('/schedule/course-list/:termCode/update')
+      .post('/schedule/course-list/1244/update')
       .set({
-        'X-SERVER-TOKEN': serverAdminToken,
+        'X-SERVER-TOKEN': tokenMap.admin,
       })
       .send({forceUpdate: false});
     expect(response.status).toBe(409);
     expect(response.body.error).toBe('Conflict');
 
-    // Check if the courseList is not updated
+    // Check if the courseList is updated
+    const dbOps = await testEnv.dbClient
+      .container('courseListMetaData')
+      .item('1234')
+      .read();
+    expect(dbOps.resource.lastChecked).toEqual(lastChecked);
+    expect(dbOps.resource.hash).toEqual(courseList.hash);
+  });
+
+  test('Success - No ForceUpdate and Has passed 12 hours with change', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+    testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
+
+    // Create courseListMetaData in the database that has passed 12 hours
+    const lastChecked = new Date(Date.now() - 1000 * 60 * 60 * 13).toISOString();
+        
+  });
+
+  test('Success - ForceUpdate', async () => {
+  });
+
+  test('Success - No Previous CourseListMetaData', async () => {
+  });
+
+  test('Success - No change', async () => {
   });
 });

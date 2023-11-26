@@ -181,8 +181,8 @@ export default class TestEnv {
       new CourseListMetaData('1242', courseListHash, currentTime)
     );
     courseListHash = TestConfig.hash(
-      '1242',
-      '1242',
+      '1244',
+      '1244',
       JSON.stringify(course1244)
     );
     courseListMetaDataSample.push(

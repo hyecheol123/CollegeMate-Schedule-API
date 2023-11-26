@@ -21,14 +21,14 @@ jest.mock('../src/functions/crawlers/courseListCrawler', () => ({
   default: jest.fn(async () => {
     return [
       {
-        id: '1244-001065',
+        id: '1234-001065',
         courseName: 'ART 102',
         courseId: '001065',
         subjectCode: '168',
         description:
           'Provides an introduction to the fundamentals of two-dimensional design. Develop a clear understanding of visual communication through problem-solving and formal and conceptual experimentation. Learn the elements and principles of design and manipulate those using analog and digital processes. Introduction to the Adobe Creative Suite of products, including InDesign, Illustrator, and (to a lesser degree) Photoshop. Serves as an introduction to professional presentation skills and techniques to hone craftsmanship. ',
         fullCourseName: 'ART DEPARTMENT 102',
-        termCode: '1244',
+        termCode: '1234',
         title: 'Two-Dimensional Design',
       },
     ];
