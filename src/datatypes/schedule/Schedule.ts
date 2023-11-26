@@ -73,7 +73,7 @@ export default class Schedule {
 
   /**
    * Check if the schedule with the email and termCode exists in the database
-   * 
+   *
    * @param {Cosmos.Database} dbClient Cosmos DB Client
    * @param {string} email User's email
    * @param {string} termCode Term code

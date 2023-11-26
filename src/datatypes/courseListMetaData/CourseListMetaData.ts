@@ -11,31 +11,42 @@ import * as Cosmos from '@azure/cosmos';
 const COURSE_LIST_META_DATA = 'courseListMetaData';
 
 export default class CourseListMetaData {
-  termCode: string;
+  id: string;
   hash: string;
   lastChecked: Date | string;
 
-  constructor(termCode: string, hash: string, lastChecked: Date | string) {
-    this.termCode = termCode;
+  /**
+   * Constructor for CourseListMetaData
+   *
+   * @param {string} id Term Code
+   * @param {string} hash Hash of the course list
+   * @param {Date | string} lastChecked Last time the course list was updated
+   */
+  constructor(id: string, hash: string, lastChecked: Date | string) {
+    this.id = id;
     this.hash = hash;
     this.lastChecked = lastChecked;
   }
 
   /**
-   * Check if the termCode exists in the database
+   * Get the most recent course list meta data
    *
    * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {id} id Term Code
    */
-  static async checkTermCodeExists(
+  static async get(
     dbClient: Cosmos.Database,
-    termCode: string
-  ): Promise<boolean> {
+    id: string
+  ): Promise<CourseListMetaData | undefined> {
     const dbOps = await dbClient
       .container(COURSE_LIST_META_DATA)
-      .items.query({
-        query: `SELECT * FROM c WHERE c.termCode = "${termCode}"`,
-      })
-      .fetchAll();
-    return dbOps.resources.length !== 0;
+      .item(id)
+      .read();
+
+    if (dbOps.statusCode === 404) {
+      return undefined;
+    } else {
+      return dbOps.resource as CourseListMetaData;
+    }
   }
 }

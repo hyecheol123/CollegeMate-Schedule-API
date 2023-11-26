@@ -11,12 +11,13 @@ import TestEnv from '../../TestEnv';
 import ExpressServer from '../../../src/ExpressServer';
 import AuthToken from '../../../src/datatypes/Token/AuthToken';
 import * as jwt from 'jsonwebtoken';
-import TestConfig from '../../TestConfig';
 
 describe('POST /schedule - Create a New Schedule', () => {
   let testEnv: TestEnv;
+  const SCHEDULE = 'schedule';
   const accessTokenMap = {
-    valid: '',
+    steve: '',
+    drag: '',
     refresh: '',
     expired: '',
     admin: '',
@@ -30,14 +31,27 @@ describe('POST /schedule - Create a New Schedule', () => {
     await testEnv.start();
 
     // Create Access Token
-    // Valid Access Token
+    // Valid Steve Access Token
     let tokenContent: AuthToken = {
       id: 'steve@wisc.edu',
       type: 'access',
       tokenType: 'user',
     };
     // Generate AccessToken
-    accessTokenMap.valid = jwt.sign(
+    accessTokenMap.steve = jwt.sign(
+      tokenContent,
+      testEnv.testConfig.jwt.secretKey,
+      {algorithm: 'HS512', expiresIn: '10m'}
+    );
+
+    // Valid Drag Access Token
+    tokenContent = {
+      id: 'drag@wisc.edu',
+      type: 'access',
+      tokenType: 'user',
+    };
+    // Generate AccessToken
+    accessTokenMap.drag = jwt.sign(
       tokenContent,
       testEnv.testConfig.jwt.secretKey,
       {algorithm: 'HS512', expiresIn: '10m'}
@@ -151,14 +165,14 @@ describe('POST /schedule - Create a New Schedule', () => {
     // request without any origin or app
     let response = await request(testEnv.expressServer.app)
       .post('/schedule')
-      .set({'X-ACCESS-TOKEN': accessTokenMap.valid});
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve});
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
 
     // request without from wrong origin and not app
     response = await request(testEnv.expressServer.app)
       .post('/schedule')
-      .set({'X-ACCESS-TOKEN': accessTokenMap.valid})
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({Origin: 'https://wrong.origin.com'});
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
@@ -166,7 +180,7 @@ describe('POST /schedule - Create a New Schedule', () => {
     // request without from wrong app
     response = await request(testEnv.expressServer.app)
       .post('/schedule')
-      .set({'X-ACCESS-TOKEN': accessTokenMap.valid})
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({'X-APPLICATION-KEY': 'wrongAppKey'});
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
@@ -178,15 +192,15 @@ describe('POST /schedule - Create a New Schedule', () => {
     // request with no request body
     let response = await request(testEnv.expressServer.app)
       .post('/schedule')
-      .set({'X-ACCESS-TOKEN': accessTokenMap.valid})
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(400);
     expect(response.body.error).toBe('Bad Request');
 
     // request with invalid request body property
     response = await request(testEnv.expressServer.app)
-    .post('/schedule')
-      .set({'X-ACCESS-TOKEN': accessTokenMap.valid})
+      .post('/schedule')
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({Origin: 'https://collegemate.app'})
       .send({invalidPropertity: 'invalidValue'});
     expect(response.status).toBe(400);
@@ -194,62 +208,123 @@ describe('POST /schedule - Create a New Schedule', () => {
 
     // request with extra request body property
     response = await request(testEnv.expressServer.app)
-    .post('/schedule')
-      .set({'X-ACCESS-TOKEN': accessTokenMap.valid})
+      .post('/schedule')
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({Origin: 'https://collegemate.app'})
       .send({
         invalidPropertity: 'invalidValue',
-        termCode: '1232',
+        termCode: '1244',
       });
     expect(response.status).toBe(400);
     expect(response.body.error).toBe('Bad Request');
 
     // request with inexistent termCode
     response = await request(testEnv.expressServer.app)
-    .post('/schedule')
-      .set({'X-ACCESS-TOKEN': accessTokenMap.valid})
+      .post('/schedule')
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({Origin: 'https://collegemate.app'})
-      .send({
-        termcode: '1224',
-      });
+      .send({termCode: '1224'});
     expect(response.status).toBe(400);
     expect(response.body.error).toBe('Bad Request');
   });
 
   test('Fail - Schedule with TermCode Exists', async () => {
-    fail();
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+    testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
+
+    // request with a termCode that already exists
+    let response = await request(testEnv.expressServer.app)
+      .post('/schedule')
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send({termCode: '1242'});
+    expect(response.status).toBe(409);
+    expect(response.body.error).toBe('Conflict');
+
+    // request with a termCode that already exists
+    response = await request(testEnv.expressServer.app)
+      .post('/schedule')
+      .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
+      .set({Origin: 'https://collegemate.app'})
+      .send({termCode: '1244'});
+    expect(response.status).toBe(409);
+    expect(response.body.error).toBe('Conflict');
   });
 
   test('Success from web', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
 
-    // valid request from web
-    const response = await request(testEnv.expressServer.app)
-      .post('/friend/request')
-      .set({'X-ACCESS-TOKEN': accessTokenMap.valid})
+    // valid request from web - Steve
+    let response = await request(testEnv.expressServer.app)
+      .post('/schedule')
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({Origin: 'https://collegemate.app'})
-      .send({termCode: '1236'});
+      .send({termCode: '1244'});
     expect(response.status).toBe(201);
+    expect(response.body.scheduleId).toBeDefined();
+
+    //check if the schedule is created
+    let dbOps = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(response.body.scheduleId)
+      .read();
+    expect(dbOps.statusCode).toBe(200);
+
+    // valid request from web - Drag
+    response = await request(testEnv.expressServer.app)
+      .post('/schedule')
+      .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
+      .set({Origin: 'https://collegemate.app'})
+      .send({termCode: '1242'});
+    expect(response.status).toBe(201);
+    expect(response.body.scheduleId).toBeDefined();
+
+    // check if the schedule is created
+    dbOps = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(response.body.scheduleId)
+      .read();
   });
 
   test('Success from app', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
 
-    // valid request from app
-    // Generate AccessToken
-    const response = await request(testEnv.expressServer.app)
-      .post('/friend/request')
+    // valid request from app - Steve
+    let response = await request(testEnv.expressServer.app)
+      .post('/schedule')
       .set({
-        'X-ACCESS-TOKEN': jwt.sign(
-          {id: 'park@wisc.edu', type: 'access', tokenType: 'user'},
-          testEnv.testConfig.jwt.secretKey,
-          {algorithm: 'HS512', expiresIn: '10m'}
-        ),
+        'X-ACCESS-TOKEN': accessTokenMap.steve,
+      })
+      .set({'X-APPLICATION-KEY': '<Android-App-v1>'})
+      .send({termCode: '1244'});
+    expect(response.status).toBe(201);
+    expect(response.body.scheduleId).toBeDefined();
+
+    // check if the schedule is created
+    let dbOps = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(response.body.scheduleId)
+      .read();
+    expect(dbOps.statusCode).toBe(200);
+
+    // Drag with another termCode
+    response = await request(testEnv.expressServer.app)
+      .post('/schedule')
+      .set({
+        'X-ACCESS-TOKEN': accessTokenMap.drag,
       })
       .set({'X-APPLICATION-KEY': '<Android-App-v1>'})
       .send({termCode: '1242'});
     expect(response.status).toBe(201);
+    expect(response.body.scheduleId).toBeDefined();
+
+    // check if the schedule is created
+    dbOps = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(response.body.scheduleId)
+      .read();
+    expect(dbOps.statusCode).toBe(200);
   });
 });

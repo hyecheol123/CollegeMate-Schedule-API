@@ -8,12 +8,16 @@
  *  - Remove used table and close database connection from the express server
  *
  * @author Hyecheol (Jerry) Jang <hyecheol123@gmail.com>
+ * @author
  */
 
 import * as crypto from 'crypto';
 import * as Cosmos from '@azure/cosmos';
 import TestConfig from './TestConfig';
 import ExpressServer from '../src/ExpressServer';
+import CourseListMetaData from '../src/datatypes/courseListMetaData/CourseListMetaData';
+import Course from '../src/datatypes/course/Course';
+import Schedule from '../src/datatypes/schedule/Schedule';
 
 /**
  * Class for Test Environment
@@ -62,12 +66,171 @@ export default class TestEnv {
     }
     this.dbClient = dbClient.database(this.testConfig.db.databaseId);
 
-    // TODO: Setup Containers
-
+    // course container
+    let containerOps = await this.dbClient.containers.create({
+      id: 'course',
+      indexingPolicy: {
+        indexingMode: 'consistent',
+        automatic: true,
+        includedPaths: [{path: '/*'}],
+        excludedPaths: [
+          {path: '/subjectCode/?'},
+          {path: '/description/?'},
+          {path: '/fullCourseName/?'},
+          {path: '/title/?'},
+          {path: '/"_etag"/?'},
+        ],
+      },
+    });
     /* istanbul ignore next */
-    // if (containerOps.statusCode !== 201) {
-    //   throw new Error(JSON.stringify(containerOps));
-    // }
+    if (containerOps.statusCode !== 201) {
+      throw new Error(JSON.stringify(containerOps));
+    }
+    // Create a new course entries
+    const course1242: Course[] = [
+      {
+        id: '1242-000441',
+        courseName: 'BSE 1',
+        courseId: '000441',
+        subjectCode: '112',
+        description:
+          'Full-time off-campus work experience which combines classroom theory with practical knowledge of operations to provide a background upon which to base a professional career. ',
+        fullCourseName: 'BIOLOGICAL SYSTEMS ENGINEERING 1',
+        termCode: '1242',
+        title: 'Cooperative Education Program',
+      },
+      {
+        id: '1242-004289',
+        courseName: 'COMP SCI 577',
+        courseId: '004289',
+        subjectCode: '266',
+        description:
+          'Basic paradigms for the design and analysis of efficient algorithms: greed, divide-and-conquer, dynamic programming, reductions, and the use of randomness. Computational intractability including typical NP-complete problems and ways to deal with them. ',
+        fullCourseName: 'COMPUTER SCIENCES 577',
+        termCode: '1242',
+        title: 'Introduction to Algorithms',
+      },
+    ];
+    const course1244: Course[] = [
+      new Course(
+        '1244-000803',
+        'ANTHRO 102',
+        '000803',
+        '156',
+        'Introduction to the ancient world from origins of human culture to the beginnings of written history as revealed by archaeological research at great sites and ruins around the globe. Archaeological analyses of important sites as case studies to illustrate concepts and techniques used by archaeologists in their efforts to understand the diversity of the human past. ',
+        'ANTHROPOLOGY 102',
+        '1244',
+        'Archaeology and the Prehistoric World'
+      ),
+      new Course(
+        '1244-024684.13',
+        'ART HIST 103',
+        '024684.13',
+        '180',
+        'Offers an introduction to world art by taking a thematic approach. Topics will center around art and architecture produced in a variety of media, from a wide time span, and a range of cultural and geographic points of origin. ',
+        'ART HISTORY 103',
+        '1244',
+        'Intro to Curatorial Studies'
+      ),
+    ];
+    const courseSample: Course[] = [];
+    course1242.forEach(course => {
+      courseSample.push(course);
+    });
+    course1244.forEach(course => {
+      courseSample.push(course);
+    });
+    // Create a new course entries on test DB
+    for (let index = 0; index < courseSample.length; ++index) {
+      await this.dbClient.container('course').items.create(courseSample[index]);
+    }
+
+    // courseListMetaData container
+    containerOps = await this.dbClient.containers.create({
+      id: 'courseListMetaData',
+      indexingPolicy: {
+        indexingMode: 'consistent',
+        automatic: true,
+        includedPaths: [{path: '/*'}],
+        excludedPaths: [
+          {path: '/hash/?'},
+          {path: '/lastChecked/?'},
+          {path: '/"_etag"/?'},
+        ],
+      },
+    });
+    /* istanbul ignore next */
+    if (containerOps.statusCode !== 201) {
+      throw new Error(JSON.stringify(containerOps));
+    }
+    // Create a new courseListMetaData entries
+    const courseListMetaDataSample: CourseListMetaData[] = [];
+    const currentTime = new Date().toISOString();
+    let courseListHash = TestConfig.hash(
+      '1242',
+      '1242',
+      JSON.stringify(course1242)
+    );
+    courseListMetaDataSample.push(
+      new CourseListMetaData('1242', courseListHash, currentTime)
+    );
+    courseListHash = TestConfig.hash(
+      '1244',
+      '1244',
+      JSON.stringify(course1244)
+    );
+    courseListMetaDataSample.push(
+      new CourseListMetaData('1244', courseListHash, currentTime)
+    );
+    // Create a new courseListMetaData entries on test DB
+    for (let index = 0; index < courseListMetaDataSample.length; ++index) {
+      await this.dbClient
+        .container('courseListMetaData')
+        .items.create(courseListMetaDataSample[index]);
+    }
+
+    // schedule container
+    containerOps = await this.dbClient.containers.create({
+      id: 'schedule',
+      indexingPolicy: {
+        indexingMode: 'consistent',
+        automatic: true,
+        includedPaths: [{path: '/*'}],
+        excludedPaths: [
+          {path: '/sessionList/*'},
+          {path: '/eventList/*'},
+          {path: '/"_etag"/?'},
+        ],
+      },
+    });
+    /* istanbul ignore next */
+    if (containerOps.statusCode !== 201) {
+      throw new Error(JSON.stringify(containerOps));
+    }
+    // Create schedule data sample entries
+    let email = 'steve@wisc.edu';
+    let termCode = '1242';
+    let scheduleId = TestConfig.hash(
+      `${email}/${termCode}/${new Date().toISOString()}`,
+      email,
+      termCode
+    );
+    const scheduleSample: Schedule[] = [];
+    scheduleSample.push(new Schedule(scheduleId, email, termCode, [], []));
+    email = 'drag@wisc.edu';
+    termCode = '1244';
+    scheduleId = TestConfig.hash(
+      `${email}/${termCode}/${new Date().toISOString()}`,
+      email,
+      termCode
+    );
+    scheduleSample.push(new Schedule(scheduleId, email, termCode, [], []));
+    // Create a new schedule entries on test DB
+    for (let index = 0; index < scheduleSample.length; ++index) {
+      await this.dbClient
+        .container('schedule')
+        .items.create(scheduleSample[index]);
+    }
 
     // Setup Express Server
     this.expressServer = new ExpressServer(this.testConfig);

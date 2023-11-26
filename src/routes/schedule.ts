@@ -13,7 +13,7 @@ import BadRequestError from '../exceptions/BadRequestError';
 import * as Cosmos from '@azure/cosmos';
 import ServerConfig from '../ServerConfig';
 import Schedule from '../datatypes/schedule/Schedule';
-import { validateCreateScheduleRequest } from '../functions/inputValidator/validateCreateScheduleRequest';
+import {validateCreateScheduleRequest} from '../functions/inputValidator/validateCreateScheduleRequest';
 import ConflictError from '../exceptions/ConflictError';
 
 // Path: /schedule
@@ -43,7 +43,10 @@ scheduleRouter.post('/', async (req, res, next) => {
     );
 
     // Validate termCode
-    if (!validateCreateScheduleRequest(req.body) || !(await CourseListMetaData.checkTermCodeExists(dbClient, req.body.termCode))) {
+    if (
+      !validateCreateScheduleRequest(req.body) ||
+      !(await CourseListMetaData.get(dbClient, req.body.termCode))
+    ) {
       throw new BadRequestError();
     }
     const termCode = req.body.termCode;
