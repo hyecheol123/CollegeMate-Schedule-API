@@ -50,7 +50,7 @@ export default class Course {
     dbClient: Cosmos.Database,
     course: Course
   ): Promise<void> {
-    const dbOps = await dbClient.container(COURSE).items.create(course);
+    await dbClient.container(COURSE).items.create(course);
   }
 
   /**
