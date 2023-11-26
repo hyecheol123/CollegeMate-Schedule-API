@@ -6,6 +6,7 @@
  */
 
 import * as Cosmos from '@azure/cosmos';
+import BadRequestError from '../../exceptions/BadRequestError';
 // import ServerConfig from '../../ServerConfig';
 
 // DB Container id
@@ -91,9 +92,13 @@ export default class Session {
         }).fetchAll()
       ).resources;
 
+      if (sessionList.length === 0) {
+        throw new BadRequestError();
+      }
+
       return sessionList;
-    } catch (err) {
-      throw err;
+    } catch (e) {
+      throw e;
     }
   };
 }
