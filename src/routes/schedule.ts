@@ -73,7 +73,10 @@ scheduleRouter.post('/course-list/:termCode/update', async (req, res, next) => {
       courseListMetaData.lastChecked = currentTime;
       await CourseListMetaData.update(dbClient, termCode, courseListHash);
     } else {
-      const previousCourseList: string[] = await Course.getAll(dbClient, termCode);
+      const previousCourseList: string[] = await Course.getAll(
+        dbClient,
+        termCode
+      );
       // Delete all courses in the term
       await Course.deleteAll(dbClient, termCode);
       // Create new courses
@@ -89,7 +92,8 @@ scheduleRouter.post('/course-list/:termCode/update', async (req, res, next) => {
         await CourseListMetaData.update(dbClient, termCode, courseListHash);
         // Before crawling session list, remove all sessions removed from the previous course list
         const courseToBeDeleted: string[] = previousCourseList.filter(
-          courseId => !courseList.map(course => course.courseId).includes(courseId)
+          courseId =>
+            !courseList.map(course => course.courseId).includes(courseId)
         );
         for (const courseId of courseToBeDeleted) {
           await Session.deleteCourse(dbClient, courseId);
@@ -120,7 +124,6 @@ scheduleRouter.post('/course-list/:termCode/update', async (req, res, next) => {
       // Delete all sessions in the course
       await Session.deleteCourse(dbClient, course.courseId);
       // Create new sessions
-      // console.log(sessionList);
       for (const session of sessionList) {
         await Session.create(dbClient, session);
       }

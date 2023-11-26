@@ -223,7 +223,10 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
 
     const prevCourseListMetaData = (
-      await testEnv.dbClient.container(COURSE_LIST_META_DATA).item('1244').read()
+      await testEnv.dbClient
+        .container(COURSE_LIST_META_DATA)
+        .item('1244')
+        .read()
     ).resource;
     const prevSessionListMetaData = (
       await testEnv.dbClient
@@ -280,12 +283,11 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
         ],
       })
       .fetchAll();
-    console.log(dbOps2.resources);
     expect(dbOps2.resources.length).toEqual(6);
     expect(dbOps2.resources[0].courseId).toEqual('001065');
     dbOps = await testEnv.dbClient
       .container(SESSION_LIST_META_DATA)
-      .item(dbOps2.resources[0].courseId)
+      .item(dbOps2.resources[0].termCode + '-' + dbOps2.resources[0].courseId)
       .read();
     expect(dbOps.resource.lastChecked).not.toEqual(
       prevSessionListMetaData.lastChecked
@@ -298,7 +300,10 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
 
     const prevCourseListMetaData = (
-      await testEnv.dbClient.container(COURSE_LIST_META_DATA).item('1242').read()
+      await testEnv.dbClient
+        .container(COURSE_LIST_META_DATA)
+        .item('1242')
+        .read()
     ).resource;
     const prevSessionListMetaData = (
       await testEnv.dbClient

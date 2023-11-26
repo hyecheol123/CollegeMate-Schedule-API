@@ -77,23 +77,25 @@ jest.mock('../src/functions/crawlers/courseListCrawler', () => ({
 // Session List Mock Data
 jest.mock('../src/functions/crawlers/sessionListCrawler', () => ({
   __esModule: true,
-  default: jest.fn(async (termCode: string, subjectCode: string, courseId: string) => {
-    switch (termCode) {
-      case '1244':
-        return session1244001065;
+  default: jest.fn(
+    async (termCode: string, subjectCode: string, courseId: string) => {
+      switch (termCode) {
+        case '1244':
+          return session1244001065;
 
-      case '1242':
-        switch (courseId) {
-          case '000441':
-            return session1242000441;
-          case '004289':
-            return session1242004289;
-          default:
-            return session1242004289;
-        }
+        case '1242':
+          switch (courseId) {
+            case '000441':
+              return session1242000441;
+            case '004289':
+              return session1242004289;
+            default:
+              return session1242004289;
+          }
 
-      default:
-        return session1234001065;
+        default:
+          return session1234001065;
+      }
     }
-  }),
+  ),
 }));

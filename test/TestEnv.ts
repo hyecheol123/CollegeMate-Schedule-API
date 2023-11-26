@@ -116,28 +116,26 @@ export default class TestEnv {
       },
     ];
     const course1244: Course[] = [
-      {
-        id: '1244-000803',
-        courseName: 'ANTHRO 102',
-        courseId: '000803',
-        subjectCode: '156',
-        description:
-          'Introduction to the ancient world from origins of human culture to the beginnings of written history as revealed by archaeological research at great sites and ruins around the globe. Archaeological analyses of important sites as case studies to illustrate concepts and techniques used by archaeologists in their efforts to understand the diversity of the human past. ',
-        fullCourseName: 'ANTHROPOLOGY 102',
-        termCode: '1244',
-        title: 'Archaeology and the Prehistoric World',
-      },
-      {
-        id: '1244-024684.13',
-        courseName: 'ART HIST 103',
-        courseId: '024684.13',
-        subjectCode: '180',
-        description:
-          'Offers an introduction to world art by taking a thematic approach. Topics will center around art and architecture produced in a variety of media, from a wide time span, and a range of cultural and geographic points of origin. ',
-        fullCourseName: 'ART HISTORY 103',
-        termCode: '1244',
-        title: 'Intro to Curatorial Studies',
-      },
+      new Course(
+        '1244-000803',
+        'ANTHRO 102',
+        '000803',
+        '156',
+        'Introduction to the ancient world from origins of human culture to the beginnings of written history as revealed by archaeological research at great sites and ruins around the globe. Archaeological analyses of important sites as case studies to illustrate concepts and techniques used by archaeologists in their efforts to understand the diversity of the human past. ',
+        'ANTHROPOLOGY 102',
+        '1244',
+        'Archaeology and the Prehistoric World'
+      ),
+      new Course(
+        '1244-024684.13',
+        'ART HIST 103',
+        '024684.13',
+        '180',
+        'Offers an introduction to world art by taking a thematic approach. Topics will center around art and architecture produced in a variety of media, from a wide time span, and a range of cultural and geographic points of origin. ',
+        'ART HISTORY 103',
+        '1244',
+        'Intro to Curatorial Studies'
+      ),
     ];
     const courseSample: Course[] = [];
     course1242.forEach(course => {
