@@ -35,54 +35,49 @@ scheduleRouter.get('/course', async (req, res, next) => {
 
     const sessions = await Session.getAllSessions(dbClient, termCode, courseId);
 
-    const courseSearch: CourseSearchGetResponseObj[] = [
-      {
-        found: true,
-        result: [
-          {
-            courseId: courseList[0].courseId,
-            courseName: courseList[0].courseName,
-            description: courseList[0].description,
-            fullCourseName: courseList[0].fullCourseName,
-            title: courseList[0].title,
-            sessionList: sessions.map(session => {
+    const courseSearch: CourseSearchGetResponseObj = {
+      found: true,
+      result: {
+        courseId: courseList[0].courseId,
+        courseName: courseList[0].courseName,
+        description: courseList[0].description,
+        fullCourseName: courseList[0].fullCourseName,
+        title: courseList[0].title,
+        sessionList: sessions.map(session => {
+          return {
+            id: session.id,
+            sessionId: session.sessionId,
+            meetings: session.meetings.map(meeting => {
               return {
-                id: session.id,
-                sessionId: session.sessionId,
-                meetings: session.meetings.map(meeting => {
-                  return {
-                    buildingName: meeting.buildingName,
-                    room: meeting.room,
-                    meetingDaysList: meeting.meetingDaysList,
-                    meetingType: meeting.meetingType,
-                    startTime: [
-                      {
-                        month: meeting.startTime.month,
-                        day: meeting.startTime.day,
-                        hour: meeting.startTime.hour,
-                        min: meeting.startTime.minute,
-                      },
-                    ],
-                    endTime: [
-                      {
-                        month: meeting.endTime.month,
-                        day: meeting.endTime.day,
-                        hour: meeting.endTime.hour,
-                        min: meeting.endTime.minute,
-                      },
-                    ],
-                    instructors: meeting.instructors,
-                  };
-                }),
-                credits: session.credit,
-                isAsynchronous: session.isAsyncronous,
-                onlineOnly: session.onlineOnly,
+                buildingName: meeting.buildingName,
+                room: meeting.room,
+                meetingDaysList: meeting.meetingDaysList,
+                meetingType: meeting.meetingType,
+                startTime: {
+                  month: meeting.startTime.month,
+                  day: meeting.startTime.day,
+                  hour: meeting.startTime.hour,
+                  min: meeting.startTime.minute,
+                },
+                endTime: {
+                  month: meeting.endTime.month,
+                  day: meeting.endTime.day,
+                  hour: meeting.endTime.hour,
+                  min: meeting.endTime.minute,
+                },
+                instructors: meeting.instructors,
               };
             }),
-          },
-        ],
+            credits: session.credit,
+            isAsynchronous: session.isAsyncronous,
+            onlineOnly: session.onlineOnly,
+          };
+        }),
       },
-    ];
+    };
+
+    console.log(courseSearch);
+    console.log(courseSearch.result.sessionList);
 
     res.status(200).json(courseSearch);
   } catch (e) {

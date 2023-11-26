@@ -1,5 +1,6 @@
 /**
  * Define type for received list response object
+ *
  * @author Jeonghyeon Park <fishbox0923@gmail.com>
  */
 
@@ -15,8 +16,8 @@ export default interface CourseSearchGetResponseObj {
       id: string;
       sessionId: string;
       meetings: {
-        buildingName: string;
-        room: string;
+        buildingName?: string;
+        room?: string;
         meetingDaysList: string[];
         meetingType: string;
         startTime: {
@@ -24,24 +25,24 @@ export default interface CourseSearchGetResponseObj {
           day: number;
           hour: number;
           min: number;
-        }[];
+        };
         endTime: {
           month: number;
           day: number;
           hour: number;
           min: number;
-        }[];
+        };
         instructors: {
+          email: string;
           name: {
             first: string;
             last: string;
           };
-          email: string;
         }[];
       }[];
       credits: number;
       isAsynchronous: boolean;
       onlineOnly: boolean;
     }[];
-  }[];
+  };
 }
