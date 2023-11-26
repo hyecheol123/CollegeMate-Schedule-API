@@ -73,12 +73,18 @@ export default class Session {
     this.topic = topic;
   }
 
-  static async getAllSessions(dbClient: Cosmos.Database, termCode: string, courseId: string) {
-    try {
-      // Get courseList from DB with the corresponding termCode and courseName
-      const sessionList: Session[] = (
-        await dbClient.container(SESSION).items.query({
-          query: 'SELECT * FROM c WHERE c.termCode = @termCode AND c.courseId = @courseId',
+  static async getAllSessions(
+    dbClient: Cosmos.Database,
+    termCode: string,
+    courseId: string
+  ): Promise<Session[]> {
+    // Get courseList from DB with the corresponding termCode and courseName
+    const sessionList: Session[] = (
+      await dbClient
+        .container(SESSION)
+        .items.query({
+          query:
+            'SELECT * FROM c WHERE c.termCode = @termCode AND c.courseId = @courseId',
           parameters: [
             {
               name: '@termCode',
@@ -87,18 +93,16 @@ export default class Session {
             {
               name: '@courseId',
               value: courseId,
-            }
+            },
           ],
-        }).fetchAll()
-      ).resources;
+        })
+        .fetchAll()
+    ).resources;
 
-      if (sessionList.length === 0) {
-        throw new BadRequestError();
-      }
-
-      return sessionList;
-    } catch (e) {
-      throw e;
+    if (sessionList.length === 0) {
+      throw new BadRequestError();
     }
-  };
+
+    return sessionList;
+  }
 }

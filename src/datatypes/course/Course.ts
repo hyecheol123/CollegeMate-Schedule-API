@@ -6,9 +6,7 @@
  */
 
 import * as Cosmos from '@azure/cosmos';
-import CourseSearchGetResponseObj from './CourseSearchGetResponseObj';
 import BadRequestError from '../../exceptions/BadRequestError';
-import Session from '../session/Session';
 // import ServerConfig from '../../ServerConfig';
 
 // DB Container id
@@ -46,18 +44,24 @@ export default class Course {
 
   /**
    * Search course within CourseListMetaData and provide course name with termcode
-   * 
+   *
    * @param dbClient Cosmos.Database
    * @param termCode string
    * @param courseName string
    */
 
-  static async getCourse(dbClient: Cosmos.Database, termCode: string, courseName: string) {
-    try {
-      // Get courseList from DB with the corresponding termCode and courseName
-      const courseList: Course[] = (
-        await dbClient.container(COURSE).items.query({
-          query: 'SELECT * FROM c WHERE c.termCode = @termCode AND (c.courseName = @courseName OR c.fullCourseName = @courseName)',
+  static async getCourse(
+    dbClient: Cosmos.Database,
+    termCode: string,
+    courseName: string
+  ): Promise<Course[]> {
+    // Get courseList from DB with the corresponding termCode and courseName
+    const courseList: Course[] = (
+      await dbClient
+        .container(COURSE)
+        .items.query({
+          query:
+            'SELECT * FROM c WHERE c.termCode = @termCode AND (c.courseName = @courseName OR c.fullCourseName = @courseName)',
           parameters: [
             {
               name: '@termCode',
@@ -66,19 +70,16 @@ export default class Course {
             {
               name: '@courseName',
               value: courseName,
-            }
+            },
           ],
-        }).fetchAll()
-      ).resources;
+        })
+        .fetchAll()
+    ).resources;
 
-      if (courseList.length === 0) {
-        throw new BadRequestError();
-      }
+    if (courseList.length === 0) {
+      throw new BadRequestError();
+    }
 
-      return courseList;
-    }
-    catch (e) {
-      throw e;
-    }
+    return courseList;
   }
 }

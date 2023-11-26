@@ -5,11 +5,11 @@
  * @author Jeonghyeon Park <fishbox0923@gmail.com>
  */
 
-import * as Cosmos from '@azure/cosmos';
+// import * as Cosmos from '@azure/cosmos';
 // import ServerConfig from '../../ServerConfig';
 
 // DB Container id
-const COURSE_LIST_META_DATA = 'courseListMetaData';
+// const COURSE_LIST_META_DATA = 'courseListMetaData';
 
 export default class CourseListMetaData {
   termCode: string;
