@@ -14,6 +14,7 @@ import verifyAccessToken from '../functions/JWT/verifyAccessToken';
 import NotFoundError from '../exceptions/NotFoundError';
 import { validateEmail } from '../functions/inputValidator/validateEmail';
 import Schedule from '../datatypes/schedule/Schedule';
+import { request } from 'http';
 
 const scheduleRouter = express.Router();
 
@@ -45,6 +46,10 @@ scheduleRouter.get('/:base64Email/list', async (req, res, next) => {
             req.params.base64Email,
             'base64url'
         ).toString('utf8');
+
+        if (requestUserEmail !== tokenContents.id) {
+            throw new ForbiddenError();
+        }
 
         if (!validateEmail(requestUserEmail)) {
             throw new NotFoundError();
