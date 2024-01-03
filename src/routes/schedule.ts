@@ -41,24 +41,15 @@ scheduleRouter.get('/:base64Email/list', async (req, res, next) => {
         req.app.get('jwtAccessKey')
         );
 
-        // Parameter check if received
-        const requestUserEmail = Buffer.from(
-            req.params.base64Email,
-            'base64url'
-        ).toString('utf8');
-
-        if (requestUserEmail !== tokenContents.id) {
-            throw new ForbiddenError();
-        }
-
-        if (!validateEmail(requestUserEmail)) {
-            throw new NotFoundError();
-        }
-
         // DB Operation
         const email = tokenContents.id;
+        if (!await Schedule.confirmExists(dbClient, email)) {
+          throw new NotFoundError();
+        }
+
         const scheduleList = await Schedule.retrieveScheduleList(dbClient, email);
 
+        // Response
         res.status(200).send(scheduleList);
 
     } catch (e) {

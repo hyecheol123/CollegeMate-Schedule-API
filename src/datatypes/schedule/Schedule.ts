@@ -60,6 +60,25 @@ export default class Schedule {
   }
 
   /**
+   * Check if the schedule with the email exists in the database
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} email User's email
+   */
+  static async confirmExists(
+    dbClient: Cosmos.Database,
+    email: string,
+  ): Promise<boolean> {
+    const dbOps = await dbClient
+      .container(SCHEDULE)
+      .items.query({
+        query: `SELECT * FROM c WHERE c.email = "${email}"`,
+      })
+    .fetchAll();
+    return dbOps.resources.length !== 0;
+  }
+
+  /**
    * Retrieve list of schedule associated with the user idenfied by the given email address (base64urlsafe encoded).
    * 
    * @param dbClient Cosmos DB client
@@ -68,7 +87,7 @@ export default class Schedule {
   static async retrieveScheduleList(
     dbClient: Cosmos.Database,
     email: string
-  ): Promise<Schedule[]> {
+  ): Promise<String[]> {
     const querySpec: Cosmos.SqlQuerySpec = {
       query: `SELECT * FROM c WHERE c.email = @email`,
       parameters: [
@@ -79,11 +98,11 @@ export default class Schedule {
       ],
     };
 
-    const { resources: scheduleList } = await dbClient
+    const dbOps = await dbClient
       .container(SCHEDULE)
       .items.query(querySpec)
-      .fetchAll();
+    .fetchAll();
 
-    return scheduleList as Schedule[];
+    return dbOps.resources.map((schedule) => schedule.id);
   }
 }
