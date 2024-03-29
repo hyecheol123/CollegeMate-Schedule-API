@@ -2,6 +2,7 @@
  * express Router middleware for Schedule APIs
  *
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
+ * @author Jeonghyeon Park <fishbox0923@gmail.com>
  */
 
 import * as express from 'express';
@@ -19,6 +20,8 @@ import Course from '../datatypes/course/Course';
 import sessionListCrawler from '../functions/crawlers/sessionListCrawler';
 import Session from '../datatypes/session/Session';
 import SessionListMetaData from '../datatypes/sessionListMetaData/SessionListMetaData';
+import ForbiddenError from '../exceptions/ForbiddenError';
+// import ServerConfig from '../ServerConfig';
 
 // Path: /schedule
 const scheduleRouter = express.Router();
@@ -147,6 +150,25 @@ scheduleRouter.post('/course-list/:termCode/update', async (req, res, next) => {
         i = 10;
       }
     }
+  } catch (e) {
+    next(e);
+  }
+});
+
+// GET: /schedule/available-semesters
+scheduleRouter.get('/available-semesters', async (req, res, next) => {
+  const dbClient: Cosmos.Database = req.app.locals.dbClient;
+  try {
+    // Check Origin header or application key
+    if (
+      req.header('Origin') !== req.app.get('webpageOrigin') &&
+      !req.app.get('applicationKey').includes(req.header('X-APPLICATION-KEY'))
+    ) {
+      throw new ForbiddenError();
+    }
+
+    const termList = await CourseListMetaData.getTermList(dbClient);
+    res.json(termList);
   } catch (e) {
     next(e);
   }

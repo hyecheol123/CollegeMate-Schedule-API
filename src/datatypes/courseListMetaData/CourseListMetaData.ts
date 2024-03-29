@@ -2,6 +2,7 @@
  * Define type and used CRUD methods for courseList's MetaData
  *
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
+ * @author Jeonghyeon Park <fishbox0923@gmail.com>
  */
 
 import * as Cosmos from '@azure/cosmos';
@@ -54,6 +55,8 @@ export default class CourseListMetaData {
    * Create a new course list meta data
    *
    * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {id} id Term Code
+   * @param {hash} hash Hash of the course list
    *
    */
   static async create(
@@ -93,5 +96,21 @@ export default class CourseListMetaData {
       .container(COURSE_LIST_META_DATA)
       .item(courseListMetaData.id)
       .replace(courseListMetaData);
+  }
+
+  /**
+   * Get a list of all available terms
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   */
+  static async getTermList(dbClient: Cosmos.Database): Promise<string[]> {
+    return (
+      await dbClient
+        .container(COURSE_LIST_META_DATA)
+        .items.query({
+          query: 'SELECT c.id FROM c',
+        })
+        .fetchAll()
+    ).resources.map((term: CourseListMetaData) => term.id);
   }
 }
