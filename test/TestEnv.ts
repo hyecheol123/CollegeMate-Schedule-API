@@ -8,7 +8,8 @@
  *  - Remove used table and close database connection from the express server
  *
  * @author Hyecheol (Jerry) Jang <hyecheol123@gmail.com>
- * @author
+ * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
+ * @author Jeonghyeon Park <fishbox0923@gmail.com>
  */
 
 import * as crypto from 'crypto';
@@ -18,6 +19,12 @@ import ExpressServer from '../src/ExpressServer';
 import CourseListMetaData from '../src/datatypes/courseListMetaData/CourseListMetaData';
 import Course from '../src/datatypes/course/Course';
 import Schedule from '../src/datatypes/schedule/Schedule';
+import Session from '../src/datatypes/session/Session';
+import * as session000441 from './testData/session1242-112-000441.json';
+import * as session004289 from './testData/session1242-266-004289.json';
+import * as session000803 from './testData/session1244-156-000803.json';
+import * as session024684 from './testData/session1244-180-024684.13.json';
+import SessionListMetaData from '../src/datatypes/sessionListMetaData/SessionListMetaData';
 
 /**
  * Class for Test Environment
@@ -66,8 +73,51 @@ export default class TestEnv {
     }
     this.dbClient = dbClient.database(this.testConfig.db.databaseId);
 
-    // course container
+    // schedule container
     let containerOps = await this.dbClient.containers.create({
+      id: 'schedule',
+      indexingPolicy: {
+        indexingMode: 'consistent',
+        automatic: true,
+        includedPaths: [{path: '/*'}],
+        excludedPaths: [
+          {path: '/sessionList/*'},
+          {path: '/eventList/*'},
+          {path: '/"_etag"/?'},
+        ],
+      },
+    });
+    /* istanbul ignore next */
+    if (containerOps.statusCode !== 201) {
+      throw new Error(JSON.stringify(containerOps));
+    }
+    // Create schedule data sample entries
+    let email = 'steve@wisc.edu';
+    let termCode = '1242';
+    let scheduleId = TestConfig.hash(
+      `${email}/${termCode}/${new Date().toISOString()}`,
+      email,
+      termCode
+    );
+    const scheduleSample: Schedule[] = [];
+    scheduleSample.push(new Schedule(scheduleId, email, termCode, [], []));
+    email = 'drag@wisc.edu';
+    termCode = '1244';
+    scheduleId = TestConfig.hash(
+      `${email}/${termCode}/${new Date().toISOString()}`,
+      email,
+      termCode
+    );
+    scheduleSample.push(new Schedule(scheduleId, email, termCode, [], []));
+    // Create a new schedule entries on test DB
+    for (let index = 0; index < scheduleSample.length; ++index) {
+      await this.dbClient
+        .container('schedule')
+        .items.create(scheduleSample[index]);
+    }
+
+    // course container
+    containerOps = await this.dbClient.containers.create({
       id: 'course',
       indexingPolicy: {
         indexingMode: 'consistent',
@@ -189,16 +239,20 @@ export default class TestEnv {
         .items.create(courseListMetaDataSample[index]);
     }
 
-    // schedule container
+    // session container
     containerOps = await this.dbClient.containers.create({
-      id: 'schedule',
+      id: 'session',
       indexingPolicy: {
         indexingMode: 'consistent',
         automatic: true,
         includedPaths: [{path: '/*'}],
         excludedPaths: [
-          {path: '/sessionList/*'},
-          {path: '/eventList/*'},
+          {path: '/meetings/buildingName/?'},
+          {path: '/meetings/room/?'},
+          {path: '/meetings/meetingDaysList/?'},
+          {path: '/meetings/startTime/*'},
+          {path: '/meetings/endTime/*'},
+          {path: '/meetings/instructors/?'},
           {path: '/"_etag"/?'},
         ],
       },
@@ -207,29 +261,85 @@ export default class TestEnv {
     if (containerOps.statusCode !== 201) {
       throw new Error(JSON.stringify(containerOps));
     }
-    // Create schedule data sample entries
-    let email = 'steve@wisc.edu';
-    let termCode = '1242';
-    let scheduleId = TestConfig.hash(
-      `${email}/${termCode}/${new Date().toISOString()}`,
-      email,
-      termCode
-    );
-    const scheduleSample: Schedule[] = [];
-    scheduleSample.push(new Schedule(scheduleId, email, termCode, [], []));
-    email = 'drag@wisc.edu';
-    termCode = '1244';
-    scheduleId = TestConfig.hash(
-      `${email}/${termCode}/${new Date().toISOString()}`,
-      email,
-      termCode
-    );
-    scheduleSample.push(new Schedule(scheduleId, email, termCode, [], []));
-    // Create a new schedule entries on test DB
-    for (let index = 0; index < scheduleSample.length; ++index) {
+    // imported session data from json files /src/test/testData
+    const sessionSample: Session[] = [];
+    session000441.forEach(session => {
+      sessionSample.push(session);
+    });
+    session004289.forEach(session => {
+      sessionSample.push(session);
+    });
+    session000803.forEach(session => {
+      sessionSample.push(session);
+    });
+    session024684.forEach(session => {
+      sessionSample.push(session);
+    });
+    // Create a new session entries on test DB
+    for (let index = 0; index < sessionSample.length; ++index) {
       await this.dbClient
-        .container('schedule')
-        .items.create(scheduleSample[index]);
+        .container('session')
+        .items.create(sessionSample[index]);
+    }
+
+    // sessionListMetaData container
+    containerOps = await this.dbClient.containers.create({
+      id: 'sessionListMetaData',
+      indexingPolicy: {
+        indexingMode: 'consistent',
+        automatic: true,
+        includedPaths: [{path: '/*'}],
+        excludedPaths: [{path: '/hash/?'}, {path: '/"_etag"/?'}],
+      },
+    });
+    /* istanbul ignore next */
+    if (containerOps.statusCode !== 201) {
+      throw new Error(JSON.stringify(containerOps));
+    }
+    // Create a new sessionListMetaData entries
+    const sessionListMetaDataSample: SessionListMetaData[] = [];
+    let sessionListHash = TestConfig.hash(
+      '1242',
+      '000441',
+      JSON.stringify(session000441)
+    );
+    sessionListMetaDataSample.push(
+      new SessionListMetaData('1242-000441', '1242', '000441', sessionListHash)
+    );
+    sessionListHash = TestConfig.hash(
+      '1242',
+      '004289',
+      JSON.stringify(session004289)
+    );
+    sessionListMetaDataSample.push(
+      new SessionListMetaData('1242-004289', '1242', '004289', sessionListHash)
+    );
+    sessionListHash = TestConfig.hash(
+      '1244',
+      '000803',
+      JSON.stringify(session000803)
+    );
+    sessionListMetaDataSample.push(
+      new SessionListMetaData('1244-000803', '1244', '000803', sessionListHash)
+    );
+    sessionListHash = TestConfig.hash(
+      '1244',
+      '024684.13',
+      JSON.stringify(session024684)
+    );
+    sessionListMetaDataSample.push(
+      new SessionListMetaData(
+        '1244-024684.13',
+        '1244',
+        '024684.13',
+        sessionListHash
+      )
+    );
+    // Create a new sessionListMetaData entries on test DB
+    for (let index = 0; index < sessionListMetaDataSample.length; ++index) {
+      await this.dbClient
+        .container('sessionListMetaData')
+        .items.create(sessionListMetaDataSample[index]);
     }
 
     // Setup Express Server

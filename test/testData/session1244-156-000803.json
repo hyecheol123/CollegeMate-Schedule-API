@@ -1,0 +1,698 @@
+[
+  {
+    "id": "1244-000803-64830",
+    "courseId": "000803",
+    "termCode": "1244",
+    "sessionId": "64830",
+    "meetings": [
+      {
+        "buildingName": "Sewell Social Sciences",
+        "room": "5208",
+        "meetingDaysList": [
+          "MONDAY",
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 9,
+          "minute": 55
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "SISSEL.SCHROEDER@WISC.EDU",
+            "name": {
+              "first": "Sissel",
+              "last": "SCHROEDER"
+            }
+          }
+        ]
+      },
+      {
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 10,
+          "minute": 5
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 12,
+          "minute": 5
+        },
+        "instructors": [
+          {
+            "email": "SISSEL.SCHROEDER@WISC.EDU",
+            "name": {
+              "first": "Sissel",
+              "last": "SCHROEDER"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Sewell Social Sciences",
+        "room": "5322",
+        "meetingDaysList": [
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 14,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 15,
+          "minute": 15
+        },
+        "instructors": []
+      }
+    ],
+    "credit": 3,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1244-000803-64829",
+    "courseId": "000803",
+    "termCode": "1244",
+    "sessionId": "64829",
+    "meetings": [
+      {
+        "buildingName": "Sewell Social Sciences",
+        "room": "5208",
+        "meetingDaysList": [
+          "MONDAY",
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 9,
+          "minute": 55
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "SISSEL.SCHROEDER@WISC.EDU",
+            "name": {
+              "first": "Sissel",
+              "last": "SCHROEDER"
+            }
+          }
+        ]
+      },
+      {
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 10,
+          "minute": 5
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 12,
+          "minute": 5
+        },
+        "instructors": [
+          {
+            "email": "SISSEL.SCHROEDER@WISC.EDU",
+            "name": {
+              "first": "Sissel",
+              "last": "SCHROEDER"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Sewell Social Sciences",
+        "room": "5322",
+        "meetingDaysList": [
+          "THURSDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 17,
+          "minute": 40
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 18,
+          "minute": 30
+        },
+        "instructors": []
+      }
+    ],
+    "credit": 3,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1244-000803-54977",
+    "courseId": "000803",
+    "termCode": "1244",
+    "sessionId": "54977",
+    "meetings": [
+      {
+        "buildingName": "Sewell Social Sciences",
+        "room": "5208",
+        "meetingDaysList": [
+          "MONDAY",
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 9,
+          "minute": 55
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "SISSEL.SCHROEDER@WISC.EDU",
+            "name": {
+              "first": "Sissel",
+              "last": "SCHROEDER"
+            }
+          }
+        ]
+      },
+      {
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 10,
+          "minute": 5
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 12,
+          "minute": 5
+        },
+        "instructors": [
+          {
+            "email": "SISSEL.SCHROEDER@WISC.EDU",
+            "name": {
+              "first": "Sissel",
+              "last": "SCHROEDER"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Sewell Social Sciences",
+        "room": "5322",
+        "meetingDaysList": [
+          "TUESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 17,
+          "minute": 40
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 18,
+          "minute": 30
+        },
+        "instructors": []
+      }
+    ],
+    "credit": 3,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1244-000803-54976",
+    "courseId": "000803",
+    "termCode": "1244",
+    "sessionId": "54976",
+    "meetings": [
+      {
+        "buildingName": "Sewell Social Sciences",
+        "room": "5208",
+        "meetingDaysList": [
+          "MONDAY",
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 9,
+          "minute": 55
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "SISSEL.SCHROEDER@WISC.EDU",
+            "name": {
+              "first": "Sissel",
+              "last": "SCHROEDER"
+            }
+          }
+        ]
+      },
+      {
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 10,
+          "minute": 5
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 12,
+          "minute": 5
+        },
+        "instructors": [
+          {
+            "email": "SISSEL.SCHROEDER@WISC.EDU",
+            "name": {
+              "first": "Sissel",
+              "last": "SCHROEDER"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Sewell Social Sciences",
+        "room": "5322",
+        "meetingDaysList": [
+          "TUESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 14,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 15,
+          "minute": 15
+        },
+        "instructors": []
+      }
+    ],
+    "credit": 3,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1244-000803-53489",
+    "courseId": "000803",
+    "termCode": "1244",
+    "sessionId": "53489",
+    "meetings": [
+      {
+        "buildingName": "Sewell Social Sciences",
+        "room": "5208",
+        "meetingDaysList": [
+          "MONDAY",
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 9,
+          "minute": 55
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "SISSEL.SCHROEDER@WISC.EDU",
+            "name": {
+              "first": "Sissel",
+              "last": "SCHROEDER"
+            }
+          }
+        ]
+      },
+      {
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 10,
+          "minute": 5
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 12,
+          "minute": 5
+        },
+        "instructors": [
+          {
+            "email": "SISSEL.SCHROEDER@WISC.EDU",
+            "name": {
+              "first": "Sissel",
+              "last": "SCHROEDER"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Sewell Social Sciences",
+        "room": "5322",
+        "meetingDaysList": [
+          "FRIDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 8,
+          "minute": 0
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 8,
+          "minute": 50
+        },
+        "instructors": []
+      }
+    ],
+    "credit": 3,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1244-000803-54822",
+    "courseId": "000803",
+    "termCode": "1244",
+    "sessionId": "54822",
+    "meetings": [
+      {
+        "buildingName": "Sewell Social Sciences",
+        "room": "5208",
+        "meetingDaysList": [
+          "MONDAY",
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 9,
+          "minute": 55
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "SISSEL.SCHROEDER@WISC.EDU",
+            "name": {
+              "first": "Sissel",
+              "last": "SCHROEDER"
+            }
+          }
+        ]
+      },
+      {
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 10,
+          "minute": 5
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 12,
+          "minute": 5
+        },
+        "instructors": [
+          {
+            "email": "SISSEL.SCHROEDER@WISC.EDU",
+            "name": {
+              "first": "Sissel",
+              "last": "SCHROEDER"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Sewell Social Sciences",
+        "room": "5322",
+        "meetingDaysList": [
+          "THURSDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 16,
+          "minute": 35
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 17,
+          "minute": 25
+        },
+        "instructors": []
+      }
+    ],
+    "credit": 3,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1244-000803-54821",
+    "courseId": "000803",
+    "termCode": "1244",
+    "sessionId": "54821",
+    "meetings": [
+      {
+        "buildingName": "Sewell Social Sciences",
+        "room": "5208",
+        "meetingDaysList": [
+          "MONDAY",
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 9,
+          "minute": 55
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "SISSEL.SCHROEDER@WISC.EDU",
+            "name": {
+              "first": "Sissel",
+              "last": "SCHROEDER"
+            }
+          }
+        ]
+      },
+      {
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 10,
+          "minute": 5
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 12,
+          "minute": 5
+        },
+        "instructors": [
+          {
+            "email": "SISSEL.SCHROEDER@WISC.EDU",
+            "name": {
+              "first": "Sissel",
+              "last": "SCHROEDER"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Sewell Social Sciences",
+        "room": "5322",
+        "meetingDaysList": [
+          "TUESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 16,
+          "minute": 35
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 17,
+          "minute": 25
+        },
+        "instructors": []
+      }
+    ],
+    "credit": 3,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1244-000803-53488",
+    "courseId": "000803",
+    "termCode": "1244",
+    "sessionId": "53488",
+    "meetings": [
+      {
+        "buildingName": "Sewell Social Sciences",
+        "room": "5208",
+        "meetingDaysList": [
+          "MONDAY",
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 9,
+          "minute": 55
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "SISSEL.SCHROEDER@WISC.EDU",
+            "name": {
+              "first": "Sissel",
+              "last": "SCHROEDER"
+            }
+          }
+        ]
+      },
+      {
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 10,
+          "minute": 5
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 12,
+          "minute": 5
+        },
+        "instructors": [
+          {
+            "email": "SISSEL.SCHROEDER@WISC.EDU",
+            "name": {
+              "first": "Sissel",
+              "last": "SCHROEDER"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Sewell Social Sciences",
+        "room": "5322",
+        "meetingDaysList": [
+          "TUESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 1,
+          "day": 23,
+          "hour": 13,
+          "minute": 20
+        },
+        "endTime": {
+          "month": 5,
+          "day": 3,
+          "hour": 14,
+          "minute": 10
+        },
+        "instructors": []
+      }
+    ],
+    "credit": 3,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  }
+]
