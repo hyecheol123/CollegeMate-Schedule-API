@@ -18,6 +18,7 @@ import TestConfig from './TestConfig';
 import ExpressServer from '../src/ExpressServer';
 import CourseListMetaData from '../src/datatypes/courseListMetaData/CourseListMetaData';
 import Course from '../src/datatypes/course/Course';
+import Schedule from '../src/datatypes/schedule/Schedule';
 import Session from '../src/datatypes/session/Session';
 import * as session000441 from './testData/session1242-112-000441.json';
 import * as session004289 from './testData/session1242-266-004289.json';
@@ -72,8 +73,51 @@ export default class TestEnv {
     }
     this.dbClient = dbClient.database(this.testConfig.db.databaseId);
 
-    // course container
+    // schedule container
     let containerOps = await this.dbClient.containers.create({
+      id: 'schedule',
+      indexingPolicy: {
+        indexingMode: 'consistent',
+        automatic: true,
+        includedPaths: [{path: '/*'}],
+        excludedPaths: [
+          {path: '/sessionList/*'},
+          {path: '/eventList/*'},
+          {path: '/"_etag"/?'},
+        ],
+      },
+    });
+    /* istanbul ignore next */
+    if (containerOps.statusCode !== 201) {
+      throw new Error(JSON.stringify(containerOps));
+    }
+    // Create schedule data sample entries
+    let email = 'steve@wisc.edu';
+    let termCode = '1242';
+    let scheduleId = TestConfig.hash(
+      `${email}/${termCode}/${new Date().toISOString()}`,
+      email,
+      termCode
+    );
+    const scheduleSample: Schedule[] = [];
+    scheduleSample.push(new Schedule(scheduleId, email, termCode, [], []));
+    email = 'drag@wisc.edu';
+    termCode = '1244';
+    scheduleId = TestConfig.hash(
+      `${email}/${termCode}/${new Date().toISOString()}`,
+      email,
+      termCode
+    );
+    scheduleSample.push(new Schedule(scheduleId, email, termCode, [], []));
+    // Create a new schedule entries on test DB
+    for (let index = 0; index < scheduleSample.length; ++index) {
+      await this.dbClient
+        .container('schedule')
+        .items.create(scheduleSample[index]);
+    }
+
+    // course container
+    containerOps = await this.dbClient.containers.create({
       id: 'course',
       indexingPolicy: {
         indexingMode: 'consistent',
