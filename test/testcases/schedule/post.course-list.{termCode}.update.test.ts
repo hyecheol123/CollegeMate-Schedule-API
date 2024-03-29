@@ -206,8 +206,8 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
       .send({forceUpdate: false});
     expect(response.status).toBe(202);
 
-    // Wait 500ms for mocking
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Wait 1000ms for mocking
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Check if the courseList is updated
     const dbOps = await testEnv.dbClient
@@ -238,7 +238,7 @@ describe('POST /schedule/course-list/:termCode/update - Update Course List (API 
       .send({forceUpdate: true});
     expect(response.status).toBe(202);
 
-    // Wait 500ms for mocking
+    // Wait 1000ms for mocking
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Check if the courseList is updated
