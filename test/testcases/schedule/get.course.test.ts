@@ -61,7 +61,7 @@ describe('GET /schedule/course - Course Search', () => {
       .get('/schedule/course')
       .set({Origin: 'https://collegemate.app'})
       .send({
-        invalidPropertity: 'invalidValue',
+        invalidProperty1: 'invalidValue',
         invalidProperty2: 'invalidValue2',
       });
     expect(response.status).toBe(400);
@@ -74,6 +74,18 @@ describe('GET /schedule/course - Course Search', () => {
       .send({
         termCode: '0000',
         courseName: 'BSE 1',
+      });
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Bad Request');
+
+    // Request with invalid request body input(extra field)
+    response = await request(testEnv.expressServer.app)
+      .get('/schedule/course')
+      .set({Origin: 'https://collegemate.app'})
+      .send({
+        termCode: '0000',
+        courseName: 'BSE 1',
+        extraField: 'extra',
       });
     expect(response.status).toBe(400);
     expect(response.body.error).toBe('Bad Request');

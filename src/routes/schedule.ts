@@ -12,6 +12,8 @@ import ForbiddenError from '../exceptions/ForbiddenError';
 import Course from '../datatypes/course/Course';
 import Session from '../datatypes/session/Session';
 import CourseSearchGetResponseObj from '../datatypes/course/CourseSearchGetResponseObj';
+import BadRequestError from '../exceptions/BadRequestError';
+import {validateCourseSearchRequest} from '../functions/inputValidator/validateCourseSearchRequest';
 
 const scheduleRouter = express.Router();
 
@@ -26,6 +28,11 @@ scheduleRouter.get('/course', async (req, res, next) => {
       !req.app.get('applicationKey').includes(req.header('X-APPLICATION-KEY'))
     ) {
       throw new ForbiddenError();
+    }
+
+    // Check request body for all required fields
+    if (!validateCourseSearchRequest(req.body)) {
+      throw new BadRequestError();
     }
 
     const termCode = req.body.termCode;
@@ -75,9 +82,6 @@ scheduleRouter.get('/course', async (req, res, next) => {
         }),
       },
     };
-
-    console.log(courseSearch);
-    console.log(courseSearch.result.sessionList);
 
     res.status(200).json(courseSearch);
   } catch (e) {
