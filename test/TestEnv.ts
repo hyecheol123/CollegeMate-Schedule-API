@@ -23,6 +23,7 @@ import * as session000441 from './testData/session1242-112-000441.json';
 import * as session004289 from './testData/session1242-266-004289.json';
 import * as session000803 from './testData/session1244-156-000803.json';
 import * as session024684 from './testData/session1244-180-024684.13.json';
+import SessionListMetaData from '../src/datatypes/sessionListMetaData/SessionListMetaData';
 
 /**
  * Class for Test Environment
@@ -252,14 +253,14 @@ export default class TestEnv {
       throw new Error(JSON.stringify(containerOps));
     }
     // Create a new sessionListMetaData entries
-    const sessionListMetaDataSample: CourseListMetaData[] = [];
+    const sessionListMetaDataSample: SessionListMetaData[] = [];
     let sessionListHash = TestConfig.hash(
       '1242',
       '000441',
       JSON.stringify(session000441)
     );
     sessionListMetaDataSample.push(
-      new CourseListMetaData('1242-000441', sessionListHash, currentTime)
+      new SessionListMetaData('1242-000441', '1242', '000441', sessionListHash)
     );
     sessionListHash = TestConfig.hash(
       '1242',
@@ -267,7 +268,7 @@ export default class TestEnv {
       JSON.stringify(session004289)
     );
     sessionListMetaDataSample.push(
-      new CourseListMetaData('1242-004289', sessionListHash, currentTime)
+      new SessionListMetaData('1242-004289', '1242', '004289', sessionListHash)
     );
     sessionListHash = TestConfig.hash(
       '1244',
@@ -275,7 +276,7 @@ export default class TestEnv {
       JSON.stringify(session000803)
     );
     sessionListMetaDataSample.push(
-      new CourseListMetaData('1244-000803', sessionListHash, currentTime)
+      new SessionListMetaData('1244-000803', '1244', '000803', sessionListHash)
     );
     sessionListHash = TestConfig.hash(
       '1244',
@@ -283,7 +284,12 @@ export default class TestEnv {
       JSON.stringify(session024684)
     );
     sessionListMetaDataSample.push(
-      new CourseListMetaData('1244-024684.13', sessionListHash, currentTime)
+      new SessionListMetaData(
+        '1244-024684.13',
+        '1244',
+        '024684.13',
+        sessionListHash
+      )
     );
     // Create a new sessionListMetaData entries on test DB
     for (let index = 0; index < sessionListMetaDataSample.length; ++index) {

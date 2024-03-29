@@ -9,6 +9,7 @@ import * as request from 'supertest';
 import * as Cosmos from '@azure/cosmos';
 import TestEnv from '../../TestEnv';
 import ExpressServer from '../../../src/ExpressServer';
+import CourseListMetaData from '../../../src/datatypes/courseListMetaData/CourseListMetaData';
 
 const COURSE_LIST_META_DATA = 'courseListMetaData';
 describe('GET /schedule/available-semesters - Get Available Semesters', () => {
@@ -67,10 +68,10 @@ describe('GET /schedule/available-semesters - Get Available Semesters', () => {
       await testEnv.dbClient
         .container(COURSE_LIST_META_DATA)
         .items.query({
-          query: 'SELECT c.termCode FROM c',
+          query: 'SELECT c.id FROM c',
         })
         .fetchAll()
-    ).resources.map((term: {termCode: string}) => term.termCode);
+    ).resources.map((term: CourseListMetaData) => term.id);
 
     expect(termList).toEqual(['1242', '1244']);
     expect(termList.length).toBe(2);
@@ -93,10 +94,10 @@ describe('GET /schedule/available-semesters - Get Available Semesters', () => {
       await testEnv.dbClient
         .container(COURSE_LIST_META_DATA)
         .items.query({
-          query: 'SELECT c.termCode FROM c',
+          query: 'SELECT c.id FROM c',
         })
         .fetchAll()
-    ).resources.map((term: {termCode: string}) => term.termCode);
+    ).resources.map((term: CourseListMetaData) => term.id);
 
     expect(termList).toEqual(['1242', '1244']);
     expect(termList.length).toBe(2);

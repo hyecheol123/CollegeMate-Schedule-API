@@ -12,14 +12,90 @@ import * as Cosmos from '@azure/cosmos';
 const COURSE_LIST_META_DATA = 'courseListMetaData';
 
 export default class CourseListMetaData {
-  termCode: string;
+  id: string;
   hash: string;
   lastChecked: Date | string;
 
-  constructor(termCode: string, hash: string, lastChecked: Date | string) {
-    this.termCode = termCode;
+  /**
+   * Constructor for CourseListMetaData
+   *
+   * @param {string} id Term Code
+   * @param {string} hash Hash of the course list
+   * @param {Date | string} lastChecked Last time the course list was updated
+   */
+  constructor(id: string, hash: string, lastChecked: Date | string) {
+    this.id = id;
     this.hash = hash;
     this.lastChecked = lastChecked;
+  }
+
+  /**
+   * Get the most recent course list meta data
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {id} id Term Code
+   */
+  static async get(
+    dbClient: Cosmos.Database,
+    id: string
+  ): Promise<CourseListMetaData | undefined> {
+    const dbOps = await dbClient
+      .container(COURSE_LIST_META_DATA)
+      .item(id)
+      .read();
+
+    if (dbOps.statusCode === 404) {
+      return undefined;
+    } else {
+      return dbOps.resource as CourseListMetaData;
+    }
+  }
+
+  /**
+   * Create a new course list meta data
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {id} id Term Code
+   * @param {hash} hash Hash of the course list
+   *
+   */
+  static async create(
+    dbClient: Cosmos.Database,
+    id: string,
+    hash: string
+  ): Promise<void> {
+    const courseListMetaData = new CourseListMetaData(
+      id,
+      hash,
+      new Date().toISOString()
+    );
+    await dbClient
+      .container(COURSE_LIST_META_DATA)
+      .items.create(courseListMetaData);
+  }
+
+  /**
+   * Update a course list meta data
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {id} id Term Code
+   * @param {hash} hash Hash of the course list
+   */
+  static async update(
+    dbClient: Cosmos.Database,
+    id: string,
+    hash: string
+  ): Promise<void> {
+    const courseListMetaData = new CourseListMetaData(
+      id,
+      hash,
+      new Date().toISOString()
+    );
+
+    await dbClient
+      .container(COURSE_LIST_META_DATA)
+      .item(courseListMetaData.id)
+      .replace(courseListMetaData);
   }
 
   /**
@@ -32,9 +108,9 @@ export default class CourseListMetaData {
       await dbClient
         .container(COURSE_LIST_META_DATA)
         .items.query({
-          query: 'SELECT c.termCode FROM c',
+          query: 'SELECT c.id FROM c',
         })
         .fetchAll()
-    ).resources.map((term: {termCode: string}) => term.termCode);
+    ).resources.map((term: CourseListMetaData) => term.id);
   }
 }
