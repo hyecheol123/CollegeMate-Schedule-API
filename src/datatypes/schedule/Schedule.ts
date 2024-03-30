@@ -7,7 +7,6 @@
 import * as Cosmos from '@azure/cosmos';
 import NotFoundError from '../../exceptions/NotFoundError';
 import IScheduleUpdateObj from './IScheduleUpdateObj';
-// import ServerConfig from '../../ServerConfig';
 
 // DB Container id
 const SCHEDULE = 'schedule';
@@ -91,6 +90,25 @@ export default class Schedule {
       dbOps.resource.sessionList,
       dbOps.resource.eventList
     );
+  }
+
+  /**
+   * Delete a schedule with the id provided
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} id Schedule id
+   */
+  static async delete(dbClient: Cosmos.Database, id: string): Promise<void> {
+    try {
+      await dbClient.container(SCHEDULE).item(id).delete();
+    } catch (e) {
+      // istanbul ignore next
+      if ((e as Cosmos.ErrorResponse).code === 404) {
+        throw new NotFoundError();
+      } else {
+        throw e;
+      }
+    }
   }
 
   /**

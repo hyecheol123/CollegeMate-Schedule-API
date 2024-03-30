@@ -1,5 +1,5 @@
 /**
- * Jest Unit Test for POST /schedule method
+ * Jest Unit Test for DELETE /schedule/:scheduleId method
  *
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
  */
@@ -11,8 +11,9 @@ import TestEnv from '../../TestEnv';
 import ExpressServer from '../../../src/ExpressServer';
 import AuthToken from '../../../src/datatypes/Token/AuthToken';
 import * as jwt from 'jsonwebtoken';
+import TestConfig from '../../TestConfig';
 
-describe('POST /schedule - Create a New Schedule', () => {
+describe('DELETE /schedule/:scheduleId - Delete Schedule', () => {
   let testEnv: TestEnv;
   const SCHEDULE = 'schedule';
   const accessTokenMap = {
@@ -21,6 +22,11 @@ describe('POST /schedule - Create a New Schedule', () => {
     refresh: '',
     expired: '',
     admin: '',
+  };
+  const scheduleIdMap = {
+    steve: '',
+    drag: '',
+    invalid: 'invalid',
   };
 
   beforeEach(async () => {
@@ -99,6 +105,28 @@ describe('POST /schedule - Create a New Schedule', () => {
       testEnv.testConfig.jwt.secretKey,
       {algorithm: 'HS512', expiresIn: '1ms'}
     );
+
+    // Steve's ScheduleId
+    let email = 'steve@wisc.edu';
+    let termCode = '1242';
+    const testDate = '2021-04-01T00:00:00.000Z';
+    scheduleIdMap.steve = TestConfig.hash(
+      `${email}/${termCode}/${testDate}`,
+      email,
+      termCode
+    );
+
+    // Drag's ScheduleId
+    email = 'drag@wisc.edu';
+    termCode = '1244';
+    scheduleIdMap.drag = TestConfig.hash(
+      `${email}/${termCode}/${testDate}`,
+      email,
+      termCode
+    );
+
+    // Invalid ScheduleId
+    scheduleIdMap.invalid = 'invalid';
   });
 
   afterEach(async () => {
@@ -110,7 +138,7 @@ describe('POST /schedule - Create a New Schedule', () => {
 
     // reqeust without a token
     const response = await request(testEnv.expressServer.app)
-      .post('/schedule')
+      .delete(`/schedule/${scheduleIdMap.steve}`)
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(401);
     expect(response.body.error).toBe('Unauthenticated');
@@ -119,12 +147,12 @@ describe('POST /schedule - Create a New Schedule', () => {
   test('Fail - Expired Access Token', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
 
-    // Wait for 5 ms
+    // Wait for 5 ms to expire the access token
     await new Promise(resolve => setTimeout(resolve, 5));
 
     // request with an expired access token from web
     const response = await request(testEnv.expressServer.app)
-      .post('/schedule')
+      .delete(`/schedule/${scheduleIdMap.steve}`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.expired})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(403);
@@ -136,7 +164,7 @@ describe('POST /schedule - Create a New Schedule', () => {
 
     // reqeust with admin token
     let response = await request(testEnv.expressServer.app)
-      .post('/schedule')
+      .delete(`/schedule/${scheduleIdMap.steve}`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.admin})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(403);
@@ -144,7 +172,7 @@ describe('POST /schedule - Create a New Schedule', () => {
 
     // request with refresh token
     response = await request(testEnv.expressServer.app)
-      .post('/schedule')
+      .delete(`/schedule/${scheduleIdMap.steve}`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.refresh})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(403);
@@ -152,7 +180,7 @@ describe('POST /schedule - Create a New Schedule', () => {
 
     // request with "wrong" token
     response = await request(testEnv.expressServer.app)
-      .post('/schedule')
+      .delete(`/schedule/${scheduleIdMap.steve}`)
       .set({'X-ACCESS-TOKEN': 'wrong'})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(403);
@@ -164,14 +192,14 @@ describe('POST /schedule - Create a New Schedule', () => {
 
     // request without any origin or app
     let response = await request(testEnv.expressServer.app)
-      .post('/schedule')
+      .delete(`/schedule/${scheduleIdMap.steve}`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve});
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
 
     // request without from wrong origin and not app
     response = await request(testEnv.expressServer.app)
-      .post('/schedule')
+      .delete(`/schedule/${scheduleIdMap.steve}`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({Origin: 'https://wrong.origin.com'});
     expect(response.status).toBe(403);
@@ -179,76 +207,51 @@ describe('POST /schedule - Create a New Schedule', () => {
 
     // request without from wrong app
     response = await request(testEnv.expressServer.app)
-      .post('/schedule')
+      .delete(`/schedule/${scheduleIdMap.steve}`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({'X-APPLICATION-KEY': 'wrongAppKey'});
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
   });
 
-  test('Fail - Bad Request', async () => {
-    testEnv.expressServer = testEnv.expressServer as ExpressServer;
-
-    // request with no request body
-    let response = await request(testEnv.expressServer.app)
-      .post('/schedule')
-      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://collegemate.app'});
-    expect(response.status).toBe(400);
-    expect(response.body.error).toBe('Bad Request');
-
-    // request with invalid request body property
-    response = await request(testEnv.expressServer.app)
-      .post('/schedule')
-      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://collegemate.app'})
-      .send({invalidPropertity: 'invalidValue'});
-    expect(response.status).toBe(400);
-    expect(response.body.error).toBe('Bad Request');
-
-    // request with extra request body property
-    response = await request(testEnv.expressServer.app)
-      .post('/schedule')
-      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://collegemate.app'})
-      .send({
-        invalidPropertity: 'invalidValue',
-        termCode: '1244',
-      });
-    expect(response.status).toBe(400);
-    expect(response.body.error).toBe('Bad Request');
-
-    // request with inexistent termCode
-    response = await request(testEnv.expressServer.app)
-      .post('/schedule')
-      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://collegemate.app'})
-      .send({termCode: '1224'});
-    expect(response.status).toBe(400);
-    expect(response.body.error).toBe('Bad Request');
-  });
-
-  test('Fail - Schedule with TermCode Exists', async () => {
+  test('Fail - Schedule does not exist', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
 
-    // request with a termCode that already exists
+    // request with a invalid scheduleId
     let response = await request(testEnv.expressServer.app)
-      .post('/schedule')
+      .delete(`/schedule/${scheduleIdMap.invalid}`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://collegemate.app'})
-      .send({termCode: '1242'});
-    expect(response.status).toBe(409);
-    expect(response.body.error).toBe('Conflict');
+      .set({Origin: 'https://collegemate.app'});
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBe('Not Found');
 
-    // request with a termCode that already exists
+    // request with another invalid scheduleId
     response = await request(testEnv.expressServer.app)
-      .post('/schedule')
+      .post('/schedule/1111')
       .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
-      .set({Origin: 'https://collegemate.app'})
-      .send({termCode: '1244'});
-    expect(response.status).toBe(409);
-    expect(response.body.error).toBe('Conflict');
+      .set({Origin: 'https://collegemate.app'});
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBe('Not Found');
+  });
+
+  test('Fail - User is not the owner of the Schedule', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+    testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
+
+    // Steve tries to delete Drag's schedule
+    let response = await request(testEnv.expressServer.app)
+      .delete(`/schedule/${scheduleIdMap.drag}`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'});
+    expect(response.status).toBe(403);
+
+    // Drag tries to delete Steve's schedule
+    response = await request(testEnv.expressServer.app)
+      .delete(`/schedule/${scheduleIdMap.steve}`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
+      .set({Origin: 'https://collegemate.app'});
+    expect(response.status).toBe(403);
   });
 
   test('Success from web', async () => {
@@ -257,34 +260,31 @@ describe('POST /schedule - Create a New Schedule', () => {
 
     // valid request from web - Steve
     let response = await request(testEnv.expressServer.app)
-      .post('/schedule')
+      .delete(`/schedule/${scheduleIdMap.steve}`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://collegemate.app'})
-      .send({termCode: '1244'});
-    expect(response.status).toBe(201);
-    expect(response.body.scheduleId).toBeDefined();
+      .set({Origin: 'https://collegemate.app'});
+    expect(response.status).toBe(200);
 
-    //check if the schedule is created
+    //check if the schedule is deleted
     let dbOps = await testEnv.dbClient
       .container(SCHEDULE)
-      .item(response.body.scheduleId)
+      .item(scheduleIdMap.steve)
       .read();
-    expect(dbOps.statusCode).toBe(200);
+    expect(dbOps.statusCode).toBe(404);
 
     // valid request from web - Drag
     response = await request(testEnv.expressServer.app)
-      .post('/schedule')
+      .delete(`/schedule/${scheduleIdMap.drag}`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
-      .set({Origin: 'https://collegemate.app'})
-      .send({termCode: '1242'});
-    expect(response.status).toBe(201);
-    expect(response.body.scheduleId).toBeDefined();
+      .set({Origin: 'https://collegemate.app'});
+    expect(response.status).toBe(200);
 
-    // check if the schedule is created
+    //check if the schedule is deleted
     dbOps = await testEnv.dbClient
       .container(SCHEDULE)
-      .item(response.body.scheduleId)
+      .item(scheduleIdMap.drag)
       .read();
+    expect(dbOps.statusCode).toBe(404);
   });
 
   test('Success from app', async () => {
@@ -293,34 +293,30 @@ describe('POST /schedule - Create a New Schedule', () => {
 
     // valid request from app - Steve
     let response = await request(testEnv.expressServer.app)
-      .post('/schedule')
+      .delete(`/schedule/${scheduleIdMap.steve}`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({'X-APPLICATION-KEY': '<Android-App-v1>'})
-      .send({termCode: '1244'});
-    expect(response.status).toBe(201);
-    expect(response.body.scheduleId).toBeDefined();
+      .set({'X-APPLICATION-KEY': '<Android-App-v1>'});
+    expect(response.status).toBe(200);
 
-    // check if the schedule is created
+    //check if the schedule is deleted
     let dbOps = await testEnv.dbClient
       .container(SCHEDULE)
-      .item(response.body.scheduleId)
+      .item(scheduleIdMap.steve)
       .read();
-    expect(dbOps.statusCode).toBe(200);
+    expect(dbOps.statusCode).toBe(404);
 
-    // Drag with another termCode
+    // valid request from app - Drag
     response = await request(testEnv.expressServer.app)
-      .post('/schedule')
+      .delete(`/schedule/${scheduleIdMap.drag}`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
-      .set({'X-APPLICATION-KEY': '<Android-App-v1>'})
-      .send({termCode: '1242'});
-    expect(response.status).toBe(201);
-    expect(response.body.scheduleId).toBeDefined();
+      .set({'X-APPLICATION-KEY': '<Android-App-v1>'});
+    expect(response.status).toBe(200);
 
-    // check if the schedule is created
+    //check if the schedule is deleted
     dbOps = await testEnv.dbClient
       .container(SCHEDULE)
-      .item(response.body.scheduleId)
+      .item(scheduleIdMap.drag)
       .read();
-    expect(dbOps.statusCode).toBe(200);
+    expect(dbOps.statusCode).toBe(404);
   });
 });

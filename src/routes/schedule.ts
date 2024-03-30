@@ -94,6 +94,47 @@ scheduleRouter.post('/', async (req, res, next) => {
   }
 });
 
+// DELETE: /schedule/:scheduleId
+scheduleRouter.delete('/:scheduleId', async (req, res, next) => {
+  const dbClient: Cosmos.Database = req.app.locals.dbClient;
+
+  try {
+    // Check Origin header or application key
+    if (
+      req.header('Origin') !== req.app.get('webpageOrigin') &&
+      !req.app.get('applicationKey').includes(req.header('X-APPLICATION-KEY'))
+    ) {
+      throw new ForbiddenError();
+    }
+
+    // Header check - access token
+    const accessToken = req.header('X-ACCESS-TOKEN');
+    if (accessToken === undefined) {
+      throw new UnauthenticatedError();
+    }
+    const tokenContents = verifyAccessToken(
+      accessToken,
+      req.app.get('jwtAccessKey')
+    );
+
+    // Validate scheduleId
+    const scheduleId = req.params.scheduleId;
+    const email = tokenContents.id;
+    const schedule = await Schedule.read(dbClient, scheduleId);
+    if (schedule.email !== email) {
+      throw new ForbiddenError();
+    }
+
+    // DB Operation: Delete the schedule
+    await Schedule.delete(dbClient, scheduleId);
+
+    // Response
+    res.status(200).send();
+  } catch (e) {
+    next(e);
+  }
+});
+
 // GET: /schedule/available-semesters
 scheduleRouter.get('/available-semesters', async (req, res, next) => {
   const dbClient: Cosmos.Database = req.app.locals.dbClient;
@@ -148,7 +189,7 @@ scheduleRouter.delete('/:scheduleId/event/:eventId', async (req, res, next) => {
     let scheduleUpdateObj: IScheduleUpdateObj = {};
     if (
       schedule.eventList.filter(event => event.id === req.params.eventId)
-        .length === 1
+        .length !== 0
     ) {
       scheduleUpdateObj = {
         eventList: schedule.eventList.filter(
@@ -157,7 +198,7 @@ scheduleRouter.delete('/:scheduleId/event/:eventId', async (req, res, next) => {
       };
     } else if (
       schedule.sessionList.filter(session => session.id === req.params.eventId)
-        .length === 1
+        .length !== 0
     ) {
       scheduleUpdateObj = {
         sessionList: schedule.sessionList.filter(
@@ -377,6 +418,7 @@ scheduleRouter.post('/course-list/:termCode/update', async (req, res, next) => {
       }
       // To prevent from being blocked by the server, wait 1 second every 10 courses
       i--;
+      /* istanbul ignore next */
       if (i === 0) {
         await new Promise(resolve => setTimeout(resolve, 1000));
         i = 10;
