@@ -7,7 +7,6 @@
 
 import * as Cosmos from '@azure/cosmos';
 import BadRequestError from '../../exceptions/BadRequestError';
-// import ServerConfig from '../../ServerConfig';
 
 // DB Container id
 const COURSE = 'course';
@@ -40,6 +39,78 @@ export default class Course {
     this.fullCourseName = fullCourseName;
     this.termCode = termCode;
     this.title = title;
+  }
+
+  /**
+   * Create a new course
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {Course} course course to be created
+   */
+  static async create(
+    dbClient: Cosmos.Database,
+    course: Course
+  ): Promise<void> {
+    await dbClient.container(COURSE).items.create(course);
+  }
+
+  /**
+   * Delete a courses in a term
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} termCode term code of the courses to be deleted
+   */
+  static async deleteAll(
+    dbClient: Cosmos.Database,
+    termCode: string
+  ): Promise<void> {
+    const dbOps = await dbClient
+      .container(COURSE)
+      .items.query({
+        query: `SELECT * FROM ${COURSE} c WHERE c.termCode = @termCode`,
+        parameters: [
+          {
+            name: '@termCode',
+            value: termCode,
+          },
+        ],
+      })
+      .fetchAll();
+
+    for (const course of dbOps.resources) {
+      await dbClient.container(COURSE).item(course.id).delete();
+    }
+  }
+
+  /**
+   * Get all courseIds in a term
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} termCode term code of the courses to be retrieved
+   */
+  static async getAll(
+    dbClient: Cosmos.Database,
+    termCode: string
+  ): Promise<string[]> {
+    const dbOps = await dbClient
+      .container(COURSE)
+      .items.query({
+        query: `SELECT * FROM ${COURSE} c WHERE c.termCode = @termCode`,
+        parameters: [
+          {
+            name: '@termCode',
+            value: termCode,
+          },
+        ],
+      })
+      .fetchAll();
+
+    const courseIds: string[] = [];
+    for (const course of dbOps.resources) {
+      courseIds.push(course.courseId);
+    }
+
+    return courseIds;
   }
 
   /**

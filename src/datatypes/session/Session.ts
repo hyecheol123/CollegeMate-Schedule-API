@@ -72,6 +72,54 @@ export default class Session {
     this.topic = topic;
   }
 
+  /**
+   * Create a new session
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {Session} session session to be created
+   */
+  static async create(
+    dbClient: Cosmos.Database,
+    session: Session
+  ): Promise<void> {
+    await dbClient.container(SESSION).items.create(session);
+  }
+
+  /**
+   * Delete all sessions in a course
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} courseId course id of the sessions to be deleted
+   */
+  static async deleteCourse(
+    dbClient: Cosmos.Database,
+    courseId: string
+  ): Promise<void> {
+    const dbOps = await dbClient
+      .container(SESSION)
+      .items.query({
+        query: `SELECT * FROM ${SESSION} s WHERE s.courseId = @courseId`,
+        parameters: [
+          {
+            name: '@courseId',
+            value: courseId,
+          },
+        ],
+      })
+      .fetchAll();
+
+    for (const session of dbOps.resources) {
+      await dbClient.container(SESSION).item(session.id).delete();
+    }
+  }
+
+  /**
+   * Get all sessions in a course
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} termCode term code of the sessions to be deleted
+   * @param {string} courseId course id of the sessions to be deleted
+   */
   static async getAllSessions(
     dbClient: Cosmos.Database,
     termCode: string,
