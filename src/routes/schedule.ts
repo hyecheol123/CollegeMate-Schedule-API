@@ -26,6 +26,8 @@ import SessionListMetaData from '../datatypes/sessionListMetaData/SessionListMet
 import ForbiddenError from '../exceptions/ForbiddenError';
 import CourseSearchGetResponseObj from '../datatypes/course/CourseSearchGetResponseObj';
 import {validateCourseSearchRequest} from '../functions/inputValidator/validateCourseSearchRequest';
+import IScheduleUpdateObj from '../datatypes/schedule/IScheduleUpdateObj';
+import NotFoundError from '../exceptions/NotFoundError';
 
 // Path: /schedule
 const scheduleRouter = express.Router();
@@ -106,6 +108,71 @@ scheduleRouter.get('/available-semesters', async (req, res, next) => {
 
     const termList = await CourseListMetaData.getTermList(dbClient);
     res.json(termList);
+  } catch (e) {
+    next(e);
+  }
+});
+
+// DELETE: /schedule/:scheduleId/event/:eventId
+scheduleRouter.delete('/:scheduleId/event/:eventId', async (req, res, next) => {
+  const dbClient: Cosmos.Database = req.app.locals.dbClient;
+
+  try {
+    // Check Origin header or application key
+    if (
+      req.header('Origin') !== req.app.get('webpageOrigin') &&
+      !req.app.get('applicationKey').includes(req.header('X-APPLICATION-KEY'))
+    ) {
+      throw new ForbiddenError();
+    }
+
+    // Header check - access token
+    const accessToken = req.header('X-ACCESS-TOKEN');
+    if (accessToken === undefined) {
+      throw new UnauthenticatedError();
+    }
+    const tokenContents = verifyAccessToken(
+      accessToken,
+      req.app.get('jwtAccessKey')
+    );
+
+    // Check if the user has access to the schedule
+    const email = tokenContents.id;
+    const scheduleId = req.params.scheduleId;
+    const schedule = await Schedule.read(dbClient, scheduleId);
+    if (schedule.email !== email) {
+      throw new ForbiddenError();
+    }
+
+    // Check and create new event or session list to update\
+    let scheduleUpdateObj: IScheduleUpdateObj = {};
+    if (
+      schedule.eventList.filter(event => event.id === req.params.eventId)
+        .length === 1
+    ) {
+      scheduleUpdateObj = {
+        eventList: schedule.eventList.filter(
+          event => event.id !== req.params.eventId
+        ),
+      };
+    } else if (
+      schedule.sessionList.filter(session => session.id === req.params.eventId)
+        .length === 1
+    ) {
+      scheduleUpdateObj = {
+        sessionList: schedule.sessionList.filter(
+          session => session.id !== req.params.eventId
+        ),
+      };
+    } else {
+      throw new NotFoundError();
+    }
+
+    // DB Operation: Update the schedule
+    await Schedule.update(dbClient, scheduleId, scheduleUpdateObj);
+
+    // Response
+    res.status(200).send();
   } catch (e) {
     next(e);
   }
