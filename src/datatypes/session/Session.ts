@@ -148,4 +148,30 @@ export default class Session {
 
     return sessionList;
   }
+
+  /**
+   * Get a list of sessions with the given array of sessionIds for the termCode provided
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} termCode Term code
+   * @param {string[]} sessionIds Array of sessionIds
+   */
+  static async getUserSessions(
+    dbClient: Cosmos.Database,
+    termCode: string,
+    sessionIds: string[]
+  ): Promise<Session[]> {
+    const sessionList: Session[] = (
+      await dbClient
+        .container(SESSION)
+        .items.query({
+          query: `SELECT * FROM c WHERE 
+            c.termCode = "${termCode}" AND
+            c.id IN (${sessionIds.map(id => `"${id}"`).join(',')})`,
+        })
+        .fetchAll()
+    ).resources;
+
+    return sessionList;
+  }
 }

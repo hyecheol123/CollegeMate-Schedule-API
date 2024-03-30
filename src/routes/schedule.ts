@@ -28,6 +28,8 @@ import CourseSearchGetResponseObj from '../datatypes/course/CourseSearchGetRespo
 import {validateCourseSearchRequest} from '../functions/inputValidator/validateCourseSearchRequest';
 import IScheduleUpdateObj from '../datatypes/schedule/IScheduleUpdateObj';
 import NotFoundError from '../exceptions/NotFoundError';
+import SessionEditRequestObj from '../datatypes/session/SessionEditRequestObj';
+import {validateSessionEditRequest} from '../functions/inputValidator/validateSessionEditRequest';
 
 // Path: /schedule
 const scheduleRouter = express.Router();
@@ -127,6 +129,132 @@ scheduleRouter.delete('/:scheduleId', async (req, res, next) => {
 
     // DB Operation: Delete the schedule
     await Schedule.delete(dbClient, scheduleId);
+
+    // Response
+    res.status(200).send();
+  } catch (e) {
+    next(e);
+  }
+});
+
+// PATCH: /schedule/:scheduleId/event/:eventId
+scheduleRouter.patch('/:scheduleId/event/:eventId', async (req, res, next) => {
+  const dbClient: Cosmos.Database = req.app.locals.dbClient;
+
+  try {
+    // Check Origin header or application key
+    if (
+      req.header('Origin') !== req.app.get('webpageOrigin') &&
+      !req.app.get('applicationKey').includes(req.header('X-APPLICATION-KEY'))
+    ) {
+      throw new ForbiddenError();
+    }
+
+    // Header check - access token
+    const accessToken = req.header('X-ACCESS-TOKEN');
+    if (accessToken === undefined) {
+      throw new UnauthenticatedError();
+    }
+    const tokenContents = verifyAccessToken(
+      accessToken,
+      req.app.get('jwtAccessKey')
+    );
+
+    // Validate request body
+    if (!validateSessionEditRequest(req.body as SessionEditRequestObj)) {
+      throw new BadRequestError();
+    }
+
+    // Check if the user has access to the schedule
+    const email = tokenContents.id;
+    const scheduleId = req.params.scheduleId;
+    const schedule = await Schedule.read(dbClient, scheduleId);
+    if (schedule.email !== email) {
+      throw new ForbiddenError();
+    }
+
+    // Check and edit schedule event/session
+    let scheduleUpdateObj: IScheduleUpdateObj = {};
+    if (
+      schedule.eventList.filter(event => event.id === req.params.eventId)
+        .length !== 0
+    ) {
+      scheduleUpdateObj = {
+        eventList: schedule.eventList.map(event => {
+          if (event.id === req.params.eventId) {
+            return {
+              id: event.id,
+              title: req.body.title ? req.body.title : event.title,
+              location: req.body.location ? req.body.location : event.location,
+              meetingDaysList: req.body.meetingDaysList
+                ? req.body.meetingDaysList
+                : event.meetingDaysList,
+              startTime: req.body.startTime
+                ? req.body.startTime
+                : event.startTime,
+              endTime: req.body.endTime ? req.body.endTime : event.endTime,
+              memo: req.body.memo ? req.body.memo : event.memo,
+              colorCode: req.body.colorCode
+                ? req.body.colorCode
+                : event.colorCode,
+            };
+          } else {
+            return event;
+          }
+        }),
+      };
+    } else if (
+      schedule.sessionList.filter(session => session.id === req.params.eventId)
+        .length !== 0
+    ) {
+      scheduleUpdateObj = {
+        sessionList: schedule.sessionList.map(session => {
+          if (session.id === req.params.eventId) {
+            return {
+              id: req.body.sessionId ? req.body.sessionId : session.id,
+              colorCode: req.body.colorCode
+                ? req.body.colorCode
+                : session.colorCode,
+            };
+          } else {
+            return session;
+          }
+        }),
+      };
+    } else {
+      throw new NotFoundError();
+    }
+
+    // Check for conflicting event in the schedule
+    if (
+      scheduleUpdateObj.eventList &&
+      scheduleUpdateObj.eventList.length !== 0 &&
+      scheduleUpdateObj.eventList.filter(
+        //TODO
+      ).length !== 0
+    ) {
+      throw new ConflictError();
+    }
+
+    // Check for conflicting session in the schedule
+    if (
+      scheduleUpdateObj.sessionList &&
+      scheduleUpdateObj.sessionList.length !== 0
+    ) {
+      const sessionList = await Session.getUserSessions(
+        dbClient,
+        schedule.termCode,
+        schedule.sessionList.map(session => session.id)
+      );
+      if (scheduleUpdateObj.sessionList.filter(
+        //TODO
+      ).length !== 0) {
+        throw new ConflictError();
+      }
+    }
+
+    // DB Operation: Update the schedule
+    await Schedule.update(dbClient, scheduleId, scheduleUpdateObj);
 
     // Response
     res.status(200).send();
