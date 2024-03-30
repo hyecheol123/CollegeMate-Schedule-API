@@ -6,12 +6,12 @@
 
 import * as Cosmos from '@azure/cosmos';
 import NotFoundError from '../../exceptions/NotFoundError';
-// import ServerConfig from '../../ServerConfig';
+import IScheduleUpdateObj from './IScheduleUpdateObj';
 
 // DB Container id
 const SCHEDULE = 'schedule';
 
-interface Event {
+export interface Event {
   id: string;
   title: string;
   location: string | undefined;
@@ -130,5 +130,40 @@ export default class Schedule {
       })
       .fetchAll();
     return dbOps.resources.length !== 0;
+  }
+
+  /**
+   * Update a schedule with the id provided
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} id Schedule id
+   * @param {ISessionUpdateObj} sessionUpdateObj Session update object
+   */
+  static async update(
+    dbClient: Cosmos.Database,
+    id: string,
+    scheduleUpdateObj: IScheduleUpdateObj
+  ): Promise<void> {
+    const updateOps: Cosmos.PatchOperation[] = [];
+    if (scheduleUpdateObj.eventList) {
+      updateOps.push({
+        op: 'replace',
+        path: '/eventList',
+        value: scheduleUpdateObj.eventList,
+      });
+    }
+    if (scheduleUpdateObj.sessionList) {
+      updateOps.push({
+        op: 'replace',
+        path: '/sessionList',
+        value: scheduleUpdateObj.sessionList,
+      });
+    }
+
+    const dbOps = await dbClient.container(SCHEDULE).item(id).patch(updateOps);
+    // istanbul ignore if
+    if (dbOps.statusCode === 404 || dbOps.resource === undefined) {
+      throw new NotFoundError();
+    }
   }
 }
