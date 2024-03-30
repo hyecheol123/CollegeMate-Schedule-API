@@ -6,7 +6,6 @@
  */
 
 import * as Cosmos from '@azure/cosmos';
-import BadRequestError from '../../exceptions/BadRequestError';
 
 // DB Container id
 const COURSE = 'course';
