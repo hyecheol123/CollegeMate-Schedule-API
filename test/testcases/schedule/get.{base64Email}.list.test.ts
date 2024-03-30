@@ -4,6 +4,7 @@
  * @author Jeonghyeon Park <fishbox0923@gmail.com>
  */
 
+// eslint-disable-next-line node/no-unpublished-import
 import * as request from 'supertest';
 import * as jwt from 'jsonwebtoken';
 import * as Cosmos from '@azure/cosmos';
