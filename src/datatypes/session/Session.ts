@@ -2,6 +2,7 @@
  * Define type and used CRUD methods for each courses
  *
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
+ * @author Jeonghyeon Park <fishbox0923@gmail.com>
  */
 
 import * as Cosmos from '@azure/cosmos';
@@ -110,5 +111,41 @@ export default class Session {
     for (const session of dbOps.resources) {
       await dbClient.container(SESSION).item(session.id).delete();
     }
+  }
+
+  /**
+   * Get all sessions in a course
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} termCode term code of the sessions to be deleted
+   * @param {string} courseId course id of the sessions to be deleted
+   */
+  static async getAllSessions(
+    dbClient: Cosmos.Database,
+    termCode: string,
+    courseId: string
+  ): Promise<Session[]> {
+    // Get courseList from DB with the corresponding termCode and courseName
+    const sessionList: Session[] = (
+      await dbClient
+        .container(SESSION)
+        .items.query({
+          query:
+            'SELECT * FROM c WHERE c.termCode = @termCode AND c.courseId = @courseId',
+          parameters: [
+            {
+              name: '@termCode',
+              value: termCode,
+            },
+            {
+              name: '@courseId',
+              value: courseId,
+            },
+          ],
+        })
+        .fetchAll()
+    ).resources;
+
+    return sessionList;
   }
 }
