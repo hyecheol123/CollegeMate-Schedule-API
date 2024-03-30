@@ -20,6 +20,7 @@ import CourseListMetaData from '../src/datatypes/courseListMetaData/CourseListMe
 import Course from '../src/datatypes/course/Course';
 import Schedule from '../src/datatypes/schedule/Schedule';
 import Session from '../src/datatypes/session/Session';
+import {Event} from '../src/datatypes/schedule/Schedule';
 import * as session000441 from './testData/session1242-112-000441.json';
 import * as session004289 from './testData/session1242-266-004289.json';
 import * as session000803 from './testData/session1244-156-000803.json';
@@ -326,8 +327,64 @@ export default class TestEnv {
       email,
       termCode
     );
+    const testEvent1: Event = {
+      id: '1242-000001',
+      title: 'Birthday',
+      location: 'Online',
+      meetingDaysList: ['Monday', 'Wednesday'],
+      startTime: {
+        month: 4,
+        day: 1,
+        hour: 9,
+        minute: 30,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 10,
+        minute: 45,
+      },
+      memo: 'Test Event 1',
+      colorCode: 0,
+    };
+    const testEvent2: Event = {
+      id: '1242-000002',
+      title: 'Meeting',
+      location: 'Online',
+      meetingDaysList: ['Tuesday', 'Thursday'],
+      startTime: {
+        month: 4,
+        day: 1,
+        hour: 13,
+        minute: 30,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 14,
+        minute: 45,
+      },
+      memo: 'Test Event 2',
+      colorCode: 1,
+    };
+    const testSession1 = {
+      id: '1242-000003',
+      colorCode: 0,
+    };
+    const testSession2 = {
+      id: '1242-000004',
+      colorCode: 1,
+    };
     const scheduleSample: Schedule[] = [];
-    scheduleSample.push(new Schedule(scheduleId, email, termCode, [], []));
+    scheduleSample.push(
+      new Schedule(
+        scheduleId,
+        email,
+        termCode,
+        [testSession1, testSession2],
+        [testEvent1, testEvent2]
+      )
+    );
     email = 'drag@wisc.edu';
     termCode = '1244';
     scheduleId = TestConfig.hash(
@@ -335,14 +392,23 @@ export default class TestEnv {
       email,
       termCode
     );
-    scheduleSample.push(new Schedule(scheduleId, email, termCode, [], []));
-    termCode = '1242';
-    scheduleId = TestConfig.hash(
-      `${email}/${termCode}/${testDate}`,
-      email,
-      termCode
+    const testEvent3 = {...testEvent1};
+    testEvent3.id = '1244-000001';
+    const testEvent4 = {...testEvent2};
+    testEvent4.id = '1244-000002';
+    const testSession3 = {...testSession1};
+    testSession3.id = '1244-000003';
+    const testSession4 = {...testSession2};
+    testSession4.id = '1244-000004';
+    scheduleSample.push(
+      new Schedule(
+        scheduleId,
+        email,
+        termCode,
+        [testSession3, testSession4],
+        [testEvent3, testEvent4]
+      )
     );
-    scheduleSample.push(new Schedule(scheduleId, email, termCode, [], []));
     // Create a new schedule entries on test DB
     for (let index = 0; index < scheduleSample.length; ++index) {
       await this.dbClient

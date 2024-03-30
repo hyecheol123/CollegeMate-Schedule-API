@@ -1,50 +1,26 @@
 /**
- * Jest unit test for GET /schedule/{base64Email}/list method
+ * Jest Unit Test for POST /schedule method
  *
- * @author Jeonghyeon Park <fishbox0923@gmail.com>
+ * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
  */
 
+// eslint-disable-next-line node/no-unpublished-import
 import * as request from 'supertest';
-import * as jwt from 'jsonwebtoken';
 import * as Cosmos from '@azure/cosmos';
 import TestEnv from '../../TestEnv';
 import ExpressServer from '../../../src/ExpressServer';
 import AuthToken from '../../../src/datatypes/Token/AuthToken';
-import TestConfig from '../../TestConfig';
+import * as jwt from 'jsonwebtoken';
 
-describe('GET /schedule/:base64Email/list - get Schedule List', () => {
+describe('POST /schedule - Create a New Schedule', () => {
   let testEnv: TestEnv;
-
-  const encodedEmailMap = {
-    steve: Buffer.from('steve@wisc.edu', 'utf8').toString('base64url'),
-    drag: Buffer.from('drag@wisc.edu', 'utf8').toString('base64url'),
-    park: Buffer.from('park@wisc.edu', 'utf8').toString('base64url'),
-  };
-
+  const SCHEDULE = 'schedule';
   const accessTokenMap = {
-    park: '',
     steve: '',
     drag: '',
     refresh: '',
     expired: '',
     admin: '',
-  };
-
-  const scheduleListMap = {
-    drag: [
-      TestConfig.hash(
-        `${'drag@wisc.edu'}/${'1244'}/${'2021-04-01T00:00:00.000Z'}`,
-        'drag@wisc.edu',
-        '1244'
-      ),
-    ],
-    steve: [
-      TestConfig.hash(
-        `${'steve@wisc.edu'}/${'1242'}/${'2021-04-01T00:00:00.000Z'}`,
-        'steve@wisc.edu',
-        '1242'
-      ),
-    ],
   };
 
   beforeEach(async () => {
@@ -55,21 +31,8 @@ describe('GET /schedule/:base64Email/list - get Schedule List', () => {
     await testEnv.start();
 
     // Create Access Token
-    // Valid Park Access Token
-    let tokenContent: AuthToken = {
-      id: 'park@wisc.edu',
-      type: 'access',
-      tokenType: 'user',
-    };
-    // Generate AccessToken
-    accessTokenMap.park = jwt.sign(
-      tokenContent,
-      testEnv.testConfig.jwt.secretKey,
-      {algorithm: 'HS512', expiresIn: '10m'}
-    );
-
     // Valid Steve Access Token
-    tokenContent = {
+    let tokenContent: AuthToken = {
       id: 'steve@wisc.edu',
       type: 'access',
       tokenType: 'user',
@@ -144,9 +107,10 @@ describe('GET /schedule/:base64Email/list - get Schedule List', () => {
 
   test('Fail - No Access Token', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
+
     // reqeust without a token
     const response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.steve}/list`)
+      .post('/schedule')
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(401);
     expect(response.body.error).toBe('Unauthenticated');
@@ -155,12 +119,12 @@ describe('GET /schedule/:base64Email/list - get Schedule List', () => {
   test('Fail - Expired Access Token', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
 
-    // Wait for 5 ms to expire the access token
+    // Wait for 5 ms
     await new Promise(resolve => setTimeout(resolve, 5));
 
     // request with an expired access token from web
     const response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.steve}/list`)
+      .post('/schedule')
       .set({'X-ACCESS-TOKEN': accessTokenMap.expired})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(403);
@@ -172,7 +136,7 @@ describe('GET /schedule/:base64Email/list - get Schedule List', () => {
 
     // reqeust with admin token
     let response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.steve}/list`)
+      .post('/schedule')
       .set({'X-ACCESS-TOKEN': accessTokenMap.admin})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(403);
@@ -180,7 +144,7 @@ describe('GET /schedule/:base64Email/list - get Schedule List', () => {
 
     // request with refresh token
     response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.steve}/list`)
+      .post('/schedule')
       .set({'X-ACCESS-TOKEN': accessTokenMap.refresh})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(403);
@@ -188,7 +152,7 @@ describe('GET /schedule/:base64Email/list - get Schedule List', () => {
 
     // request with "wrong" token
     response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.steve}/list`)
+      .post('/schedule')
       .set({'X-ACCESS-TOKEN': 'wrong'})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(403);
@@ -200,14 +164,14 @@ describe('GET /schedule/:base64Email/list - get Schedule List', () => {
 
     // request without any origin or app
     let response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.steve}/list`)
+      .post('/schedule')
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve});
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
 
     // request without from wrong origin and not app
     response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.steve}/list`)
+      .post('/schedule')
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({Origin: 'https://wrong.origin.com'});
     expect(response.status).toBe(403);
@@ -215,115 +179,148 @@ describe('GET /schedule/:base64Email/list - get Schedule List', () => {
 
     // request without from wrong app
     response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.steve}/list`)
+      .post('/schedule')
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({'X-APPLICATION-KEY': 'wrongAppKey'});
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
   });
 
-  test('Fail - Schedule does not exist', async () => {
+  test('Fail - Bad Request', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+
+    // request with no request body
+    let response = await request(testEnv.expressServer.app)
+      .post('/schedule')
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'});
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Bad Request');
+
+    // request with invalid request body property
+    response = await request(testEnv.expressServer.app)
+      .post('/schedule')
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send({invalidPropertity: 'invalidValue'});
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Bad Request');
+
+    // request with extra request body property
+    response = await request(testEnv.expressServer.app)
+      .post('/schedule')
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send({
+        invalidPropertity: 'invalidValue',
+        termCode: '1244',
+      });
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Bad Request');
+
+    // request with inexistent termCode
+    response = await request(testEnv.expressServer.app)
+      .post('/schedule')
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send({termCode: '1224'});
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Bad Request');
+  });
+
+  test('Fail - Schedule with TermCode Exists', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
 
-    // request with a valid email but no schedule
-    const response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.park}/list`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.park})
-      .set({Origin: 'https://collegemate.app'});
-    expect(response.status).toBe(404);
-    expect(response.body.error).toBe('Not Found');
-  });
-
-  test('Fail - Invalid Email', async () => {
-    testEnv.expressServer = testEnv.expressServer as ExpressServer;
-
-    // request with a invalid email
-    const response = await request(testEnv.expressServer.app)
-      .get('/schedule/invalid/list')
+    // request with a termCode that already exists
+    let response = await request(testEnv.expressServer.app)
+      .post('/schedule')
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://collegemate.app'});
-    expect(response.status).toBe(404);
-    expect(response.body.error).toBe('Not Found');
-  });
+      .set({Origin: 'https://collegemate.app'})
+      .send({termCode: '1242'});
+    expect(response.status).toBe(409);
+    expect(response.body.error).toBe('Conflict');
 
-  test('Fail - Not Friend of Schedule Owner', async () => {
-    testEnv.expressServer = testEnv.expressServer as ExpressServer;
-
-    // request with a invalid email
-    const response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.steve}/list`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.park})
-      .set({Origin: 'https://collegemate.app'});
-    expect(response.status).toBe(403);
-    expect(response.body.error).toBe('Forbidden');
+    // request with a termCode that already exists
+    response = await request(testEnv.expressServer.app)
+      .post('/schedule')
+      .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
+      .set({Origin: 'https://collegemate.app'})
+      .send({termCode: '1244'});
+    expect(response.status).toBe(409);
+    expect(response.body.error).toBe('Conflict');
   });
 
   test('Success from web', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
 
-    // request with a valid email
+    // valid request from web - Steve
     let response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.drag}/list`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
-      .set({Origin: 'https://collegemate.app'});
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(scheduleListMap.drag);
-
-    response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.drag}/list`)
+      .post('/schedule')
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://collegemate.app'});
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(scheduleListMap.drag);
+      .set({Origin: 'https://collegemate.app'})
+      .send({termCode: '1244'});
+    expect(response.status).toBe(201);
+    expect(response.body.scheduleId).toBeDefined();
 
+    //check if the schedule is created
+    let dbOps = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(response.body.scheduleId)
+      .read();
+    expect(dbOps.statusCode).toBe(200);
+
+    // valid request from web - Drag
     response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.steve}/list`)
+      .post('/schedule')
       .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
-      .set({Origin: 'https://collegemate.app'});
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(scheduleListMap.steve);
+      .set({Origin: 'https://collegemate.app'})
+      .send({termCode: '1242'});
+    expect(response.status).toBe(201);
+    expect(response.body.scheduleId).toBeDefined();
 
-    response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.steve}/list`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://collegemate.app'});
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(scheduleListMap.steve);
+    // check if the schedule is created
+    dbOps = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(response.body.scheduleId)
+      .read();
   });
 
   test('Success from app', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
 
-    // request with a valid email
+    // valid request from app - Steve
     let response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.drag}/list`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
-      .set({'X-APPLICATION-KEY': '<Android-App-v1>'});
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(scheduleListMap.drag);
-
-    response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.drag}/list`)
+      .post('/schedule')
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({'X-APPLICATION-KEY': '<Android-App-v1>'});
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(scheduleListMap.drag);
+      .set({'X-APPLICATION-KEY': '<Android-App-v1>'})
+      .send({termCode: '1244'});
+    expect(response.status).toBe(201);
+    expect(response.body.scheduleId).toBeDefined();
 
+    // check if the schedule is created
+    let dbOps = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(response.body.scheduleId)
+      .read();
+    expect(dbOps.statusCode).toBe(200);
+
+    // Drag with another termCode
     response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.steve}/list`)
+      .post('/schedule')
       .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
-      .set({'X-APPLICATION-KEY': '<Android-App-v1>'});
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(scheduleListMap.steve);
+      .set({'X-APPLICATION-KEY': '<Android-App-v1>'})
+      .send({termCode: '1242'});
+    expect(response.status).toBe(201);
+    expect(response.body.scheduleId).toBeDefined();
 
-    response = await request(testEnv.expressServer.app)
-      .get(`/schedule/${encodedEmailMap.steve}/list`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({'X-APPLICATION-KEY': '<Android-App-v1>'});
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(scheduleListMap.steve);
+    // check if the schedule is created
+    dbOps = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(response.body.scheduleId)
+      .read();
+    expect(dbOps.statusCode).toBe(200);
   });
 });
