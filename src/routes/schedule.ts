@@ -132,6 +132,14 @@ scheduleRouter.get('/course', async (req, res, next) => {
     const termCode = req.body.termCode;
     const courseName = req.body.courseName;
     const courseList = await Course.getCourse(dbClient, termCode, courseName);
+
+    if (courseList.length === 0) {
+      res.status(200).json({
+        found: false,
+      });
+      return;
+    }
+
     const courseId = courseList[0].courseId;
 
     const sessions = await Session.getAllSessions(dbClient, termCode, courseId);

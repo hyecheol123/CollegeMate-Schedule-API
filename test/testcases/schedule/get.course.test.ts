@@ -67,17 +67,6 @@ describe('GET /schedule/course - Course Search', () => {
     expect(response.status).toBe(400);
     expect(response.body.error).toBe('Bad Request');
 
-    // Request with invalid request body input(termCode)
-    response = await request(testEnv.expressServer.app)
-      .get('/schedule/course')
-      .set({Origin: 'https://collegemate.app'})
-      .send({
-        termCode: '0000',
-        courseName: 'BSE 1',
-      });
-    expect(response.status).toBe(400);
-    expect(response.body.error).toBe('Bad Request');
-
     // Request with invalid request body input(extra field)
     response = await request(testEnv.expressServer.app)
       .get('/schedule/course')
@@ -91,7 +80,7 @@ describe('GET /schedule/course - Course Search', () => {
     expect(response.body.error).toBe('Bad Request');
   });
 
-  test('Success', async () => {
+  test('Success - found', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
 
@@ -134,5 +123,34 @@ describe('GET /schedule/course - Course Search', () => {
     );
     expect(response.body.result.sessionList[1].sessionId).toBe('64829');
     expect(response.body.result.sessionList[2].isAsynchronous).toBe(false);
+  });
+
+  test('Success - not found', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+    testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
+
+    // Request with non existent request body input(termCode) Web
+    let response = await request(testEnv.expressServer.app)
+      .get('/schedule/course')
+      .set({Origin: 'https://collegemate.app'})
+      .send({
+        termCode: '0000',
+        courseName: 'BSE 1',
+      });
+    expect(response.status).toBe(200);
+    expect(response.body.found).toBe(false);
+    expect(response.body.result).toBeUndefined();
+
+    // Request From Web
+    response = await request(testEnv.expressServer.app)
+      .get('/schedule/course')
+      .set({'X-APPLICATION-KEY': '<Android-App-v1>'})
+      .send({
+        termCode: '1244',
+        courseName: 'BioBio',
+      });
+    expect(response.status).toBe(200);
+    expect(response.body.found).toBe(false);
+    expect(response.body.result).toBeUndefined();
   });
 });

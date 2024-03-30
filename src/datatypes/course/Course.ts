@@ -147,10 +147,6 @@ export default class Course {
         .fetchAll()
     ).resources;
 
-    if (courseList.length === 0) {
-      throw new BadRequestError();
-    }
-
     return courseList;
   }
 }
