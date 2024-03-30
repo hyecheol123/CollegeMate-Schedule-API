@@ -5,6 +5,7 @@
  */
 
 import * as Cosmos from '@azure/cosmos';
+import NotFoundError from '../../exceptions/NotFoundError';
 // import ServerConfig from '../../ServerConfig';
 
 // DB Container id
@@ -69,6 +70,45 @@ export default class Schedule {
     schedule: Schedule
   ): Promise<void> {
     await dbClient.container(SCHEDULE).items.create(schedule);
+  }
+
+  /**
+   * Read a schedule with the id provided
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} id Schedule id
+   */
+  static async read(dbClient: Cosmos.Database, id: string): Promise<Schedule> {
+    const dbOps = await dbClient.container(SCHEDULE).item(id).read<Schedule>();
+    if (dbOps.statusCode === 404 || dbOps.resource === undefined) {
+      throw new NotFoundError();
+    }
+    return new Schedule(
+      dbOps.resource.id,
+      dbOps.resource.email,
+      dbOps.resource.termCode,
+      dbOps.resource.sessionList,
+      dbOps.resource.eventList
+    );
+  }
+
+  /**
+   * Delete a schedule with the id provided
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} id Schedule id
+   */
+  static async delete(dbClient: Cosmos.Database, id: string): Promise<void> {
+    try {
+      await dbClient.container(SCHEDULE).item(id).delete();
+    } catch (e) {
+      // istanbul ignore next
+      if ((e as Cosmos.ErrorResponse).code === 404) {
+        throw new NotFoundError();
+      } else {
+        throw e;
+      }
+    }
   }
 
   /**

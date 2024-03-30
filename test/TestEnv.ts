@@ -320,8 +320,9 @@ export default class TestEnv {
     // Create schedule data sample entries
     let email = 'steve@wisc.edu';
     let termCode = '1242';
+    const testDate = '2021-04-01T00:00:00.000Z';
     let scheduleId = TestConfig.hash(
-      `${email}/${termCode}/${new Date().toISOString()}`,
+      `${email}/${termCode}/${testDate}`,
       email,
       termCode
     );
@@ -330,7 +331,7 @@ export default class TestEnv {
     email = 'drag@wisc.edu';
     termCode = '1244';
     scheduleId = TestConfig.hash(
-      `${email}/${termCode}/${new Date().toISOString()}`,
+      `${email}/${termCode}/${testDate}`,
       email,
       termCode
     );
