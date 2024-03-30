@@ -97,7 +97,6 @@ export default class Schedule {
    *
    * @param {Cosmos.Database} dbClient Cosmos DB Client
    * @param {string} id Schedule id
-   * @param {string} email User's email
    */
   static async delete(dbClient: Cosmos.Database, id: string): Promise<void> {
     try {
