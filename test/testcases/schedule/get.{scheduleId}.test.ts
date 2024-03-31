@@ -22,6 +22,7 @@ describe('GET /schedule/:scheduleId - get Schedule Detail', () => {
     refresh: '',
     expired: '',
     admin: '',
+    jerry: '',
   };
 
   const scheduleIdMap = {
@@ -73,6 +74,19 @@ describe('GET /schedule/:scheduleId - get Schedule Detail', () => {
     };
     // Generate AccessToken
     accessTokenMap.drag = jwt.sign(
+      tokenContent,
+      testEnv.testConfig.jwt.secretKey,
+      {algorithm: 'HS512', expiresIn: '10m'}
+    );
+
+    // Valid Jerry Access Token
+    tokenContent = {
+      id: 'jerry@wisc.edu',
+      type: 'access',
+      tokenType: 'user',
+    };
+    // Generate AccessToken
+    accessTokenMap.jerry = jwt.sign(
       tokenContent,
       testEnv.testConfig.jwt.secretKey,
       {algorithm: 'HS512', expiresIn: '10m'}
@@ -296,7 +310,7 @@ describe('GET /schedule/:scheduleId - get Schedule Detail', () => {
     expect(response.body.eventList[0].title).toBe('Birthday');
     expect(response.body.eventList[1].title).toBe('Meeting');
 
-    // drag request steve's schedule
+    // steve request drag's schedule
     response = await request(testEnv.expressServer.app)
       .get(`/schedule/${scheduleIdMap.drag}`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -311,7 +325,7 @@ describe('GET /schedule/:scheduleId - get Schedule Detail', () => {
     expect(response.body.eventList[0].id).toBe('1244-000001');
     expect(response.body.eventList[1].id).toBe('1244-000002');
 
-    // steve request drag's schedule
+    // drag request steve's schedule
     response = await request(testEnv.expressServer.app)
       .get(`/schedule/${scheduleIdMap.steve}`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
@@ -340,6 +354,25 @@ describe('GET /schedule/:scheduleId - get Schedule Detail', () => {
     expect(response.body.eventList.length).toEqual(2);
     expect(response.body.eventList[0].title).toBe('Birthday');
     expect(response.body.eventList[1].title).toBe('Meeting');
+
+    // jerry request steve's schedule
+    response = await request(testEnv.expressServer.app)
+      .get(`/schedule/${scheduleIdMap.steve}`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.jerry})
+      .set({Origin: 'https://collegemate.app'});
+    expect(response.status).toBe(200);
+    expect(response.body.email).toBe('steve@wisc.edu');
+    expect(response.body.termCode).toBe('1242');
+    expect(response.body.sessionList.length).toEqual(2);
+    expect(response.body.sessionList[0].id).toBe('1242-000003');
+    expect(response.body.sessionList[1].id).toBe('1242-000004');
+    expect(response.body.eventList.length).toEqual(2);
+    expect(response.body.eventList[0].title).toBe('Birthday');
+    expect(response.body.eventList[1].title).toBe('Meeting');
+    expect(response.body.eventList[0].id).toBe('1242-000001');
+    expect(response.body.eventList[1].id).toBe('1242-000002');
+    expect(response.body.sessionList[0].colorCode).toBe(0);
+    expect(response.body.sessionList[1].colorCode).toBe(1);
   });
 
   test('Success from app', async () => {
@@ -360,7 +393,7 @@ describe('GET /schedule/:scheduleId - get Schedule Detail', () => {
     expect(response.body.eventList[0].title).toBe('Birthday');
     expect(response.body.eventList[1].title).toBe('Meeting');
 
-    // drag request steve's schedule
+    // steve request drag's schedule
     response = await request(testEnv.expressServer.app)
       .get(`/schedule/${scheduleIdMap.drag}`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -375,7 +408,7 @@ describe('GET /schedule/:scheduleId - get Schedule Detail', () => {
     expect(response.body.eventList[0].id).toBe('1244-000001');
     expect(response.body.eventList[1].id).toBe('1244-000002');
 
-    // steve request drag's schedule
+    // drag request steve's schedule
     response = await request(testEnv.expressServer.app)
       .get(`/schedule/${scheduleIdMap.steve}`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
@@ -404,5 +437,24 @@ describe('GET /schedule/:scheduleId - get Schedule Detail', () => {
     expect(response.body.eventList.length).toEqual(2);
     expect(response.body.eventList[0].title).toBe('Birthday');
     expect(response.body.eventList[1].title).toBe('Meeting');
+
+    // jerry request drag's schedule
+    response = await request(testEnv.expressServer.app)
+      .get(`/schedule/${scheduleIdMap.drag}`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.jerry})
+      .set({'X-APPLICATION-KEY': '<Android-App-v1>'});
+    expect(response.status).toBe(200);
+    expect(response.body.email).toBe('drag@wisc.edu');
+    expect(response.body.termCode).toBe('1244');
+    expect(response.body.sessionList.length).toEqual(2);
+    expect(response.body.sessionList[0].id).toBe('1244-000003');
+    expect(response.body.sessionList[1].id).toBe('1244-000004');
+    expect(response.body.eventList.length).toEqual(2);
+    expect(response.body.eventList[0].title).toBe('Birthday');
+    expect(response.body.eventList[1].title).toBe('Meeting');
+    expect(response.body.eventList[0].id).toBe('1244-000001');
+    expect(response.body.eventList[1].id).toBe('1244-000002');
+    expect(response.body.sessionList[0].colorCode).toBe(0);
+    expect(response.body.sessionList[1].colorCode).toBe(1);
   });
 });
