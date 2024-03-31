@@ -1,9 +1,9 @@
 /**
- * File to execute when jest test environmet is started.
  * Mocking courseListCrawler function to return mock data.
  * Mocking sessionListCrawler function to return mock data.
  *
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
+ * @author Jeonghyeon Park <fishbox0923@gmail.com>
  */
 import * as session1244001065 from './testData/session1244-168-001065.json';
 import * as session1234001065 from './testData/session1234-168-001065.json';

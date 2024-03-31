@@ -2,6 +2,7 @@
  * Define type and used CRUD methods for schedule
  *
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
+ * @author Jeonghyeon Park <fishbox0923@gmail.com>
  */
 
 import * as Cosmos from '@azure/cosmos';
@@ -165,5 +166,29 @@ export default class Schedule {
     if (dbOps.statusCode === 404 || dbOps.resource === undefined) {
       throw new NotFoundError();
     }
+  }
+
+  /**
+   * Retrieve list of schedule associated with the user idenfied by the given email address (base64urlsafe encoded).
+   *
+   * @param dbClient Cosmos DB client
+   * @param email base64urlsafe encoded email address
+   */
+  static async retrieveScheduleIdList(
+    dbClient: Cosmos.Database,
+    email: string
+  ): Promise<string[]> {
+    const dbOps = await dbClient
+      .container(SCHEDULE)
+      .items.query({
+        query: `SELECT c.id FROM c WHERE c.email = "${email}"`,
+      })
+      .fetchAll();
+
+    if (dbOps.resources.length === 0) {
+      throw new NotFoundError();
+    }
+
+    return dbOps.resources.map(item => item.id);
   }
 }
