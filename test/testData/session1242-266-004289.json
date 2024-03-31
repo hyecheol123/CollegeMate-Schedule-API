@@ -1,0 +1,1919 @@
+[
+  {
+    "id": "1242-004289-36784",
+    "courseId": "004289",
+    "termCode": "1242",
+    "sessionId": "36784",
+    "meetings": [
+      {
+        "buildingName": "Russell Laboratories",
+        "room": "150",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "BACH@CS.WISC.EDU",
+            "name": {
+              "first": "Eric",
+              "last": "BACH"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Educational Sciences",
+        "room": "301",
+        "meetingDaysList": [
+          "MONDAY",
+          "WEDNESDAY",
+          "FRIDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 9,
+          "minute": 55
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "BACH@CS.WISC.EDU",
+            "name": {
+              "first": "Eric",
+              "last": "BACH"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Engineering Hall",
+        "room": "2305",
+        "meetingDaysList": [
+          "TUESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 15,
+          "minute": 30
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 16,
+          "minute": 20
+        },
+        "instructors": [
+          {
+            "email": "BACH@CS.WISC.EDU",
+            "name": {
+              "first": "Eric",
+              "last": "BACH"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 4,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1242-004289-26760",
+    "courseId": "004289",
+    "termCode": "1242",
+    "sessionId": "26760",
+    "meetings": [
+      {
+        "buildingName": "Ingraham Hall",
+        "room": "B10",
+        "meetingDaysList": [
+          "TUESDAY",
+          "THURSDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 13,
+          "minute": 0
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 15
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S413",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S429",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Grainger Hall",
+        "room": "1100",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Engineering Hall",
+        "room": "2239",
+        "meetingDaysList": [
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 14,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 15,
+          "minute": 15
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 4,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1242-004289-23311",
+    "courseId": "004289",
+    "termCode": "1242",
+    "sessionId": "23311",
+    "meetings": [
+      {
+        "buildingName": "Ingraham Hall",
+        "room": "B10",
+        "meetingDaysList": [
+          "TUESDAY",
+          "THURSDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 13,
+          "minute": 0
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 15
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S413",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S429",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Grainger Hall",
+        "room": "1100",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Computer Sciences",
+        "room": "1325",
+        "meetingDaysList": [
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 13,
+          "minute": 20
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 10
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 4,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1242-004289-23310",
+    "courseId": "004289",
+    "termCode": "1242",
+    "sessionId": "23310",
+    "meetings": [
+      {
+        "buildingName": "Ingraham Hall",
+        "room": "B10",
+        "meetingDaysList": [
+          "TUESDAY",
+          "THURSDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 13,
+          "minute": 0
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 15
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S413",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S429",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Grainger Hall",
+        "room": "1100",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Computer Sciences",
+        "room": "1325",
+        "meetingDaysList": [
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 5
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 12,
+          "minute": 55
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 4,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1242-004289-22298",
+    "courseId": "004289",
+    "termCode": "1242",
+    "sessionId": "22298",
+    "meetings": [
+      {
+        "buildingName": "Ingraham Hall",
+        "room": "B10",
+        "meetingDaysList": [
+          "TUESDAY",
+          "THURSDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 13,
+          "minute": 0
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 15
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S413",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S429",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Grainger Hall",
+        "room": "1100",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Computer Sciences",
+        "room": "1257",
+        "meetingDaysList": [
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 11,
+          "minute": 0
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 11,
+          "minute": 50
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 4,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1242-004289-22297",
+    "courseId": "004289",
+    "termCode": "1242",
+    "sessionId": "22297",
+    "meetings": [
+      {
+        "buildingName": "Ingraham Hall",
+        "room": "B10",
+        "meetingDaysList": [
+          "TUESDAY",
+          "THURSDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 13,
+          "minute": 0
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 15
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S413",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S429",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Grainger Hall",
+        "room": "1100",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Computer Sciences",
+        "room": "1263",
+        "meetingDaysList": [
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 9,
+          "minute": 55
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 4,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1242-004289-24802",
+    "courseId": "004289",
+    "termCode": "1242",
+    "sessionId": "24802",
+    "meetings": [
+      {
+        "buildingName": "Ingraham Hall",
+        "room": "B10",
+        "meetingDaysList": [
+          "TUESDAY",
+          "THURSDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 13,
+          "minute": 0
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 15
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S413",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S429",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Grainger Hall",
+        "room": "1100",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Computer Sciences",
+        "room": "1257",
+        "meetingDaysList": [
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 8,
+          "minute": 50
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 9,
+          "minute": 40
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          },
+          {
+            "email": "MDIGES@WISC.EDU",
+            "name": {
+              "first": "Martin",
+              "last": "Diges"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 4,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1242-004289-26759",
+    "courseId": "004289",
+    "termCode": "1242",
+    "sessionId": "26759",
+    "meetings": [
+      {
+        "buildingName": "Bascom Hall",
+        "room": "272",
+        "meetingDaysList": [
+          "TUESDAY",
+          "THURSDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 9,
+          "minute": 30
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S413",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S429",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Grainger Hall",
+        "room": "1100",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Engineering Hall",
+        "room": "3345",
+        "meetingDaysList": [
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 14,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 15,
+          "minute": 15
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 4,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1242-004289-22296",
+    "courseId": "004289",
+    "termCode": "1242",
+    "sessionId": "22296",
+    "meetings": [
+      {
+        "buildingName": "Bascom Hall",
+        "room": "272",
+        "meetingDaysList": [
+          "TUESDAY",
+          "THURSDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 9,
+          "minute": 30
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S413",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S429",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Grainger Hall",
+        "room": "1100",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Computer Sciences",
+        "room": "1221",
+        "meetingDaysList": [
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 13,
+          "minute": 20
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 10
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 4,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1242-004289-22295",
+    "courseId": "004289",
+    "termCode": "1242",
+    "sessionId": "22295",
+    "meetings": [
+      {
+        "buildingName": "Bascom Hall",
+        "room": "272",
+        "meetingDaysList": [
+          "TUESDAY",
+          "THURSDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 9,
+          "minute": 30
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S413",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S429",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Grainger Hall",
+        "room": "1100",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Computer Sciences",
+        "room": "1221",
+        "meetingDaysList": [
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 5
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 12,
+          "minute": 55
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 4,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1242-004289-22294",
+    "courseId": "004289",
+    "termCode": "1242",
+    "sessionId": "22294",
+    "meetings": [
+      {
+        "buildingName": "Bascom Hall",
+        "room": "272",
+        "meetingDaysList": [
+          "TUESDAY",
+          "THURSDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 9,
+          "minute": 30
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S413",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S429",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Grainger Hall",
+        "room": "1100",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Computer Sciences",
+        "room": "1221",
+        "meetingDaysList": [
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 11,
+          "minute": 0
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 11,
+          "minute": 50
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 4,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1242-004289-22293",
+    "courseId": "004289",
+    "termCode": "1242",
+    "sessionId": "22293",
+    "meetings": [
+      {
+        "buildingName": "Bascom Hall",
+        "room": "272",
+        "meetingDaysList": [
+          "TUESDAY",
+          "THURSDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 9,
+          "minute": 30
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S413",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S429",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Grainger Hall",
+        "room": "1100",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Engineering Hall",
+        "room": "3024",
+        "meetingDaysList": [
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 9,
+          "minute": 55
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 4,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  },
+  {
+    "id": "1242-004289-22292",
+    "courseId": "004289",
+    "termCode": "1242",
+    "sessionId": "22292",
+    "meetings": [
+      {
+        "buildingName": "Bascom Hall",
+        "room": "272",
+        "meetingDaysList": [
+          "TUESDAY",
+          "THURSDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 9,
+          "minute": 30
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 10,
+          "minute": 45
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S413",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Chemistry Building",
+        "room": "S429",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Grainger Hall",
+        "room": "1100",
+        "meetingDaysList": [],
+        "meetingType": "EXAM",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 12,
+          "minute": 25
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 14,
+          "minute": 25
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      },
+      {
+        "buildingName": "Computer Sciences",
+        "room": "1325",
+        "meetingDaysList": [
+          "WEDNESDAY"
+        ],
+        "meetingType": "CLASS",
+        "startTime": {
+          "month": 9,
+          "day": 6,
+          "hour": 8,
+          "minute": 50
+        },
+        "endTime": {
+          "month": 12,
+          "day": 13,
+          "hour": 9,
+          "minute": 40
+        },
+        "instructors": [
+          {
+            "email": "MRENAULT@WISC.EDU",
+            "name": {
+              "first": "Marc",
+              "last": "RENAULT"
+            }
+          }
+        ]
+      }
+    ],
+    "credit": 4,
+    "isAsyncronous": false,
+    "onlineOnly": false
+  }
+]

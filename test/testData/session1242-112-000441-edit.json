@@ -1,0 +1,32 @@
+[
+  {
+    "id": "1242-000441-32924",
+    "courseId": "000441",
+    "termCode": "1242",
+    "sessionId": "32924",
+    "meetings": [],
+    "credit": 1,
+    "isAsyncronous": true,
+    "onlineOnly": false
+  },
+  {
+    "id": "1242-000441-32807",
+    "courseId": "000441",
+    "termCode": "1242",
+    "sessionId": "32807",
+    "meetings": [],
+    "credit": 1,
+    "isAsyncronous": true,
+    "onlineOnly": false
+  },
+  {
+    "id": "1242-000441-28002",
+    "courseId": "000441",
+    "termCode": "1242",
+    "sessionId": "28002",
+    "meetings": [],
+    "credit": 1,
+    "isAsyncronous": true,
+    "onlineOnly": false
+  }
+]
