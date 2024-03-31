@@ -481,4 +481,51 @@ scheduleRouter.get('/:base64Email/list', async (req, res, next) => {
   }
 });
 
+// GET: /schedule/{scheduleId}
+scheduleRouter.get('/:scheduleId', async (req, res, next) => {
+  const dbClient: Cosmos.Database = req.app.locals.dbClient;
+  try {
+    // Check Origin header or application key
+    if (
+      req.header('Origin') !== req.app.get('webpageOrigin') &&
+      !req.app.get('applicationKey').includes(req.header('X-APPLICATION-KEY'))
+    ) {
+      throw new ForbiddenError();
+    }
+
+    // Header check - access token
+    const accessToken = req.header('X-ACCESS-TOKEN');
+    if (accessToken === undefined) {
+      throw new UnauthenticatedError();
+    }
+
+    const tokenContents = verifyAccessToken(
+      accessToken,
+      req.app.get('jwtAccessKey')
+    );
+
+    // Check if the user has access to the schedule
+    const email = tokenContents.id;
+    const scheduleId = req.params.scheduleId;
+    const schedule = await Schedule.read(dbClient, scheduleId);
+    if (schedule.email !== email) {
+      const friendList = await getFriendList(schedule.email, req);
+      if (!friendList.includes(email)) {
+        throw new ForbiddenError();
+      }
+    }
+    const scheduleDetail = {
+      email: schedule.email,
+      termCode: schedule.termCode,
+      sessionList: schedule.sessionList,
+      eventList: schedule.eventList,
+    };
+
+    // Response
+    res.status(200).send(scheduleDetail);
+  } catch (e) {
+    next(e);
+  }
+});
+
 export default scheduleRouter;
