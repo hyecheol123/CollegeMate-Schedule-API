@@ -174,7 +174,7 @@ export default class Schedule {
    * @param dbClient Cosmos DB client
    * @param email base64urlsafe encoded email address
    */
-  static async ScheduledList(
+  static async retrieveScheduleIdList(
     dbClient: Cosmos.Database,
     email: string
   ): Promise<string[]> {

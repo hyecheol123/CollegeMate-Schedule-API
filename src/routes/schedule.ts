@@ -461,7 +461,7 @@ scheduleRouter.get('/:base64Email/list', async (req, res, next) => {
     if (!validateEmail(requestUserEmail)) {
       throw new NotFoundError();
     }
-    const scheduledList = await Schedule.ScheduledList(
+    const scheduleIdList = await Schedule.retrieveScheduleIdList(
       dbClient,
       requestUserEmail
     );
@@ -475,7 +475,7 @@ scheduleRouter.get('/:base64Email/list', async (req, res, next) => {
     }
 
     // Response
-    res.status(200).send({scheduleIds: scheduledList});
+    res.status(200).send({scheduleIds: scheduleIdList});
   } catch (e) {
     next(e);
   }
