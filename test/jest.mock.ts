@@ -1,9 +1,9 @@
 /**
- * File to execute when jest test environmet is started.
  * Mocking courseListCrawler function to return mock data.
  * Mocking sessionListCrawler function to return mock data.
  *
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
+ * @author Jeonghyeon Park <fishbox0923@gmail.com>
  */
 import * as session1244001065 from './testData/session1244-168-001065.json';
 import * as session1234001065 from './testData/session1234-168-001065.json';
@@ -98,4 +98,19 @@ jest.mock('../src/functions/crawlers/sessionListCrawler', () => ({
       }
     }
   ),
+}));
+
+// Get Friend List Mock Data
+jest.mock('../src/datatypes/Friend/getFriendList', () => ({
+  __esModule: true,
+  default: jest.fn(async (email: string, req: Request) => {
+    switch (email) {
+      case 'drag@wisc.edu':
+        return ['steve@wisc.edu', 'jerry@wisc.edu', 'dickdick@wisc.edu'];
+      case 'steve@wisc.edu':
+        return ['jeonghyeon@wisc.edu', 'drag@wisc.edu', 'jerry@wisc.edu'];
+      default:
+        return [];
+    }
+  }),
 }));
