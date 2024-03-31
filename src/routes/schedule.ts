@@ -461,6 +461,11 @@ scheduleRouter.get('/:base64Email/list', async (req, res, next) => {
     if (!validateEmail(requestUserEmail)) {
       throw new NotFoundError();
     }
+    const scheduledList = await Schedule.ScheduledList(
+      dbClient,
+      requestUserEmail
+    );
+
     const email = tokenContents.id;
     if (requestUserEmail !== email) {
       const friendList = await getFriendList(requestUserEmail, req);
@@ -469,16 +474,8 @@ scheduleRouter.get('/:base64Email/list', async (req, res, next) => {
       }
     }
 
-    // DB Operation
-    if (!(await Schedule.confirmExists(dbClient, requestUserEmail))) {
-      throw new NotFoundError();
-    }
-    const scheduleList = await Schedule.retrieveScheduleList(
-      dbClient,
-      requestUserEmail
-    );
     // Response
-    res.status(200).send(scheduleList);
+    res.status(200).send({scheduleIds: scheduledList});
   } catch (e) {
     next(e);
   }
