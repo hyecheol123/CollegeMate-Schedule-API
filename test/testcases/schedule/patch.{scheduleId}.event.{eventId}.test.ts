@@ -1,5 +1,5 @@
 /**
- * Jest Unit Test for DELETE /schedule/:scheduleId/event/:eventId
+ * Jest Unit Test for PATCH /schedule/:scheduleId/event/:eventId
  *
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
  */
@@ -13,7 +13,7 @@ import AuthToken from '../../../src/datatypes/Token/AuthToken';
 import * as jwt from 'jsonwebtoken';
 import TestConfig from '../../TestConfig';
 
-describe('DELETE /schedule/:scheduleId/event/:eventId - Remove Event/Session', () => {
+describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () => {
   let testEnv: TestEnv;
   const SCHEDULE = 'schedule';
   const accessTokenMap = {
@@ -27,6 +27,12 @@ describe('DELETE /schedule/:scheduleId/event/:eventId - Remove Event/Session', (
     steve: '',
     drag: '',
     invalid: 'invalid',
+  };
+  const eventMap = {
+    event1: {},
+    overlap: {},
+    session1: {},
+    invalid: {},
   };
 
   beforeEach(async () => {
@@ -127,6 +133,52 @@ describe('DELETE /schedule/:scheduleId/event/:eventId - Remove Event/Session', (
 
     // Invalid ScheduleId
     scheduleIdMap.invalid = 'invalid';
+
+    // event1
+    eventMap.event1 = {
+      id: 'event1',
+      title: 'event1',
+      location: 'location1',
+      meetingDaysList: ['MONDAY', 'WEDNESDAY', 'FRIDAY'],
+      startTime: {
+        month: 1,
+        day: 1,
+        hour: 10,
+        minute: 0,
+      },
+      endTime: {
+        month: 5,
+        day: 31,
+        hour: 11,
+        minute: 0,
+      },
+      memo: 'memo1',
+      colorCode: 1,
+    };
+
+    // overlap
+    eventMap.overlap = {
+      id: 'overlap',
+      title: 'overlap',
+      location: 'location1',
+      meetingDaysList: ['MONDAY', 'WEDNESDAY', 'FRIDAY'],
+      startTime: {
+        month: 1,
+        day: 1,
+        hour: 0,
+        minute: 0,
+      },
+      endTime: {
+        month: 12,
+        day: 31,
+        hour: 23,
+        minute: 59,
+      },
+      memo: 'memo1',
+      colorCode: 1,
+    };
+
+    //TODO - Invalid and other possible cases
   });
 
   afterEach(async () => {
@@ -138,7 +190,7 @@ describe('DELETE /schedule/:scheduleId/event/:eventId - Remove Event/Session', (
 
     // reqeust without a token
     const response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(401);
     expect(response.body.error).toBe('Unauthenticated');
@@ -152,7 +204,7 @@ describe('DELETE /schedule/:scheduleId/event/:eventId - Remove Event/Session', (
 
     // request with an expired access token from web
     const response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.expired})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(403);
@@ -164,7 +216,7 @@ describe('DELETE /schedule/:scheduleId/event/:eventId - Remove Event/Session', (
 
     // reqeust with admin token
     let response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.admin})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(403);
@@ -192,14 +244,14 @@ describe('DELETE /schedule/:scheduleId/event/:eventId - Remove Event/Session', (
 
     // request without any origin or app
     let response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve});
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
 
     // request without from wrong origin and not app
     response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({Origin: 'https://wrong.origin.com'});
     expect(response.status).toBe(403);
@@ -207,7 +259,7 @@ describe('DELETE /schedule/:scheduleId/event/:eventId - Remove Event/Session', (
 
     // request without from wrong app
     response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({'X-APPLICATION-KEY': 'wrongAppKey'});
     expect(response.status).toBe(403);
@@ -220,7 +272,7 @@ describe('DELETE /schedule/:scheduleId/event/:eventId - Remove Event/Session', (
 
     // request with a invalid scheduleId
     let response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.invalid}/event/1242-000001`)
+      .patch(`/schedule/${scheduleIdMap.invalid}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(404);
@@ -228,7 +280,7 @@ describe('DELETE /schedule/:scheduleId/event/:eventId - Remove Event/Session', (
 
     // request with another invalid scheduleId
     response = await request(testEnv.expressServer.app)
-      .delete('/schedule/1111/event/1242-000001')
+      .patch('/schedule/1111/event/1242-000001')
       .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(404);
@@ -241,14 +293,14 @@ describe('DELETE /schedule/:scheduleId/event/:eventId - Remove Event/Session', (
 
     // Steve tries to delete Drag's schedule
     let response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.drag}/event/1244-000001`)
+      .patch(`/schedule/${scheduleIdMap.drag}/event/1244-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(403);
 
     // Drag tries to delete Steve's schedule
     response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(403);
@@ -260,172 +312,16 @@ describe('DELETE /schedule/:scheduleId/event/:eventId - Remove Event/Session', (
 
     // session does not belong to the schedule
     let response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.drag}/event/1242-000001`)
+      .patch(`/schedule/${scheduleIdMap.drag}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(404);
 
     // session does not belong to the schedule
     response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.steve}/event/1244-000001`)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1244-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({Origin: 'https://collegemate.app'});
     expect(response.status).toBe(404);
-  });
-
-  test('Success from web - Delete Session', async () => {
-    testEnv.expressServer = testEnv.expressServer as ExpressServer;
-    testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
-
-    // valid request from web - Steve
-    let response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.steve}/event/1242-000003`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://collegemate.app'});
-    expect(response.status).toBe(200);
-
-    //check if the schedule is deleted
-    let dbOps = await testEnv.dbClient
-      .container(SCHEDULE)
-      .item(scheduleIdMap.steve)
-      .read();
-    expect(dbOps.statusCode).toBe(200);
-    expect(dbOps.resource.eventList.length).toBe(2);
-    expect(dbOps.resource.sessionList.length).toBe(1);
-    expect(dbOps.resource.sessionList[0].id).toBe('1242-000004');
-
-    // valid request from web - Drag
-    response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.drag}/event/1244-000004`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
-      .set({Origin: 'https://collegemate.app'});
-    expect(response.status).toBe(200);
-
-    //check if the schedule is deleted
-    dbOps = await testEnv.dbClient
-      .container(SCHEDULE)
-      .item(scheduleIdMap.drag)
-      .read();
-    expect(dbOps.statusCode).toBe(200);
-    expect(dbOps.resource.eventList.length).toBe(2);
-    expect(dbOps.resource.sessionList.length).toBe(1);
-    expect(dbOps.resource.sessionList[0].id).toBe('1244-000003');
-  });
-
-  test('Success from web - Delete Event', async () => {
-    testEnv.expressServer = testEnv.expressServer as ExpressServer;
-    testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
-
-    // valid request from web - Steve
-    let response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://collegemate.app'});
-    expect(response.status).toBe(200);
-
-    //check if the schedule is deleted
-    let dbOps = await testEnv.dbClient
-      .container(SCHEDULE)
-      .item(scheduleIdMap.steve)
-      .read();
-    expect(dbOps.statusCode).toBe(200);
-    expect(dbOps.resource.eventList.length).toBe(1);
-    expect(dbOps.resource.eventList[0].id).toBe('1242-000002');
-    expect(dbOps.resource.sessionList.length).toBe(2);
-
-    // valid request from web - Drag
-    response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.drag}/event/1244-000002`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
-      .set({Origin: 'https://collegemate.app'});
-    expect(response.status).toBe(200);
-
-    //check if the schedule is deleted
-    dbOps = await testEnv.dbClient
-      .container(SCHEDULE)
-      .item(scheduleIdMap.drag)
-      .read();
-    expect(dbOps.statusCode).toBe(200);
-    expect(dbOps.resource.eventList.length).toBe(1);
-    expect(dbOps.resource.eventList[0].id).toBe('1244-000001');
-    expect(dbOps.resource.sessionList.length).toBe(2);
-  });
-
-  test('Success from app - Delete Session', async () => {
-    testEnv.expressServer = testEnv.expressServer as ExpressServer;
-    testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
-
-    // valid request from web - Steve
-    let response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.steve}/event/1242-000003`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({'X-APPLICATION-KEY': '<Android-App-v1>'});
-    expect(response.status).toBe(200);
-
-    //check if the schedule is deleted
-    let dbOps = await testEnv.dbClient
-      .container(SCHEDULE)
-      .item(scheduleIdMap.steve)
-      .read();
-    expect(dbOps.statusCode).toBe(200);
-    expect(dbOps.resource.eventList.length).toBe(2);
-    expect(dbOps.resource.sessionList.length).toBe(1);
-    expect(dbOps.resource.sessionList[0].id).toBe('1242-000004');
-
-    // valid request from web - Drag
-    response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.drag}/event/1244-000004`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
-      .set({'X-APPLICATION-KEY': '<Android-App-v1>'});
-    expect(response.status).toBe(200);
-
-    //check if the schedule is deleted
-    dbOps = await testEnv.dbClient
-      .container(SCHEDULE)
-      .item(scheduleIdMap.drag)
-      .read();
-    expect(dbOps.statusCode).toBe(200);
-    expect(dbOps.resource.eventList.length).toBe(2);
-    expect(dbOps.resource.sessionList.length).toBe(1);
-    expect(dbOps.resource.sessionList[0].id).toBe('1244-000003');
-  });
-
-  test('Success from app - Delete Event', async () => {
-    testEnv.expressServer = testEnv.expressServer as ExpressServer;
-    testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
-
-    // valid request from web - Steve
-    let response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({'X-APPLICATION-KEY': '<Android-App-v1>'});
-    expect(response.status).toBe(200);
-
-    //check if the schedule is deleted
-    let dbOps = await testEnv.dbClient
-      .container(SCHEDULE)
-      .item(scheduleIdMap.steve)
-      .read();
-    expect(dbOps.statusCode).toBe(200);
-    expect(dbOps.resource.eventList.length).toBe(1);
-    expect(dbOps.resource.eventList[0].id).toBe('1242-000002');
-    expect(dbOps.resource.sessionList.length).toBe(2);
-
-    // valid request from web - Drag
-    response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.drag}/event/1244-000002`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
-      .set({'X-APPLICATION-KEY': '<Android-App-v1>'});
-    expect(response.status).toBe(200);
-
-    //check if the schedule is deleted
-    dbOps = await testEnv.dbClient
-      .container(SCHEDULE)
-      .item(scheduleIdMap.drag)
-      .read();
-    expect(dbOps.statusCode).toBe(200);
-    expect(dbOps.resource.eventList.length).toBe(1);
-    expect(dbOps.resource.eventList[0].id).toBe('1244-000001');
-    expect(dbOps.resource.sessionList.length).toBe(2);
   });
 });

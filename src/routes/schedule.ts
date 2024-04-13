@@ -264,7 +264,8 @@ scheduleRouter.patch('/:scheduleId/event/:eventId', async (req, res, next) => {
       );
 
     // check if there is any time conflict
-    if (timeChanged) timeConflictChecker(allEvents);
+    if (timeChanged)
+      if (timeConflictChecker(allEvents)) throw new ConflictError();
 
     // DB Operation: Update the schedule
     await Schedule.update(dbClient, scheduleId, scheduleUpdateObj);

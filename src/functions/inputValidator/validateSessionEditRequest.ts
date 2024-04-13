@@ -1,5 +1,5 @@
 /**
- * Validate request body for POST /schedule/:scheduleId/event/:eventId
+ * Validate request body for PATCH /schedule/:scheduleId/event/:eventId
  *
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
  */
@@ -25,14 +25,52 @@ export const validateSessionEditRequest = new Ajv().compile({
         eventType: {type: 'string', enum: ['event']},
         title: {type: 'string'},
         location: {type: 'string'},
-        meetingDaysList: {type: 'array', items: {type: 'string'}},
+        meetingDaysList: {
+          type: 'array',
+          items: {
+            enum: [
+              'MONDAY',
+              'TUESDAY',
+              'WEDNESDAY',
+              'THURSDAY',
+              'FRIDAY',
+              'SATURDAY',
+              'SUNDAY',
+            ],
+          },
+        },
         startTime: {
           type: 'object',
           properties: {
-            month: {type: 'number'},
-            day: {type: 'number'},
-            hour: {type: 'number'},
-            minute: {type: 'number'},
+            month: {type: 'number', minimum: 1, maximum: 12},
+            day: {
+              type: 'number',
+              if: {
+                properties: {month: {enum: [2]}},
+              },
+              then: {
+                if: {
+                  properties: {year: {type: 'number', multipleOf: 4}},
+                },
+                then: {maximum: 29},
+                else: {
+                  if: {
+                    properties: {year: {type: 'number', multipleOf: 400}},
+                  },
+                  then: {maximum: 28},
+                  else: {maximum: 29},
+                },
+              },
+              else: {
+                if: {
+                  properties: {month: {enum: [1, 3, 5, 7, 8, 10, 12]}},
+                },
+                then: {maximum: 31},
+                else: {maximum: 30},
+              },
+            },
+            hour: {type: 'number', minimum: 0, maximum: 23},
+            minute: {type: 'number', minimum: 0, maximum: 59},
           },
           required: ['month', 'day', 'hour', 'minute'],
           additionalProperties: false,
@@ -40,10 +78,10 @@ export const validateSessionEditRequest = new Ajv().compile({
         endTime: {
           type: 'object',
           properties: {
-            month: {type: 'number'},
+            month: {type: 'number', minimum: 1, maximum: 12},
             day: {type: 'number'},
-            hour: {type: 'number'},
-            minute: {type: 'number'},
+            hour: {type: 'number', minimum: 0, maximum: 23},
+            minute: {type: 'number', minimum: 0, maximum: 59},
           },
           required: ['month', 'day', 'hour', 'minute'],
           additionalProperties: false,
