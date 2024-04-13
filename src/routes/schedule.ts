@@ -30,6 +30,9 @@ import IScheduleUpdateObj from '../datatypes/schedule/IScheduleUpdateObj';
 import NotFoundError from '../exceptions/NotFoundError';
 import SessionEditRequestObj from '../datatypes/session/SessionEditRequestObj';
 import {validateSessionEditRequest} from '../functions/inputValidator/validateSessionEditRequest';
+import timeConflictChecker, {
+  TimeRange,
+} from '../functions/utils/timeConflictChecker';
 
 // Path: /schedule
 const scheduleRouter = express.Router();
@@ -164,6 +167,8 @@ scheduleRouter.patch('/:scheduleId/event/:eventId', async (req, res, next) => {
     if (!validateSessionEditRequest(req.body as SessionEditRequestObj)) {
       throw new BadRequestError();
     }
+    // Check if the time has been changed
+    const timeChanged = req.body.startTime || req.body.endTime;
 
     // Check if the user has access to the schedule
     const email = tokenContents.id;
@@ -225,33 +230,41 @@ scheduleRouter.patch('/:scheduleId/event/:eventId', async (req, res, next) => {
       throw new NotFoundError();
     }
 
-    // Check for conflicting event in the schedule
-    if (
-      scheduleUpdateObj.eventList &&
-      scheduleUpdateObj.eventList.length !== 0 &&
-      scheduleUpdateObj.eventList.filter(
-        //TODO
-      ).length !== 0
-    ) {
-      throw new ConflictError();
-    }
-
-    // Check for conflicting session in the schedule
-    if (
-      scheduleUpdateObj.sessionList &&
-      scheduleUpdateObj.sessionList.length !== 0
-    ) {
-      const sessionList = await Session.getUserSessions(
-        dbClient,
-        schedule.termCode,
-        schedule.sessionList.map(session => session.id)
+    // Check for conflicting events or sessions in the schedule
+    const sessionList = await Session.getUserSessions(
+      dbClient,
+      schedule.termCode,
+      schedule.sessionList.map(session => session.id)
+    );
+    const eventList = schedule.eventList;
+    // combine all events and sessions time range
+    const allEvents: TimeRange[] = sessionList
+      .map(session => {
+        return session.meetings
+          .filter(meeting => {
+            return meeting.meetingType !== 'EXAM';
+          })
+          .map(meeting => {
+            return {
+              meetingDaysList: meeting.meetingDaysList,
+              startTime: meeting.startTime,
+              endTime: meeting.endTime,
+            };
+          });
+      })
+      .flat()
+      .concat(
+        eventList.map(event => {
+          return {
+            meetingDaysList: event.meetingDaysList,
+            startTime: event.startTime,
+            endTime: event.endTime,
+          };
+        })
       );
-      if (scheduleUpdateObj.sessionList.filter(
-        //TODO
-      ).length !== 0) {
-        throw new ConflictError();
-      }
-    }
+
+    // check if there is any time conflict
+    if (timeChanged) timeConflictChecker(allEvents);
 
     // DB Operation: Update the schedule
     await Schedule.update(dbClient, scheduleId, scheduleUpdateObj);
