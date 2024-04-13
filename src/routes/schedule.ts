@@ -30,6 +30,11 @@ import IScheduleUpdateObj from '../datatypes/schedule/IScheduleUpdateObj';
 import NotFoundError from '../exceptions/NotFoundError';
 import {validateEmail} from '../functions/inputValidator/validateEmail';
 import getFriendList from '../datatypes/Friend/getFriendList';
+import {validateSessionAddRequest} from '../functions/inputValidator/validateSessionAddRequest';
+import SessionAddRequestObj from '../datatypes/session/SessionAddRequestObj';
+import timeConflictChecker, {
+  TimeRange,
+} from '../functions/utils/timeConflictChecker';
 
 // Path: /schedule
 const scheduleRouter = express.Router();
@@ -151,6 +156,124 @@ scheduleRouter.get('/available-semesters', async (req, res, next) => {
 
     const termList = await CourseListMetaData.getTermList(dbClient);
     res.json(termList);
+  } catch (e) {
+    next(e);
+  }
+});
+
+// POST: /schedule/:scheduleId/event/
+scheduleRouter.post('/:scheduleId/event/', async (req, res, next) => {
+  const dbClient: Cosmos.Database = req.app.locals.dbClient;
+
+  try {
+    // Check Origin header or application key
+    if (
+      req.header('Origin') !== req.app.get('webpageOrigin') &&
+      !req.app.get('applicationKey').includes(req.header('X-APPLICATION-KEY'))
+    ) {
+      throw new ForbiddenError();
+    }
+
+    // Header check - access token
+    const accessToken = req.header('X-ACCESS-TOKEN');
+    if (accessToken === undefined) {
+      throw new UnauthenticatedError();
+    }
+    const tokenContents = verifyAccessToken(
+      accessToken,
+      req.app.get('jwtAccessKey')
+    );
+
+    // Validate request body
+    if (!validateSessionAddRequest(req.body as SessionAddRequestObj)) {
+      throw new BadRequestError();
+    }
+
+    // Check if the user has access to the schedule
+    const email = tokenContents.id;
+    const scheduleId = req.params.scheduleId;
+    const schedule = await Schedule.read(dbClient, scheduleId);
+    if (schedule.email !== email) {
+      throw new ForbiddenError();
+    }
+
+    // Check for conflicting events or sessions in the schedule
+    const sessionList = await Session.getUserSessions(
+      dbClient,
+      schedule.termCode,
+      schedule.sessionList.map(session => session.id)
+    );
+    const eventList = schedule.eventList;
+    // combine all events and sessions time range
+    const allEvents: TimeRange[] = sessionList
+      .map(session => {
+        return session.meetings
+          .filter(meeting => {
+            return meeting.meetingType !== 'EXAM';
+          })
+          .map(meeting => {
+            return {
+              meetingDaysList: meeting.meetingDaysList,
+              startTime: meeting.startTime,
+              endTime: meeting.endTime,
+            };
+          });
+      })
+      .flat()
+      .concat(
+        eventList.map(event => {
+          return {
+            meetingDaysList: event.meetingDaysList,
+            startTime: event.startTime,
+            endTime: event.endTime,
+          };
+        })
+      );
+
+    // check if there is any time conflict
+    if (timeConflictChecker(allEvents)) throw new ConflictError();
+
+    let scheduleUpdateObj: IScheduleUpdateObj = {};
+    if (req.body.eventType === 'session') {
+      scheduleUpdateObj = {
+        sessionList: [
+          ...schedule.sessionList,
+          {
+            id: req.body.sessionId,
+            colorCode: req.body.colorCode,
+          },
+        ],
+      };
+    } else {
+      const requestCreatedDate = new Date();
+      scheduleUpdateObj = {
+        eventList: [
+          ...schedule.eventList,
+          {
+            id: ServerConfig.hash(
+              `${req.body.title}/${
+                req.body.location
+              }/${requestCreatedDate.toISOString()}`,
+              req.body.title,
+              req.body.colorCode
+            ),
+            title: req.body.title,
+            location: req.body.location,
+            meetingDaysList: req.body.meetingDaysList,
+            startTime: req.body.startTime,
+            endTime: req.body.endTime,
+            memo: req.body.memo,
+            colorCode: req.body.colorCode,
+          },
+        ],
+      };
+    }
+
+    // DB Operation: Update the schedule
+    await Schedule.update(dbClient, scheduleId, scheduleUpdateObj);
+
+    // Response
+    res.status(200).send();
   } catch (e) {
     next(e);
   }
