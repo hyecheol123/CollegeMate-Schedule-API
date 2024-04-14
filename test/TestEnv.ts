@@ -331,7 +331,7 @@ export default class TestEnv {
       id: '1242-000001',
       title: 'Birthday',
       location: 'Online',
-      meetingDaysList: ['Monday', 'Wednesday'],
+      meetingDaysList: ['MONDAY', 'WEDNESDAY'],
       startTime: {
         month: 4,
         day: 1,
@@ -351,7 +351,7 @@ export default class TestEnv {
       id: '1242-000002',
       title: 'Meeting',
       location: 'Online',
-      meetingDaysList: ['Tuesday', 'Thursday'],
+      meetingDaysList: ['TUESDAY', 'THURSDAY'],
       startTime: {
         month: 4,
         day: 1,
@@ -407,6 +407,30 @@ export default class TestEnv {
         termCode,
         [testSession3, testSession4],
         [testEvent3, testEvent4]
+      )
+    );
+    email = 'leap@wisc.edu';
+    termCode = '1234';
+    scheduleId = TestConfig.hash(
+      `${email}/${termCode}/${testDate}`,
+      email,
+      termCode
+    );
+    const testEvent5 = {...testEvent1};
+    testEvent5.id = '1234-000001';
+    const testEvent6 = {...testEvent2};
+    testEvent6.id = '1234-000002';
+    const testSession5 = {...testSession1};
+    testSession5.id = '1234-000003';
+    const testSession6 = {...testSession2};
+    testSession6.id = '1234-000004';
+    scheduleSample.push(
+      new Schedule(
+        scheduleId,
+        email,
+        termCode,
+        [testSession5, testSession6],
+        [testEvent5, testEvent6]
       )
     );
     // Create a new schedule entries on test DB

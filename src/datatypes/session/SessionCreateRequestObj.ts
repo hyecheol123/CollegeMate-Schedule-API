@@ -3,23 +3,23 @@
  */
 
 export default interface SessionCreateRequestObj {
-    eventType: string;
-    sessionId: string;
-    title: string;
-    location: string;
-    meetingDaysList: string[];
-    startTime: {
-      month: number;
-      day: number;
-      hour: number;
-      minute: number;
-    };
-    endTime: {
-      month: number;
-      day: number;
-      hour: number;
-      minute: number;
-    };
-    memo: string;
-    colorCode: number;
+  eventType: string;
+  sessionId: string;
+  title: string;
+  location: string;
+  meetingDaysList: string[];
+  startTime: {
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+  };
+  endTime: {
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+  };
+  memo: string;
+  colorCode: number;
 }

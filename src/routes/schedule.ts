@@ -185,7 +185,8 @@ scheduleRouter.post('/:scheduleId/event', async (req, res, next) => {
     );
 
     // Validate request body
-    if (!validateSessionAddRequest(req.body as SessionAddRequestObj)) {
+    const sessionAddInfo = req.body as SessionAddRequestObj;
+    if (!validateSessionAddRequest(sessionAddInfo)) {
       throw new BadRequestError();
     }
 
@@ -196,14 +197,61 @@ scheduleRouter.post('/:scheduleId/event', async (req, res, next) => {
     if (schedule.email !== email) {
       throw new ForbiddenError();
     }
-    
-    // if session id exists in req body, check if the session exists
+
+    const year = parseInt(schedule.termCode.slice(1, 3));
+    // Check for day depending on the month
     if (
-      req.body.eventType === 'session' &&
-      req.body.sessionId &&
-      !(await Session.checkExists(dbClient, req.body.sessionId))
+      (sessionAddInfo.startTime &&
+        ((sessionAddInfo.startTime.month === 2 &&
+          (sessionAddInfo.startTime.day > 29 ||
+            (sessionAddInfo.startTime.day === 29 && year % 4 !== 0))) ||
+          ([1, 3, 5, 7, 8, 10, 12].includes(sessionAddInfo.startTime.month) &&
+            sessionAddInfo.startTime.day > 31) ||
+          ([4, 6, 9, 11].includes(sessionAddInfo.startTime.month) &&
+            sessionAddInfo.startTime.day > 30))) ||
+      (sessionAddInfo.endTime &&
+        ((sessionAddInfo.endTime &&
+          sessionAddInfo.endTime.month === 2 &&
+          sessionAddInfo.endTime.day > 29) ||
+          ([1, 3, 5, 7, 8, 10, 12].includes(sessionAddInfo.endTime.month) &&
+            sessionAddInfo.endTime.day > 31) ||
+          ([4, 6, 9, 11].includes(sessionAddInfo.endTime.month) &&
+            sessionAddInfo.endTime.day > 30)))
     ) {
-      throw new NotFoundError();
+      throw new BadRequestError();
+    }
+
+    // Check if startTime is after endTime
+    if (
+      sessionAddInfo.startTime &&
+      sessionAddInfo.endTime &&
+      (sessionAddInfo.startTime.month > sessionAddInfo.endTime.month ||
+        (sessionAddInfo.startTime.month === sessionAddInfo.endTime.month &&
+          (sessionAddInfo.startTime.day > sessionAddInfo.endTime.day ||
+            (sessionAddInfo.startTime.day === sessionAddInfo.endTime.day &&
+              (sessionAddInfo.startTime.hour > sessionAddInfo.endTime.hour ||
+                (sessionAddInfo.startTime.hour ===
+                  sessionAddInfo.endTime.hour &&
+                  sessionAddInfo.startTime.minute >=
+                    sessionAddInfo.endTime.minute))))))
+    ) {
+      throw new BadRequestError();
+    }
+
+    // if session id exists in req body, check if the session exists
+    if (sessionAddInfo.sessionId) {
+      // if sessionId exists in req body, check if session already exists in the schedule
+      if (
+        schedule.sessionList.filter(
+          session => session.id === sessionAddInfo.sessionId
+        ).length !== 0
+      ) {
+        throw new ConflictError();
+      }
+      // if sessionId exists in req body, check if the session exists
+      if (!(await Session.checkExists(dbClient, sessionAddInfo.sessionId))) {
+        throw new NotFoundError();
+      }
     }
 
     // Check for conflicting events or sessions in the schedule
