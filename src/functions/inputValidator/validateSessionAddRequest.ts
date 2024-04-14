@@ -16,7 +16,7 @@ export const validateSessionAddRequest = new Ajv().compile({
         memo: {type: 'string'},
         colorCode: {type: 'number'},
       },
-      required: ['eventType', 'sessionId'],
+      required: ['eventType', 'sessionId', 'colorCode'],
       additionalProperties: false,
     },
     {

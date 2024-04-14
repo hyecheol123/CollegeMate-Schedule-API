@@ -162,7 +162,7 @@ scheduleRouter.get('/available-semesters', async (req, res, next) => {
 });
 
 // POST: /schedule/:scheduleId/event/
-scheduleRouter.post('/:scheduleId/event/', async (req, res, next) => {
+scheduleRouter.post('/:scheduleId/event', async (req, res, next) => {
   const dbClient: Cosmos.Database = req.app.locals.dbClient;
 
   try {
@@ -195,6 +195,15 @@ scheduleRouter.post('/:scheduleId/event/', async (req, res, next) => {
     const schedule = await Schedule.read(dbClient, scheduleId);
     if (schedule.email !== email) {
       throw new ForbiddenError();
+    }
+    
+    // if session id exists in req body, check if the session exists
+    if (
+      req.body.eventType === 'session' &&
+      req.body.sessionId &&
+      !(await Session.checkExists(dbClient, req.body.sessionId))
+    ) {
+      throw new NotFoundError();
     }
 
     // Check for conflicting events or sessions in the schedule
@@ -273,7 +282,7 @@ scheduleRouter.post('/:scheduleId/event/', async (req, res, next) => {
     await Schedule.update(dbClient, scheduleId, scheduleUpdateObj);
 
     // Response
-    res.status(200).send();
+    res.status(201).send();
   } catch (e) {
     next(e);
   }
