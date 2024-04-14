@@ -28,11 +28,20 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     drag: '',
     invalid: 'invalid',
   };
-  const eventMap = {
-    event1: {},
-    overlap: {},
-    session1: {},
-    invalid: {},
+  const nonConflictingEventEdit = {
+    eventType: 'event',
+    startTime: {
+      month: 4,
+      day: 1,
+      hour: 0,
+      minute: 0,
+    },
+    endTime: {
+      month: 4,
+      day: 1,
+      hour: 0,
+      minute: 0,
+    },
   };
 
   beforeEach(async () => {
@@ -133,52 +142,6 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
 
     // Invalid ScheduleId
     scheduleIdMap.invalid = 'invalid';
-
-    // event1
-    eventMap.event1 = {
-      id: 'event1',
-      title: 'event1',
-      location: 'location1',
-      meetingDaysList: ['MONDAY', 'WEDNESDAY', 'FRIDAY'],
-      startTime: {
-        month: 1,
-        day: 1,
-        hour: 10,
-        minute: 0,
-      },
-      endTime: {
-        month: 5,
-        day: 31,
-        hour: 11,
-        minute: 0,
-      },
-      memo: 'memo1',
-      colorCode: 1,
-    };
-
-    // overlap
-    eventMap.overlap = {
-      id: 'overlap',
-      title: 'overlap',
-      location: 'location1',
-      meetingDaysList: ['MONDAY', 'WEDNESDAY', 'FRIDAY'],
-      startTime: {
-        month: 1,
-        day: 1,
-        hour: 0,
-        minute: 0,
-      },
-      endTime: {
-        month: 12,
-        day: 31,
-        hour: 23,
-        minute: 59,
-      },
-      memo: 'memo1',
-      colorCode: 1,
-    };
-
-    //TODO - Invalid and other possible cases
   });
 
   afterEach(async () => {
@@ -191,7 +154,8 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     // reqeust without a token
     const response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
-      .set({Origin: 'https://collegemate.app'});
+      .set({Origin: 'https://collegemate.app'})
+      .send(nonConflictingEventEdit);
     expect(response.status).toBe(401);
     expect(response.body.error).toBe('Unauthenticated');
   });
@@ -206,7 +170,8 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     const response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.expired})
-      .set({Origin: 'https://collegemate.app'});
+      .set({Origin: 'https://collegemate.app'})
+      .send(nonConflictingEventEdit);
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
   });
@@ -218,7 +183,8 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     let response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.admin})
-      .set({Origin: 'https://collegemate.app'});
+      .set({Origin: 'https://collegemate.app'})
+      .send(nonConflictingEventEdit);
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
 
@@ -226,7 +192,8 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     response = await request(testEnv.expressServer.app)
       .delete(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.refresh})
-      .set({Origin: 'https://collegemate.app'});
+      .set({Origin: 'https://collegemate.app'})
+      .send(nonConflictingEventEdit);
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
 
@@ -234,7 +201,8 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     response = await request(testEnv.expressServer.app)
       .delete(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': 'wrong'})
-      .set({Origin: 'https://collegemate.app'});
+      .set({Origin: 'https://collegemate.app'})
+      .send(nonConflictingEventEdit);
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
   });
@@ -245,7 +213,8 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     // request without any origin or app
     let response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.steve});
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .send(nonConflictingEventEdit);
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
 
@@ -253,7 +222,8 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://wrong.origin.com'});
+      .set({Origin: 'https://wrong.origin.com'})
+      .send(nonConflictingEventEdit);
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
 
@@ -261,7 +231,8 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({'X-APPLICATION-KEY': 'wrongAppKey'});
+      .set({'X-APPLICATION-KEY': 'wrongAppKey'})
+      .send(nonConflictingEventEdit);
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
   });
@@ -274,7 +245,8 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     let response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.invalid}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://collegemate.app'});
+      .set({Origin: 'https://collegemate.app'})
+      .send(nonConflictingEventEdit);
     expect(response.status).toBe(404);
     expect(response.body.error).toBe('Not Found');
 
@@ -282,7 +254,8 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     response = await request(testEnv.expressServer.app)
       .patch('/schedule/1111/event/1242-000001')
       .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
-      .set({Origin: 'https://collegemate.app'});
+      .set({Origin: 'https://collegemate.app'})
+      .send(nonConflictingEventEdit);
     expect(response.status).toBe(404);
     expect(response.body.error).toBe('Not Found');
   });
@@ -291,37 +264,194 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
 
-    // Steve tries to delete Drag's schedule
+    // Steve tries to edit Drag's schedule
     let response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.drag}/event/1244-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://collegemate.app'});
+      .set({Origin: 'https://collegemate.app'})
+      .send(nonConflictingEventEdit);
     expect(response.status).toBe(403);
 
-    // Drag tries to delete Steve's schedule
+    // Drag tries to write to Steve's schedule
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
-      .set({Origin: 'https://collegemate.app'});
+      .set({Origin: 'https://collegemate.app'})
+      .send(nonConflictingEventEdit);
     expect(response.status).toBe(403);
   });
 
-  test('Fail - Session/Event is not found from the Schedule', async () => {
+  test('Fail - Overlapping Event/Session', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+
+    let eventEdit = {
+      eventType: 'event',
+      startTime: {
+        month: 4,
+        day: 1,
+        hour: 13,
+        minute: 30,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 14,
+        minute: 45,
+      },
+    };
+
+    // Session creation
+    let response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(409);
+
+    eventEdit = {
+      eventType: 'event',
+      startTime: {
+        month: 4,
+        day: 1,
+        hour: 12,
+        minute: 20,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 13,
+        minute: 31,
+      },
+    };
+
+    // Session creation
+    response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(409);
+    
+    eventEdit = {
+      eventType: 'event',
+      startTime: {
+        month: 4,
+        day: 1,
+        hour: 14,
+        minute: 44,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 15,
+        minute: 30,
+      },
+    };
+
+    // Session creation
+    response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(409);
+  });
+
+  test('Success - Edit Event', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
 
-    // session does not belong to the schedule
-    let response = await request(testEnv.expressServer.app)
-      .patch(`/schedule/${scheduleIdMap.drag}/event/1242-000001`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
-      .set({Origin: 'https://collegemate.app'});
-    expect(response.status).toBe(404);
+    let eventEdit = {
+      eventType: 'event',
+      startTime: {
+        month: 4,
+        day: 1,
+        hour: 12,
+        minute: 30,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 13,
+        minute: 29,
+      },
+    };
 
-    // session does not belong to the schedule
-    response = await request(testEnv.expressServer.app)
-      .patch(`/schedule/${scheduleIdMap.steve}/event/1244-000001`)
+    // Session creation
+    let response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://collegemate.app'});
-    expect(response.status).toBe(404);
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(200);
+
+    eventEdit = {
+      eventType: 'event',
+      startTime: {
+        month: 4,
+        day: 1,
+        hour: 14,
+        minute: 46,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 15,
+        minute: 20,
+      },
+    };
+
+    // Session creation
+    response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(200);
+    
+    eventEdit = {
+      eventType: 'event',
+      startTime: {
+        month: 4,
+        day: 2,
+        hour: 13,
+        minute: 30,
+      },
+      endTime: {
+        month: 5,
+        day: 2,
+        hour: 14,
+        minute: 45,
+      },
+    };
+
+    // Session creation
+    response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(200);
+  });
+
+  test('Success - Edit Session', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+    testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
+
+    let eventEdit = {
+      eventType: 'session',
+      sessionId: '1242-004289-36784',
+      colorCode: '1',
+    };
+
+    // Session creation
+    let response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(200);
+
+    //TODO - Add more test cases for session edit
   });
 });

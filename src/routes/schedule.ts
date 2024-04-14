@@ -178,6 +178,14 @@ scheduleRouter.patch('/:scheduleId/event/:eventId', async (req, res, next) => {
       throw new ForbiddenError();
     }
 
+    // if session id exists in req body, check if the session exists
+    if (
+      req.body.sessionId &&
+      !(await Session.checkExists(dbClient, req.body.sessionId))
+    ) {
+      throw new NotFoundError();
+    }
+
     // Check and edit schedule event/session
     let scheduleUpdateObj: IScheduleUpdateObj = {};
     if (
