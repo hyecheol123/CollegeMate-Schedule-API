@@ -281,6 +281,63 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     expect(response.status).toBe(403);
   });
 
+  test('Fail - Invalid Event Type', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+
+    let eventEdit = {
+      eventType: 'invalid',
+      startTime: {
+        month: 4,
+        day: 1,
+        hour: 0,
+        minute: 0,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 0,
+        minute: 0,
+      },
+    };
+
+    // Session creation
+    let response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Invalid Event Type');
+  });
+
+  test('Fail - Invalid Event/Session Id', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+
+    let response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000010`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(nonConflictingEventEdit);
+    expect(response.status).toBe(409);
+  });
+
+  test('Fail - Nonexistent SessionId', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+
+    let eventEdit = {
+      eventType: 'session',
+      sessionId: '1242-000010-00000',
+    };
+
+    // Session creation
+    let response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(404);
+  });
+
   test('Fail - Overlapping Event/Session', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
 
