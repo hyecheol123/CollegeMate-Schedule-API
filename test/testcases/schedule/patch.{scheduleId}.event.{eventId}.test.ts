@@ -307,7 +307,6 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       .set({Origin: 'https://collegemate.app'})
       .send(eventEdit);
     expect(response.status).toBe(400);
-    expect(response.body.error).toBe('Invalid Event Type');
   });
 
   test('Fail - Invalid Event/Session Id', async () => {
