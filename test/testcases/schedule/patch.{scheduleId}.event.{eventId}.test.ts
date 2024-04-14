@@ -12,6 +12,7 @@ import ExpressServer from '../../../src/ExpressServer';
 import AuthToken from '../../../src/datatypes/Token/AuthToken';
 import * as jwt from 'jsonwebtoken';
 import TestConfig from '../../TestConfig';
+import Schedule from '../../../src/datatypes/schedule/Schedule';
 
 describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () => {
   let testEnv: TestEnv;
@@ -40,7 +41,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       month: 4,
       day: 1,
       hour: 0,
-      minute: 0,
+      minute: 1,
     },
   };
 
@@ -284,7 +285,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
   test('Fail - Invalid Event Type', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
 
-    let eventEdit = {
+    const eventEdit = {
       eventType: 'invalid',
       startTime: {
         month: 4,
@@ -301,7 +302,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     };
 
     // Session creation
-    let response = await request(testEnv.expressServer.app)
+    const response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({Origin: 'https://collegemate.app'})
@@ -312,24 +313,283 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
   test('Fail - Invalid Event/Session Id', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
 
-    let response = await request(testEnv.expressServer.app)
+    const response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000010`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({Origin: 'https://collegemate.app'})
       .send(nonConflictingEventEdit);
+    expect(response.status).toBe(404);
+  });
+
+  test('Fail - Invalid Date', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+
+    let eventEdit = {
+      eventType: 'event',
+      meetingDaysList: ['MONDAY'],
+      startTime: {
+        month: 4,
+        day: 31,
+        hour: 13,
+        minute: 30,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 14,
+        minute: 45,
+      },
+    };
+
+    // Session creation
+    let response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(400);
+
+    eventEdit = {
+      eventType: 'event',
+      meetingDaysList: ['MONDAY'],
+      startTime: {
+        month: 2,
+        day: 30,
+        hour: 13,
+        minute: 30,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 14,
+        minute: 45,
+      },
+    };
+
+    // Session creation
+    response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(400);
+
+    eventEdit = {
+      eventType: 'event',
+      meetingDaysList: ['MONDAY'],
+      startTime: {
+        month: 2,
+        day: 30,
+        hour: 25,
+        minute: 30,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 14,
+        minute: 45,
+      },
+    };
+
+    // Session creation
+    response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(400);
+
+    eventEdit = {
+      eventType: 'event',
+      meetingDaysList: ['MONDAY'],
+      startTime: {
+        month: 2,
+        day: 30,
+        hour: 11,
+        minute: 60,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 14,
+        minute: 45,
+      },
+    };
+
+    // Session creation
+    response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(400);
+  });
+
+  test('Fail - Start time after End time', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+
+    let eventEdit = {
+      eventType: 'event',
+      meetingDaysList: ['MONDAY'],
+      startTime: {
+        month: 4,
+        day: 1,
+        hour: 15,
+        minute: 30,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 14,
+        minute: 45,
+      },
+    };
+
+    // Session creation
+    let response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(400);
+
+    eventEdit = {
+      eventType: 'event',
+      meetingDaysList: ['MONDAY'],
+      startTime: {
+        month: 4,
+        day: 2,
+        hour: 13,
+        minute: 30,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 14,
+        minute: 45,
+      },
+    };
+
+    // Session creation
+    response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(400);
+  });
+
+  test('Fail - Preexisting SessionId', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+
+    const eventEdit = {
+      eventType: 'session',
+      sessionId: '1242-000004',
+    };
+
+    // Session creation
+    const response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(409);
+  });
+
+  test('Fail - Start time after preexisting End time', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+
+    let eventEdit = {
+      eventType: 'event',
+      meetingDaysList: ['MONDAY'],
+      startTime: {
+        month: 4,
+        day: 1,
+        hour: 10,
+        minute: 46,
+      },
+    };
+
+    // Session creation
+    let response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(409);
+
+    eventEdit = {
+      eventType: 'event',
+      meetingDaysList: ['MONDAY'],
+      startTime: {
+        month: 4,
+        day: 2,
+        hour: 14,
+        minute: 30,
+      },
+    };
+
+    // Session creation
+    response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000002`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(409);
+  });
+
+  test('Fail - End time before preexisting Start time', async () => {
+    testEnv.expressServer = testEnv.expressServer as ExpressServer;
+
+    let eventEdit = {
+      eventType: 'event',
+      meetingDaysList: ['MONDAY'],
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 9,
+        minute: 29,
+      },
+    };
+
+    // Session creation
+    let response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(409);
+
+    eventEdit = {
+      eventType: 'event',
+      meetingDaysList: ['MONDAY'],
+      endTime: {
+        month: 1,
+        day: 1,
+        hour: 13,
+        minute: 10,
+      },
+    };
+
+    // Session creation
+    response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000002`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
     expect(response.status).toBe(409);
   });
 
   test('Fail - Nonexistent SessionId', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
 
-    let eventEdit = {
+    const eventEdit = {
       eventType: 'session',
       sessionId: '1242-000010-00000',
     };
 
     // Session creation
-    let response = await request(testEnv.expressServer.app)
+    const response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
       .set({Origin: 'https://collegemate.app'})
@@ -342,6 +602,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
 
     let eventEdit = {
       eventType: 'event',
+      meetingDaysList: ['TUESDAY'],
       startTime: {
         month: 4,
         day: 1,
@@ -366,6 +627,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
 
     eventEdit = {
       eventType: 'event',
+      meetingDaysList: ['TUESDAY'],
       startTime: {
         month: 4,
         day: 1,
@@ -387,9 +649,10 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       .set({Origin: 'https://collegemate.app'})
       .send(eventEdit);
     expect(response.status).toBe(409);
-    
+
     eventEdit = {
       eventType: 'event',
+      meetingDaysList: ['TUESDAY'],
       startTime: {
         month: 4,
         day: 1,
@@ -419,6 +682,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
 
     let eventEdit = {
       eventType: 'event',
+      meetingDaysList: ['TUESDAY'],
       startTime: {
         month: 4,
         day: 1,
@@ -441,8 +705,23 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       .send(eventEdit);
     expect(response.status).toBe(200);
 
+    let dbResponse = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(scheduleIdMap.steve)
+      .read();
+    let schedule: Schedule = dbResponse.resource;
+    expect(
+      schedule.eventList.filter(e => e.id === '1242-000001')[0].startTime
+    ).toEqual({
+      month: 4,
+      day: 1,
+      hour: 12,
+      minute: 30,
+    });
+
     eventEdit = {
       eventType: 'event',
+      meetingDaysList: ['TUESDAY'],
       startTime: {
         month: 4,
         day: 1,
@@ -464,9 +743,24 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       .set({Origin: 'https://collegemate.app'})
       .send(eventEdit);
     expect(response.status).toBe(200);
-    
+
+    dbResponse = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(scheduleIdMap.steve)
+      .read();
+    schedule = dbResponse.resource;
+    expect(
+      schedule.eventList.filter(e => e.id === '1242-000001')[0].endTime
+    ).toEqual({
+      month: 4,
+      day: 1,
+      hour: 15,
+      minute: 20,
+    });
+
     eventEdit = {
       eventType: 'event',
+      meetingDaysList: ['MONDAY'],
       startTime: {
         month: 4,
         day: 2,
@@ -488,26 +782,50 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       .set({Origin: 'https://collegemate.app'})
       .send(eventEdit);
     expect(response.status).toBe(200);
+
+    dbResponse = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(scheduleIdMap.steve)
+      .read();
+    schedule = dbResponse.resource;
+    expect(
+      schedule.eventList.filter(e => e.id === '1242-000001')[0].endTime
+    ).toEqual({
+      month: 5,
+      day: 2,
+      hour: 14,
+      minute: 45,
+    });
   });
 
   test('Success - Edit Session', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
 
-    let eventEdit = {
+    const eventEdit = {
       eventType: 'session',
       sessionId: '1242-004289-36784',
-      colorCode: '1',
+      colorCode: 1,
     };
 
     // Session creation
-    let response = await request(testEnv.expressServer.app)
-      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+    const response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000003`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://collegemate.app'})
+      .set({'X-APPLICATION-KEY': '<Android-App-v1>'})
       .send(eventEdit);
     expect(response.status).toBe(200);
 
-    //TODO - Add more test cases for session edit
+    const dbResponse = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(scheduleIdMap.steve)
+      .read();
+    const schedule: Schedule = dbResponse.resource;
+    expect(
+      schedule.sessionList.filter(e => e.id === '1242-004289-36784')[0]
+        .colorCode
+    ).toEqual(1);
+
+    //TODO - Add more test cases for session edit and check db
   });
 });

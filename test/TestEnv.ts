@@ -331,7 +331,7 @@ export default class TestEnv {
       id: '1242-000001',
       title: 'Birthday',
       location: 'Online',
-      meetingDaysList: ['Monday', 'Wednesday'],
+      meetingDaysList: ['MONDAY', 'WEDNESDAY'],
       startTime: {
         month: 4,
         day: 1,
@@ -351,7 +351,7 @@ export default class TestEnv {
       id: '1242-000002',
       title: 'Meeting',
       location: 'Online',
-      meetingDaysList: ['Tuesday', 'Thursday'],
+      meetingDaysList: ['TUESDAY', 'THURSDAY'],
       startTime: {
         month: 4,
         day: 1,

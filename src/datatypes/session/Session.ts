@@ -177,7 +177,7 @@ export default class Session {
 
   /**
    * Check if a session exists
-   * 
+   *
    * @param {Cosmos.Database} dbClient Cosmos DB Client
    * @param {string} sessionId session id
    */
@@ -186,10 +186,10 @@ export default class Session {
     sessionId: string
   ): Promise<boolean> {
     const result = await dbClient
-        .container(SESSION)
-        .item(sessionId)
-        .read<Session>()
-    
+      .container(SESSION)
+      .item(sessionId)
+      .read<Session>();
+
     if (result.statusCode === 404 || result.resource === undefined) {
       return false;
     }

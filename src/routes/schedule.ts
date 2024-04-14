@@ -163,12 +163,52 @@ scheduleRouter.patch('/:scheduleId/event/:eventId', async (req, res, next) => {
       req.app.get('jwtAccessKey')
     );
 
+    const sessionEditInfo = req.body as SessionEditRequestObj;
     // Validate request body
-    if (!validateSessionEditRequest(req.body as SessionEditRequestObj)) {
+    if (!validateSessionEditRequest(sessionEditInfo)) {
       throw new BadRequestError();
     }
+
+    // Check for day depending on the month
+    if (
+      (sessionEditInfo.startTime &&
+        ((sessionEditInfo.startTime.month === 2 &&
+          sessionEditInfo.startTime.day > 29) ||
+          ([1, 3, 5, 7, 8, 10, 12].includes(sessionEditInfo.startTime.month) &&
+            sessionEditInfo.startTime.day > 31) ||
+          ([4, 6, 9, 11].includes(sessionEditInfo.startTime.month) &&
+            sessionEditInfo.startTime.day > 30))) ||
+      (sessionEditInfo.endTime &&
+        ((sessionEditInfo.endTime &&
+          sessionEditInfo.endTime.month === 2 &&
+          sessionEditInfo.endTime.day > 29) ||
+          ([1, 3, 5, 7, 8, 10, 12].includes(sessionEditInfo.endTime.month) &&
+            sessionEditInfo.endTime.day > 31) ||
+          ([4, 6, 9, 11].includes(sessionEditInfo.endTime.month) &&
+            sessionEditInfo.endTime.day > 30)))
+    ) {
+      throw new BadRequestError();
+    }
+
+    // Check if startTime is after endTime
+    if (
+      sessionEditInfo.startTime &&
+      sessionEditInfo.endTime &&
+      (sessionEditInfo.startTime.month > sessionEditInfo.endTime.month ||
+        (sessionEditInfo.startTime.month === sessionEditInfo.endTime.month &&
+          (sessionEditInfo.startTime.day > sessionEditInfo.endTime.day ||
+            (sessionEditInfo.startTime.day === sessionEditInfo.endTime.day &&
+              (sessionEditInfo.startTime.hour > sessionEditInfo.endTime.hour ||
+                (sessionEditInfo.startTime.hour ===
+                  sessionEditInfo.endTime.hour &&
+                  sessionEditInfo.startTime.minute >=
+                    sessionEditInfo.endTime.minute))))))
+    ) {
+      throw new BadRequestError();
+    }
+
     // Check if the time has been changed
-    const timeChanged = req.body.startTime || req.body.endTime;
+    const timeChanged = sessionEditInfo.startTime || sessionEditInfo.endTime;
 
     // Check if the user has access to the schedule
     const email = tokenContents.id;
@@ -178,19 +218,18 @@ scheduleRouter.patch('/:scheduleId/event/:eventId', async (req, res, next) => {
       throw new ForbiddenError();
     }
 
-    if (req.body.sessionId) {
-      // if sessionId exists in req body, check if the session exists
-      if (
-        !(await Session.checkExists(dbClient, req.body.sessionId))
-      ) {
-        throw new NotFoundError();
-      }
+    if (sessionEditInfo.sessionId) {
       // if sessionId exists in req body, check if session already exists in the schedule
       if (
-        schedule.sessionList.filter(session => session.id === req.body.sessionId)
-          .length !== 0
+        schedule.sessionList.filter(
+          session => session.id === sessionEditInfo.sessionId
+        ).length !== 0
       ) {
         throw new ConflictError();
+      }
+      // if sessionId exists in req body, check if the session exists
+      if (!(await Session.checkExists(dbClient, sessionEditInfo.sessionId))) {
+        throw new NotFoundError();
       }
     }
 
@@ -203,20 +242,53 @@ scheduleRouter.patch('/:scheduleId/event/:eventId', async (req, res, next) => {
       scheduleUpdateObj = {
         eventList: schedule.eventList.map(event => {
           if (event.id === req.params.eventId) {
+            // If only startTime or endTime is changed, check if it precedes or succeeds the other
+            if (
+              (sessionEditInfo.startTime &&
+                !sessionEditInfo.endTime &&
+                (event.endTime.month < sessionEditInfo.startTime.month ||
+                  (event.endTime.month === sessionEditInfo.startTime.month &&
+                    (event.endTime.day < sessionEditInfo.startTime.day ||
+                      (event.endTime.day === sessionEditInfo.startTime.day &&
+                        (event.endTime.hour < sessionEditInfo.startTime.hour ||
+                          (event.endTime.hour ===
+                            sessionEditInfo.startTime.hour &&
+                            event.endTime.minute <=
+                              sessionEditInfo.startTime.minute))))))) ||
+              (!sessionEditInfo.startTime &&
+                sessionEditInfo.endTime &&
+                (event.startTime.month > sessionEditInfo.endTime.month ||
+                  (event.startTime.month === sessionEditInfo.endTime.month &&
+                    (event.startTime.day > sessionEditInfo.endTime.day ||
+                      (event.startTime.day === sessionEditInfo.endTime.day &&
+                        (event.startTime.hour > sessionEditInfo.endTime.hour ||
+                          (event.startTime.hour ===
+                            sessionEditInfo.endTime.hour &&
+                            event.startTime.minute >=
+                              sessionEditInfo.endTime.minute)))))))
+            ) {
+              throw new ConflictError();
+            }
             return {
               id: event.id,
-              title: req.body.title ? req.body.title : event.title,
-              location: req.body.location ? req.body.location : event.location,
-              meetingDaysList: req.body.meetingDaysList
-                ? req.body.meetingDaysList
+              title: sessionEditInfo.title
+                ? sessionEditInfo.title
+                : event.title,
+              location: sessionEditInfo.location
+                ? sessionEditInfo.location
+                : event.location,
+              meetingDaysList: sessionEditInfo.meetingDaysList
+                ? sessionEditInfo.meetingDaysList
                 : event.meetingDaysList,
-              startTime: req.body.startTime
-                ? req.body.startTime
+              startTime: sessionEditInfo.startTime
+                ? sessionEditInfo.startTime
                 : event.startTime,
-              endTime: req.body.endTime ? req.body.endTime : event.endTime,
-              memo: req.body.memo ? req.body.memo : event.memo,
-              colorCode: req.body.colorCode
-                ? req.body.colorCode
+              endTime: sessionEditInfo.endTime
+                ? sessionEditInfo.endTime
+                : event.endTime,
+              memo: sessionEditInfo.memo ? sessionEditInfo.memo : event.memo,
+              colorCode: sessionEditInfo.colorCode
+                ? sessionEditInfo.colorCode
                 : event.colorCode,
             };
           } else {
@@ -232,9 +304,11 @@ scheduleRouter.patch('/:scheduleId/event/:eventId', async (req, res, next) => {
         sessionList: schedule.sessionList.map(session => {
           if (session.id === req.params.eventId) {
             return {
-              id: req.body.sessionId ? req.body.sessionId : session.id,
-              colorCode: req.body.colorCode
-                ? req.body.colorCode
+              id: sessionEditInfo.sessionId
+                ? sessionEditInfo.sessionId
+                : session.id,
+              colorCode: sessionEditInfo.colorCode
+                ? sessionEditInfo.colorCode
                 : session.colorCode,
             };
           } else {
@@ -250,9 +324,14 @@ scheduleRouter.patch('/:scheduleId/event/:eventId', async (req, res, next) => {
     const sessionList = await Session.getUserSessions(
       dbClient,
       schedule.termCode,
-      schedule.sessionList.map(session => session.id)
+      (scheduleUpdateObj.sessionList
+        ? scheduleUpdateObj.sessionList
+        : schedule.sessionList
+      ).map(session => session.id)
     );
-    const eventList = schedule.eventList;
+    const eventList = scheduleUpdateObj.eventList
+      ? scheduleUpdateObj.eventList
+      : schedule.eventList;
     // combine all events and sessions time range
     const allEvents: TimeRange[] = sessionList
       .map(session => {
