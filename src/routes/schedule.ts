@@ -168,6 +168,7 @@ scheduleRouter.patch('/:scheduleId/event/:eventId', async (req, res, next) => {
     if (!validateSessionEditRequest(sessionEditInfo)) {
       throw new BadRequestError();
     }
+    // TODO: needs to extract year from termCode and check if the year needs extra day from leap year
 
     // Check for day depending on the month
     if (
