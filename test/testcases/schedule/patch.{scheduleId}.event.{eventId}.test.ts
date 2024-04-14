@@ -20,6 +20,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
   const accessTokenMap = {
     steve: '',
     drag: '',
+    leap: '',
     refresh: '',
     expired: '',
     admin: '',
@@ -27,6 +28,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
   const scheduleIdMap = {
     steve: '',
     drag: '',
+    leap: '',
     invalid: 'invalid',
   };
   const nonConflictingEventEdit = {
@@ -74,6 +76,18 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     };
     // Generate AccessToken
     accessTokenMap.drag = jwt.sign(
+      tokenContent,
+      testEnv.testConfig.jwt.secretKey,
+      {algorithm: 'HS512', expiresIn: '10m'}
+    );
+    // Valid Leap Access Token
+    tokenContent = {
+      id: 'leap@wisc.edu',
+      type: 'access',
+      tokenType: 'user',
+    };
+    // Generate AccessToken
+    accessTokenMap.leap = jwt.sign(
       tokenContent,
       testEnv.testConfig.jwt.secretKey,
       {algorithm: 'HS512', expiresIn: '10m'}
@@ -136,6 +150,15 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     email = 'drag@wisc.edu';
     termCode = '1244';
     scheduleIdMap.drag = TestConfig.hash(
+      `${email}/${termCode}/${testDate}`,
+      email,
+      termCode
+    );
+
+    // Leap's ScheduleId
+    email = 'leap@wisc.edu';
+    termCode = '1234';
+    scheduleIdMap.leap = TestConfig.hash(
       `${email}/${termCode}/${testDate}`,
       email,
       termCode
@@ -334,14 +357,13 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
         minute: 30,
       },
       endTime: {
-        month: 4,
+        month: 5,
         day: 1,
         hour: 14,
         minute: 45,
       },
     };
 
-    // Session creation
     let response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -366,7 +388,6 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -379,7 +400,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       meetingDaysList: ['MONDAY'],
       startTime: {
         month: 2,
-        day: 30,
+        day: 20,
         hour: 25,
         minute: 30,
       },
@@ -391,7 +412,6 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -404,7 +424,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       meetingDaysList: ['MONDAY'],
       startTime: {
         month: 2,
-        day: 30,
+        day: 12,
         hour: 11,
         minute: 60,
       },
@@ -420,6 +440,39 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(400);
+
+    // Session creation
+    response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(400);
+
+    eventEdit = {
+      eventType: 'event',
+      meetingDaysList: ['MONDAY'],
+      startTime: {
+        month: 2,
+        day: 29,
+        hour: 11,
+        minute: 30,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 14,
+        minute: 45,
+      },
+    };
+
+    // Session creation
+    response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.leap}/event/1234-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.leap})
       .set({Origin: 'https://collegemate.app'})
       .send(eventEdit);
     expect(response.status).toBe(400);
@@ -795,6 +848,46 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       day: 2,
       hour: 14,
       minute: 45,
+    });
+
+    // Checking leap year
+    eventEdit = {
+      eventType: 'event',
+      meetingDaysList: ['TUESDAY'],
+      startTime: {
+        month: 2,
+        day: 29,
+        hour: 14,
+        minute: 46,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 15,
+        minute: 20,
+      },
+    };
+
+    // Session creation
+    response = await request(testEnv.expressServer.app)
+      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventEdit);
+    expect(response.status).toBe(200);
+
+    dbResponse = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(scheduleIdMap.steve)
+      .read();
+    schedule = dbResponse.resource;
+    expect(
+      schedule.eventList.filter(e => e.id === '1242-000001')[0].startTime
+    ).toEqual({
+      month: 2,
+      day: 29,
+      hour: 14,
+      minute: 46,
     });
   });
 

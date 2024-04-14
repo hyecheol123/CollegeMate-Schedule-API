@@ -409,6 +409,30 @@ export default class TestEnv {
         [testEvent3, testEvent4]
       )
     );
+    email = 'leap@wisc.edu';
+    termCode = '1234';
+    scheduleId = TestConfig.hash(
+      `${email}/${termCode}/${testDate}`,
+      email,
+      termCode
+    );
+    const testEvent5 = {...testEvent1};
+    testEvent5.id = '1234-000001';
+    const testEvent6 = {...testEvent2};
+    testEvent6.id = '1234-000002';
+    const testSession5 = {...testSession1};
+    testSession5.id = '1234-000003';
+    const testSession6 = {...testSession2};
+    testSession6.id = '1234-000004';
+    scheduleSample.push(
+      new Schedule(
+        scheduleId,
+        email,
+        termCode,
+        [testSession5, testSession6],
+        [testEvent5, testEvent6]
+      )
+    );
     // Create a new schedule entries on test DB
     for (let index = 0; index < scheduleSample.length; ++index) {
       await this.dbClient

@@ -168,13 +168,24 @@ scheduleRouter.patch('/:scheduleId/event/:eventId', async (req, res, next) => {
     if (!validateSessionEditRequest(sessionEditInfo)) {
       throw new BadRequestError();
     }
+
+    // Check if the user has access to the schedule
+    const email = tokenContents.id;
+    const scheduleId = req.params.scheduleId;
+    const schedule = await Schedule.read(dbClient, scheduleId);
+    if (schedule.email !== email) {
+      throw new ForbiddenError();
+    }
     // TODO: needs to extract year from termCode and check if the year needs extra day from leap year
+    // middle two digits of termCode is the year
+    const year = parseInt(schedule.termCode.slice(1, 3));
 
     // Check for day depending on the month
     if (
       (sessionEditInfo.startTime &&
         ((sessionEditInfo.startTime.month === 2 &&
-          sessionEditInfo.startTime.day > 29) ||
+          (sessionEditInfo.startTime.day > 29 ||
+            (sessionEditInfo.startTime.day === 29 && year % 4 !== 0))) ||
           ([1, 3, 5, 7, 8, 10, 12].includes(sessionEditInfo.startTime.month) &&
             sessionEditInfo.startTime.day > 31) ||
           ([4, 6, 9, 11].includes(sessionEditInfo.startTime.month) &&
@@ -210,14 +221,6 @@ scheduleRouter.patch('/:scheduleId/event/:eventId', async (req, res, next) => {
 
     // Check if the time has been changed
     const timeChanged = sessionEditInfo.startTime || sessionEditInfo.endTime;
-
-    // Check if the user has access to the schedule
-    const email = tokenContents.id;
-    const scheduleId = req.params.scheduleId;
-    const schedule = await Schedule.read(dbClient, scheduleId);
-    if (schedule.email !== email) {
-      throw new ForbiddenError();
-    }
 
     if (sessionEditInfo.sessionId) {
       // if sessionId exists in req body, check if session already exists in the schedule
