@@ -81,6 +81,12 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
       type: 'refresh',
       tokenType: 'user',
     };
+    // Generate AccessToken
+    accessTokenMap.refresh = jwt.sign(
+      tokenContent,
+      testEnv.testConfig.jwt.secretKey,
+      {algorithm: 'HS512', expiresIn: '10m'}
+    );
     // Valid Leap Access Token
     tokenContent = {
       id: 'leap@wisc.edu',
@@ -89,12 +95,6 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
     };
     // Generate AccessToken
     accessTokenMap.leap = jwt.sign(
-      tokenContent,
-      testEnv.testConfig.jwt.secretKey,
-      {algorithm: 'HS512', expiresIn: '10m'}
-    );
-    // Generate AccessToken
-    accessTokenMap.refresh = jwt.sign(
       tokenContent,
       testEnv.testConfig.jwt.secretKey,
       {algorithm: 'HS512', expiresIn: '10m'}
