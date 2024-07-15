@@ -12,7 +12,6 @@ import ExpressServer from '../../../src/ExpressServer';
 import AuthToken from '../../../src/datatypes/Token/AuthToken';
 import * as jwt from 'jsonwebtoken';
 import TestConfig from '../../TestConfig';
-import ServerConfig from '../../../src/ServerConfig';
 
 describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
   let testEnv: TestEnv;
@@ -87,6 +86,7 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
       testEnv.testConfig.jwt.secretKey,
       {algorithm: 'HS512', expiresIn: '10m'}
     );
+
     // Valid Leap Access Token
     tokenContent = {
       id: 'leap@wisc.edu',
@@ -167,8 +167,8 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
       location: 'location1',
       meetingDaysList: ['MONDAY', 'WEDNESDAY', 'FRIDAY'],
       startTime: {
-        month: 1,
-        day: 1,
+        month: 5,
+        day: 4,
         hour: 10,
         minute: 0,
       },
@@ -193,7 +193,6 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
 
     eventMap.inDBEvent = {
       eventType: 'event',
-      id: '1242-000001',
       title: 'Birthday',
       location: 'Online',
       meetingDaysList: ['MONDAY', 'WEDNESDAY'],
@@ -215,12 +214,13 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
 
     eventMap.inDBSession = {
       eventType: 'session',
-      id: '1242-000003',
+      sessionId: '1242-000003',
       colorCode: 0,
     };
 
     eventMap.doesNotExistSession = {
-      id: '1242-999999',
+      eventType: 'session',
+      sessionId: '1242-999999',
       colorCode: 0,
     };
   });
@@ -235,7 +235,8 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
     // reqeust without a token
     const response = await request(testEnv.expressServer.app)
       .post(`/schedule/${scheduleIdMap.steve}/event`)
-      .set({Origin: 'https://collegemate.app'});
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventMap.validEvent);
     expect(response.status).toBe(401);
     expect(response.body.error).toBe('Unauthenticated');
   });
@@ -250,7 +251,8 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
     const response = await request(testEnv.expressServer.app)
       .post(`/schedule/${scheduleIdMap.steve}/event`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.expired})
-      .set({Origin: 'https://collegemate.app'});
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventMap.validEvent);
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
   });
@@ -262,23 +264,26 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
     let response = await request(testEnv.expressServer.app)
       .post(`/schedule/${scheduleIdMap.steve}/event`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.admin})
-      .set({Origin: 'https://collegemate.app'});
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventMap.validEvent);
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
 
     // request with refresh token
     response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.steve}/event`)
+      .post(`/schedule/${scheduleIdMap.steve}/event`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.refresh})
-      .set({Origin: 'https://collegemate.app'});
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventMap.validEvent);
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
 
     // request with "wrong" token
     response = await request(testEnv.expressServer.app)
-      .delete(`/schedule/${scheduleIdMap.steve}/event`)
+      .post(`/schedule/${scheduleIdMap.steve}/event`)
       .set({'X-ACCESS-TOKEN': 'wrong'})
-      .set({Origin: 'https://collegemate.app'});
+      .set({Origin: 'https://collegemate.app'})
+      .send(eventMap.validEvent);
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
   });
@@ -289,7 +294,8 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
     // request without any origin or app
     let response = await request(testEnv.expressServer.app)
       .post(`/schedule/${scheduleIdMap.steve}/event`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.steve});
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .send(eventMap.validEvent);
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
 
@@ -297,7 +303,8 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
     response = await request(testEnv.expressServer.app)
       .post(`/schedule/${scheduleIdMap.steve}/event`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({Origin: 'https://wrong.origin.com'});
+      .set({Origin: 'https://wrong.origin.com'})
+      .send(eventMap.validEvent);
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
 
@@ -305,7 +312,8 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
     response = await request(testEnv.expressServer.app)
       .post(`/schedule/${scheduleIdMap.steve}/event`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
-      .set({'X-APPLICATION-KEY': 'wrongAppKey'});
+      .set({'X-APPLICATION-KEY': 'wrongAppKey'})
+      .send(eventMap.validEvent);
     expect(response.status).toBe(403);
     expect(response.body.error).toBe('Forbidden');
   });
@@ -361,6 +369,8 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
     let overlapEvent = {
       eventType: 'event',
       title: 'event1',
+      location: 'Online',
+      memo: 'Test Event 1',
       meetingDaysList: ['TUESDAY'],
       startTime: {
         month: 4,
@@ -389,6 +399,8 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
     overlapEvent = {
       eventType: 'event',
       title: 'event1',
+      location: 'Online',
+      memo: 'memo1',
       meetingDaysList: ['TUESDAY'],
       startTime: {
         month: 4,
@@ -416,6 +428,8 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
     overlapEvent = {
       eventType: 'event',
       title: 'event1',
+      location: 'Online',
+      memo: 'memo1',
       meetingDaysList: ['TUESDAY'],
       startTime: {
         month: 4,
@@ -441,7 +455,7 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
     expect(response.body.error).toBe('Conflict');
   });
 
-  test('Fail - Add Event/Session which already exists in DB', async () => {
+  test('Fail - Add Event/Session which already exists in Schedule', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
 
@@ -769,5 +783,6 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
       .set({'X-APPLICATION-KEY': '<Android-App-v1>'})
       .send(eventMap.validSession);
     expect(response.status).toBe(201);
+    // TODO: Check hash logic for eventId and write tests
   });
 });

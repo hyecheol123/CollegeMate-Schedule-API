@@ -198,7 +198,13 @@ scheduleRouter.post('/:scheduleId/event', async (req, res, next) => {
       throw new ForbiddenError();
     }
 
-    const year = parseInt(schedule.termCode.slice(1, 3));
+    const term = parseInt(schedule.termCode.slice(3, 4));
+    let year = parseInt(schedule.termCode.slice(1, 3));
+    if (term === 2) {
+      //Fall Term
+      year--;
+    }
+
     // Check for day depending on the month
     if (
       (sessionAddInfo.startTime &&
@@ -242,8 +248,8 @@ scheduleRouter.post('/:scheduleId/event', async (req, res, next) => {
     if (sessionAddInfo.sessionId) {
       // if sessionId exists in req body, check if session already exists in the schedule
       if (
-        schedule.sessionList.filter(
-          session => session.id === sessionAddInfo.sessionId
+        schedule.sessionList.filter(session =>
+          session.id.includes(sessionAddInfo.sessionId)
         ).length !== 0
       ) {
         throw new ConflictError();
@@ -287,8 +293,41 @@ scheduleRouter.post('/:scheduleId/event', async (req, res, next) => {
         })
       );
 
+    // add sessionAddInfo to allEvents
+    if (sessionAddInfo.startTime && sessionAddInfo.endTime) {
+      allEvents.push({
+        meetingDaysList: sessionAddInfo.meetingDaysList,
+        startTime: sessionAddInfo.startTime,
+        endTime: sessionAddInfo.endTime,
+      });
+    }
+
+    if (sessionAddInfo.sessionId) {
+      const session = await Session.read(dbClient, sessionAddInfo.sessionId);
+      // Check TermCode
+      //TODO UPDATE
+      // if (session.termCode !== schedule.termCode) {
+      //   throw new ForbiddenError();
+      // }
+      allEvents.push(
+        ...session.meetings
+          .filter(meeting => {
+            return meeting.meetingType !== 'EXAM';
+          })
+          .map(meeting => {
+            return {
+              meetingDaysList: meeting.meetingDaysList,
+              startTime: meeting.startTime,
+              endTime: meeting.endTime,
+            };
+          })
+      );
+    }
+
     // check if there is any time conflict
-    if (timeConflictChecker(allEvents)) throw new ConflictError();
+    if (timeConflictChecker(allEvents)) {
+      throw new ConflictError();
+    }
 
     let scheduleUpdateObj: IScheduleUpdateObj = {};
     if (req.body.eventType === 'session') {
@@ -296,6 +335,7 @@ scheduleRouter.post('/:scheduleId/event', async (req, res, next) => {
         sessionList: [
           ...schedule.sessionList,
           {
+            //TODO id를 어떻게??
             id: req.body.sessionId,
             colorCode: req.body.colorCode,
           },
@@ -308,11 +348,9 @@ scheduleRouter.post('/:scheduleId/event', async (req, res, next) => {
           ...schedule.eventList,
           {
             id: ServerConfig.hash(
-              `${req.body.title}/${
-                req.body.location
-              }/${requestCreatedDate.toISOString()}`,
-              req.body.title,
-              req.body.colorCode
+              `${email}/${scheduleId}/${requestCreatedDate.toISOString()}`,
+              email,
+              scheduleId
             ),
             title: req.body.title,
             location: req.body.location,
