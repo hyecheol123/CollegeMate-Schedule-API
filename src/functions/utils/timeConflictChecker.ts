@@ -29,13 +29,16 @@ function isTimeBefore(time1: Time, time2: Time): boolean {
   return time1.minute <= time2.minute;
 }
 
-function isOverlap(range1: TimeRange, range2: TimeRange): boolean {
-  return !(
-    isMonthBefore(range1.endTime, range2.startTime) ||
-    isMonthBefore(range2.endTime, range1.startTime)
-  ) || !(
-    isTimeBefore(range1.endTime, range2.startTime) ||
-    isTimeBefore(range2.endTime, range1.startTime)
+export function isOverlap(range1: TimeRange, range2: TimeRange): boolean {
+  return (
+    !(
+      isMonthBefore(range1.endTime, range2.startTime) ||
+      isMonthBefore(range2.endTime, range1.startTime)
+    ) ||
+    !(
+      isTimeBefore(range1.endTime, range2.startTime) ||
+      isTimeBefore(range2.endTime, range1.startTime)
+    )
   );
 }
 
