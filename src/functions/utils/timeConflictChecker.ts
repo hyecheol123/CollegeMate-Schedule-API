@@ -17,11 +17,13 @@ interface Time {
   minute: number;
 }
 
-function isBefore(time1: Time, time2: Time): boolean {
+function isMonthBefore(time1: Time, time2: Time): boolean {
   if (time1.month < time2.month) return true;
   if (time1.month > time2.month) return false;
-  if (time1.day < time2.day) return true;
-  if (time1.day > time2.day) return false;
+  return time1.day < time2.day;
+}
+
+function isTimeBefore(time1: Time, time2: Time): boolean {
   if (time1.hour < time2.hour) return true;
   if (time1.hour > time2.hour) return false;
   return time1.minute <= time2.minute;
@@ -29,8 +31,11 @@ function isBefore(time1: Time, time2: Time): boolean {
 
 function isOverlap(range1: TimeRange, range2: TimeRange): boolean {
   return !(
-    isBefore(range1.endTime, range2.startTime) ||
-    isBefore(range2.endTime, range1.startTime)
+    isMonthBefore(range1.endTime, range2.startTime) ||
+    isMonthBefore(range2.endTime, range1.startTime)
+  ) || !(
+    isTimeBefore(range1.endTime, range2.startTime) ||
+    isTimeBefore(range2.endTime, range1.startTime)
   );
 }
 
