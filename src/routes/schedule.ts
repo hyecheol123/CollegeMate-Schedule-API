@@ -178,7 +178,12 @@ scheduleRouter.patch('/:scheduleId/event/:eventId', async (req, res, next) => {
     }
     // TODO: needs to extract year from termCode and check if the year needs extra day from leap year
     // middle two digits of termCode is the year
-    const year = parseInt(schedule.termCode.slice(1, 3));
+    const term = parseInt(schedule.termCode.slice(3, 4));
+    let year = parseInt(schedule.termCode.slice(1, 3));
+    if (term === 2) {
+      //Fall Term
+      year--;
+    }
 
     // Check for day depending on the month
     if (
