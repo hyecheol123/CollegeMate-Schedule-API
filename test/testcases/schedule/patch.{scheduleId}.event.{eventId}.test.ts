@@ -324,7 +324,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
+    // Event Edit
     const response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -436,7 +436,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
+    // Event Edit
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -444,7 +444,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       .send(eventEdit);
     expect(response.status).toBe(400);
 
-    // Session creation
+    // Event Edit
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -469,7 +469,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
+    // Event Edit
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.leap}/event/1234-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.leap})
@@ -498,7 +498,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
+    // Event Edit
     let response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -523,7 +523,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
+    // Event Edit
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -540,7 +540,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       sessionId: '1242-000004',
     };
 
-    // Session creation
+    // Event Edit
     const response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -563,7 +563,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
+    // Event Edit
     let response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -582,7 +582,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
+    // Event Edit
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000002`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -605,7 +605,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
+    // Event Edit
     let response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -624,7 +624,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
+    // Event Edit
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000002`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -641,7 +641,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       sessionId: '1242-000010-00000',
     };
 
-    // Session creation
+    // Event Edit
     const response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -670,7 +670,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
+    // Event Edit
     let response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -695,7 +695,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
+    // Event Edit
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -720,7 +720,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
+    // Event Edit
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -750,7 +750,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
+    // Event Edit
     let response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -789,7 +789,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
+    // Event Edit
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -828,7 +828,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
+    // Event Edit
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -868,7 +868,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       },
     };
 
-    // Session creation
+    // Event Edit
     response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
@@ -901,7 +901,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       colorCode: 1,
     };
 
-    // Session creation
+    // Event Edit
     const response = await request(testEnv.expressServer.app)
       .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000003`)
       .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
