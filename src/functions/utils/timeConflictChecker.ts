@@ -2,29 +2,22 @@
  * Utility to check if any time conflicts exist within the given array of time ranges
  *
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
- * @author Jeonghyeon Park <fishbox0923@gmail.com>
  */
 
 export interface TimeRange {
   meetingDaysList: string[];
-  startTime: {
-    month: number;
-    day: number;
-    hour: number;
-    minute: number;
-  };
-  endTime: {
-    month: number;
-    day: number;
-    hour: number;
-    minute: number;
-  };
+  startTime: Time;
+  endTime: Time;
 }
 
-function isBefore(
-  time1: {month: number; day: number; hour: number; minute: number},
-  time2: {month: number; day: number; hour: number; minute: number}
-): boolean {
+interface Time {
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+}
+
+function isBefore(time1: Time, time2: Time): boolean {
   if (time1.month < time2.month) return true;
   if (time1.month > time2.month) return false;
   if (time1.day < time2.day) return true;
@@ -41,6 +34,12 @@ function isOverlap(range1: TimeRange, range2: TimeRange): boolean {
   );
 }
 
+/**
+ * Check if any time conflicts exist within the given array of time ranges
+ *
+ * @param timeRanges Array of time ranges to check for conflicts
+ * @returns true if any conflicts exist, false otherwise
+ */
 export default function timeConflictChecker(timeRanges: TimeRange[]): boolean {
   for (let i = 0; i < timeRanges.length; i++) {
     for (let j = i + 1; j < timeRanges.length; j++) {
