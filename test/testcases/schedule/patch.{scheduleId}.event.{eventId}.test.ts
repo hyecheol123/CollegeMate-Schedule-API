@@ -878,7 +878,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
 
     dbResponse = await testEnv.dbClient
       .container(SCHEDULE)
-      .item(scheduleIdMap.steve)
+      .item(scheduleIdMap.drag)
       .read();
     schedule = dbResponse.resource;
     expect(
