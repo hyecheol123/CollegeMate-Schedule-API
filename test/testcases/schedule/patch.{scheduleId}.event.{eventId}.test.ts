@@ -882,7 +882,7 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
       .read();
     schedule = dbResponse.resource;
     expect(
-      schedule.eventList.filter(e => e.id === '1242-000001')[0].startTime
+      schedule.eventList.filter(e => e.id === '1244-000001')[0].startTime
     ).toEqual({
       month: 2,
       day: 29,
