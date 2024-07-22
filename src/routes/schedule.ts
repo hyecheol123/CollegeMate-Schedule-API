@@ -305,10 +305,9 @@ scheduleRouter.post('/:scheduleId/event', async (req, res, next) => {
     if (sessionAddInfo.sessionId) {
       const session = await Session.read(dbClient, sessionAddInfo.sessionId);
       // Check TermCode
-      //TODO UPDATE
-      // if (session.termCode !== schedule.termCode) {
-      //   throw new ForbiddenError();
-      // }
+      if (session.termCode !== schedule.termCode) {
+        throw new ForbiddenError();
+      }
       allEvents.push(
         ...session.meetings
           .filter(meeting => {
@@ -335,8 +334,7 @@ scheduleRouter.post('/:scheduleId/event', async (req, res, next) => {
         sessionList: [
           ...schedule.sessionList,
           {
-            //TODO id를 어떻게??
-            id: req.body.sessionId,
+            id: req.body.id,
             colorCode: req.body.colorCode,
           },
         ],
