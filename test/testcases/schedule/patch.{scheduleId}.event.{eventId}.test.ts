@@ -870,8 +870,8 @@ describe('PATCH /schedule/:scheduleId/event/:eventId - Edit Event/Session', () =
 
     // Event Edit
     response = await request(testEnv.expressServer.app)
-      .patch(`/schedule/${scheduleIdMap.steve}/event/1242-000001`)
-      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .patch(`/schedule/${scheduleIdMap.drag}/event/1244-000001`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.drag})
       .set({Origin: 'https://collegemate.app'})
       .send(eventEdit);
     expect(response.status).toBe(200);
