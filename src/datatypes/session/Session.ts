@@ -148,4 +148,75 @@ export default class Session {
 
     return sessionList;
   }
+
+  /**
+   * Get a list of sessions with the given array of sessionIds for the termCode provided
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} termCode Term code
+   * @param {string[]} sessionIds Array of sessionIds
+   */
+  static async getUserSessions(
+    dbClient: Cosmos.Database,
+    termCode: string,
+    sessionIds: string[]
+  ): Promise<Session[]> {
+    const sessionList: Session[] = (
+      await dbClient
+        .container(SESSION)
+        .items.query({
+          query: `SELECT * FROM c WHERE 
+            c.termCode = "${termCode}" AND
+            c.id IN (${sessionIds.map(id => `"${id}"`).join(',')})`,
+        })
+        .fetchAll()
+    ).resources;
+
+    return sessionList;
+  }
+
+  /**
+   * Check if a session exists
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} sessionId session id
+   */
+  static async checkExists(
+    dbClient: Cosmos.Database,
+    sessionId: string
+  ): Promise<boolean> {
+    const result = await dbClient
+      .container(SESSION)
+      .item(sessionId)
+      .read<Session>();
+
+    if (result.statusCode === 404 || result.resource === undefined) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Read a session with the id provided
+   *
+   * @param {Cosmos.Database} dbClient Cosmos DB Client
+   * @param {string} id Session id
+   */
+  static async read(dbClient: Cosmos.Database, id: string): Promise<Session> {
+    const dbOps = await dbClient.container(SESSION).item(id).read<Session>();
+    if (dbOps.statusCode === 404 || dbOps.resource === undefined) {
+      throw new Error('Session not found');
+    }
+    return new Session(
+      dbOps.resource.id,
+      dbOps.resource.courseId,
+      dbOps.resource.termCode,
+      dbOps.resource.sessionId,
+      dbOps.resource.meetings,
+      dbOps.resource.credit,
+      dbOps.resource.isAsyncronous,
+      dbOps.resource.onlineOnly,
+      dbOps.resource.topic
+    );
+  }
 }
