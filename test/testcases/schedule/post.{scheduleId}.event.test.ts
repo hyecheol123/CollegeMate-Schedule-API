@@ -15,6 +15,7 @@ import TestConfig from '../../TestConfig';
 
 describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
   let testEnv: TestEnv;
+  const SCHEDULE = 'schedule';
   const accessTokenMap = {
     steve: '',
     drag: '',
@@ -679,6 +680,35 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
       .send(wrongDateEvent);
     expect(response.status).toBe(400);
     expect(response.body.error).toBe('Bad Request');
+
+    //leap year
+    wrongDateEvent = {
+      eventType: 'event',
+      title: 'event1',
+      meetingDaysList: ['MONDAY'],
+      startTime: {
+        month: 2,
+        day: 29,
+        hour: 11,
+        minute: 30,
+      },
+      endTime: {
+        month: 2,
+        day: 28,
+        hour: 14,
+        minute: 45,
+      },
+      colorCode: 1,
+    };
+
+    // Event Edit
+    response = await request(testEnv.expressServer.app)
+      .post(`/schedule/${scheduleIdMap.leap}/event`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.leap})
+      .set({Origin: 'https://collegemate.app'})
+      .send(wrongDateEvent);
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Bad Request');
   });
 
   test('Fail - Start time after End time', async () => {
@@ -744,7 +774,15 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
   test('Success - Add Event/Session from Web', async () => {
     testEnv.expressServer = testEnv.expressServer as ExpressServer;
     testEnv.dbClient = testEnv.dbClient as Cosmos.Database;
-ㅌ
+
+    let dbResponse = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(scheduleIdMap.steve)
+      .read();
+    let schedule = dbResponse.resource;
+    // Steve's schedule has 2 events by default
+    expect(schedule.eventList.length).toBe(2);
+
     // Steve tries to add an event
     let response = await request(testEnv.expressServer.app)
       .post(`/schedule/${scheduleIdMap.steve}/event`)
@@ -753,6 +791,30 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
       .send(eventMap.validEvent);
     expect(response.status).toBe(201);
 
+    dbResponse = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(scheduleIdMap.steve)
+      .read();
+    schedule = dbResponse.resource;
+    // TODO: Check hash logic for eventId and write tests
+    expect(schedule.eventList.length).toBe(3);
+    expect(schedule.eventList[2].title).toBe('event1');
+    expect(schedule.eventList[2].location).toBe('location1');
+    expect(schedule.eventList[2].memo).toBe('memo1');
+    expect(schedule.eventList[2].meetingDaysList).toStrictEqual([
+      'MONDAY',
+      'WEDNESDAY',
+      'FRIDAY',
+    ]);
+
+    dbResponse = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(scheduleIdMap.steve)
+      .read();
+    schedule = dbResponse.resource;
+    // Steve's schedule has 2 sessions by default
+    expect(schedule.sessionList.length).toBe(2);
+
     // Steve tries to add a session
     response = await request(testEnv.expressServer.app)
       .post(`/schedule/${scheduleIdMap.steve}/event`)
@@ -760,7 +822,40 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
       .set({Origin: 'https://collegemate.app'})
       .send(eventMap.validSession);
     expect(response.status).toBe(201);
-    // TODO: Check hash logic for eventId and write tests
+
+    dbResponse = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(scheduleIdMap.steve)
+      .read();
+    schedule = dbResponse.resource;
+    expect(schedule.sessionList.length).toBe(3);
+    expect(schedule.sessionList[2].id).toBe('1242-004289-36784');
+
+    // Checking leap year
+    const leapEvent = {
+      eventType: 'event',
+      meetingDaysList: ['TUESDAY'],
+      startTime: {
+        month: 2,
+        day: 29,
+        hour: 14,
+        minute: 46,
+      },
+      endTime: {
+        month: 4,
+        day: 1,
+        hour: 15,
+        minute: 20,
+      },
+    };
+
+    response = await request(testEnv.expressServer.app)
+      .post(`/schedule/${scheduleIdMap.steve}/event`)
+      .set({'X-ACCESS-TOKEN': accessTokenMap.steve})
+      .set({Origin: 'https://collegemate.app'})
+      .send(leapEvent);
+    // termCode 1242 -> 2023 Fall Semester, so not a leap year
+    expect(response.status).toBe(400);
   });
 
   test('Success - Add Event/Session from App', async () => {
@@ -775,6 +870,24 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
       .send(eventMap.validEvent);
     expect(response.status).toBe(201);
 
+    let dbResponse = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(scheduleIdMap.steve)
+      .read();
+    let schedule = dbResponse.resource;
+    expect(schedule.eventList[2].startTime).toStrictEqual({
+      month: 5,
+      day: 4,
+      hour: 10,
+      minute: 0,
+    });
+    expect(schedule.eventList[2].endTime).toStrictEqual({
+      month: 5,
+      day: 31,
+      hour: 11,
+      minute: 0,
+    });
+
     // Steve tries to add a session
     response = await request(testEnv.expressServer.app)
       .post(`/schedule/${scheduleIdMap.steve}/event`)
@@ -782,6 +895,12 @@ describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
       .set({'X-APPLICATION-KEY': '<Android-App-v1>'})
       .send(eventMap.validSession);
     expect(response.status).toBe(201);
-    // TODO: Check hash logic for eventId and write tests
+
+    dbResponse = await testEnv.dbClient
+      .container(SCHEDULE)
+      .item(scheduleIdMap.steve)
+      .read();
+    schedule = dbResponse.resource;
+    expect(schedule.sessionList[2].id).toBe('1242-004289-36784');
   });
 });

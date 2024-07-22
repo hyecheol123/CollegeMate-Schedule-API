@@ -248,8 +248,8 @@ scheduleRouter.post('/:scheduleId/event', async (req, res, next) => {
     if (sessionAddInfo.sessionId) {
       // if sessionId exists in req body, check if session already exists in the schedule
       if (
-        schedule.sessionList.filter(session =>
-          session.id.includes(sessionAddInfo.sessionId)
+        schedule.sessionList.filter(
+          session => session.id === sessionAddInfo.sessionId
         ).length !== 0
       ) {
         throw new ConflictError();
@@ -334,7 +334,7 @@ scheduleRouter.post('/:scheduleId/event', async (req, res, next) => {
         sessionList: [
           ...schedule.sessionList,
           {
-            id: req.body.id,
+            id: req.body.sessionId,
             colorCode: req.body.colorCode,
           },
         ],

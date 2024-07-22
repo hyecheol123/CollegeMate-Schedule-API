@@ -2,6 +2,7 @@
  * Utility to check if any time conflicts exist within the given array of time ranges
  *
  * @author Seok-Hee (Steve) Han <seokheehan01@gmail.com>
+ * @author Jeonghyeon Park <fishbox0923@gmail.com>
  */
 
 export interface TimeRange {
