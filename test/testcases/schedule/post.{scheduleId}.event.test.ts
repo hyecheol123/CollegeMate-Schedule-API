@@ -15,7 +15,6 @@ import TestConfig from '../../TestConfig';
 
 describe('POST /schedule/:scheduleId/event - Add Event/Session', () => {
   let testEnv: TestEnv;
-  const SCHEDULE = 'schedule';
   const accessTokenMap = {
     steve: '',
     drag: '',
