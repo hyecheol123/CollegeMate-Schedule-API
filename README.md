@@ -1,11 +1,10 @@
-# Collegemate Schedule API
+# School Schedule Gathering API
 
 [![Code Style: Google](https://img.shields.io/badge/code%20style-google-blueviolet.svg)](https://github.com/google/gts)
 
-Repository for Collegemate project's Schedule API.
+Standalone schedule gathering API for school course management without authentication or user management features.
 
-API Documentation is not yet published.
-Other APIs and FE repository will be listed here later.
+This API provides course and schedule data management functionality for educational institutions.
 
 ## Scripts
 
@@ -15,18 +14,21 @@ Here is the list for supported npm/yarn scripts. These are used to lint, test, b
 - `lint:fix`: lint the code and try auto-fix
 - `build`: compile typescript codes (destination: `dist` directory)
 - `clean`: remove the compiled code
-- `start`: run the codes (Need following Environment Vairables: DB_ENDPOINT, DB_KEY, DB_ID)
-- `test`: Run the codes
+- `start`: run the application (Required Environment Variables: DB_ENDPOINT, DB_KEY, DB_ID)
+- `test`: Run tests
 
-Use Azure Cosmos DB Emulator while testing the application.
-Details on install and usage guide of the emulator can be found [here](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator?tabs=ssl-netstd21).  
-Microsoft also offers Emulator for Linux environment, but as it is preview, we recomment to run the emulator on Windows.
-In this case, developers have to manually enable access on a local network.
-Refer to the guide provided above.
+## Database Setup
 
-As of now, Windows Worker of GitHub Action does not support Service Container.
-Therefore, Azure Cosmos DB Emulator cannot run on the GitHub Action Worker.
-So, automatic tests are disabled; Need manual test and code review for all features before pull request merge.
+This application uses Azure Cosmos DB. For development and testing:
+
+1. **Azure Cosmos DB Emulator**: Install and run the emulator locally
+   - [Installation Guide](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator?tabs=ssl-netstd21)
+   - For Linux environments, manual network configuration may be required
+
+2. **Environment Variables**: Set the following variables:
+   - `DB_ENDPOINT`: Cosmos DB endpoint URL
+   - `DB_KEY`: Primary access key
+   - `DB_ID`: Database name
 
 ## Dependencies/Environment
 
@@ -56,3 +58,29 @@ Data Diagram
 This project used it to develop and maintain APIs more conveniently.
 
 [ajv](https://ajv.js.org/) is used for runtime type checks.
+
+## API Endpoints
+
+### Active Endpoints
+- `GET /schedule/available-semesters` - Get available academic terms
+- `GET /schedule/course` - Search for courses by term and name
+
+### Security
+- **Origin Validation**: Both endpoints require requests to come from the configured webpage origin
+- **No Authentication**: No user authentication or JWT tokens required
+
+### Commented Out Endpoints
+All other endpoints with full authentication are commented out but preserved in the codebase for future use:
+- **Schedule CRUD operations** (with JWT token validation)
+- **Course data crawling/updating** (with server admin token validation)
+- **Event/session management** (with user ownership validation)
+- **Friend-based schedule sharing** (with friend list validation)
+- **Application key authentication** (for mobile app access)
+- **User ownership controls** (email-based access restrictions)
+
+## Features
+
+- **Course Search**: Search for courses by term code and course name
+- **Semester Information**: Get list of available academic terms
+- **Origin Protection**: CORS-like protection requiring requests from authorized web origin
+- **Simple Integration**: Minimal setup for web-based course lookup

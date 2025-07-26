@@ -6,7 +6,8 @@
 
 import * as express from 'express';
 import {CosmosClient} from '@azure/cosmos';
-import * as cookieParser from 'cookie-parser';
+// COMMENTED OUT: Cookie parser for session management
+// import * as cookieParser from 'cookie-parser';
 import ServerConfig from './ServerConfig';
 import HTTPError from './exceptions/HTTPError';
 import scheduleRouter from './routes/schedule';
@@ -31,20 +32,23 @@ export default class ExpressServer {
       key: config.db.key,
     }).database(config.db.databaseId);
 
-    // JWT Keys
-    this.app.set('jwtAccessKey', config.jwt.secretKey);
+    // Origin check for web requests
+    this.app.set('webpageOrigin', config.webpageOrigin);
 
-    // API Server Domain
-    this.app.set('serverDomain', config.domainPath.domain);
+    // COMMENTED OUT: JWT Keys for authentication
+    // this.app.set('jwtAccessKey', config.jwt.secretKey);
+
+    // COMMENTED OUT: API Server Domain
+    // this.app.set('serverDomain', config.domainPath.domain);
 
     // Setup Parsers
     this.app.use(express.json());
-    this.app.use(cookieParser());
+    // COMMENTED OUT: Cookie parser for session management
+    // this.app.use(cookieParser());
 
-    // Origin and Application Key
-    this.app.set('webpageOrigin', config.webpageOrigin);
-    this.app.set('applicationKey', config.applicationKey);
-    this.app.set('serverAdminKey', config.serverAdminKey);
+    // COMMENTED OUT: Application Key and Server Admin Key for multi-client authentication
+    // this.app.set('applicationKey', config.applicationKey);
+    // this.app.set('serverAdminKey', config.serverAdminKey);
 
     // Only Allow GET, POST, DELETE, PUT, PATCH method
     this.app.use(
@@ -92,6 +96,7 @@ export default class ExpressServer {
     });
   }
 
+  // COMMENTED OUT: Asyncronously set serverAdminToken
   // TODO: Asyncronously set serverAdminToken
 
   /**

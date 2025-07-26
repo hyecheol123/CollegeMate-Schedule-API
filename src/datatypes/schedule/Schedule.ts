@@ -35,7 +35,6 @@ export interface Event {
 
 export default class Schedule {
   id: string;
-  email: string;
   termCode: string;
   sessionList: {
     id: string;
@@ -45,7 +44,6 @@ export default class Schedule {
 
   constructor(
     id: string,
-    email: string,
     termCode: string,
     sessionList: {
       id: string;
@@ -54,7 +52,6 @@ export default class Schedule {
     eventList: Event[]
   ) {
     this.id = id;
-    this.email = email;
     this.termCode = termCode;
     this.sessionList = sessionList;
     this.eventList = eventList;
@@ -86,7 +83,6 @@ export default class Schedule {
     }
     return new Schedule(
       dbOps.resource.id,
-      dbOps.resource.email,
       dbOps.resource.termCode,
       dbOps.resource.sessionList,
       dbOps.resource.eventList
@@ -110,27 +106,6 @@ export default class Schedule {
         throw e;
       }
     }
-  }
-
-  /**
-   * Check if the schedule with the email and termCode exists in the database
-   *
-   * @param {Cosmos.Database} dbClient Cosmos DB Client
-   * @param {string} email User's email
-   * @param {string} termCode Term code
-   */
-  static async checkExists(
-    dbClient: Cosmos.Database,
-    email: string,
-    termCode: string
-  ): Promise<boolean> {
-    const dbOps = await dbClient
-      .container(SCHEDULE)
-      .items.query({
-        query: `SELECT * FROM c WHERE c.email = "${email}" AND c.termCode = "${termCode}"`,
-      })
-      .fetchAll();
-    return dbOps.resources.length !== 0;
   }
 
   /**
@@ -169,25 +144,19 @@ export default class Schedule {
   }
 
   /**
-   * Retrieve list of schedule associated with the user idenfied by the given email address (base64urlsafe encoded).
+   * Retrieve list of all schedule IDs
    *
    * @param dbClient Cosmos DB client
-   * @param email base64urlsafe encoded email address
    */
-  static async retrieveScheduleIdList(
-    dbClient: Cosmos.Database,
-    email: string
+  static async retrieveAllScheduleIds(
+    dbClient: Cosmos.Database
   ): Promise<string[]> {
     const dbOps = await dbClient
       .container(SCHEDULE)
       .items.query({
-        query: `SELECT c.id FROM c WHERE c.email = "${email}"`,
+        query: 'SELECT c.id FROM c',
       })
       .fetchAll();
-
-    if (dbOps.resources.length === 0) {
-      throw new NotFoundError();
-    }
 
     return dbOps.resources.map(item => item.id);
   }

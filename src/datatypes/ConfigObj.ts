@@ -11,11 +11,12 @@
 export interface ConfigObj {
   db: DbObj; // contain database configuration parameters
   expressPort: number; // indicate express server port
-  jwtKeys: JwtKeyObj; // indicate jwt token credentials
-  serverDomainPath: ServerDomainPathObj; // indicate server's domain and path
-  webpageOrigin: string; // indicate our website Origin
-  applicationKey: string[]; // Indicate the list of applicationKey (Mobile Application Origin Check)
-  serverAdminKey: string; // Indicate unique key for this server
+  webpageOrigin: string; // indicate our website Origin for CORS validation
+  // COMMENTED OUT: Authentication-related config fields
+  // jwtKeys: JwtKeyObj; // indicate jwt token credentials
+  // serverDomainPath: ServerDomainPathObj; // indicate server's domain and path
+  // applicationKey: string[]; // Indicate the list of applicationKey (Mobile Application Origin Check)
+  // serverAdminKey: string; // Indicate unique key for this server
 }
 
 /**
@@ -28,19 +29,20 @@ export interface DbObj {
   databaseId: string; // default database name
 }
 
-/**
- * Interface to define jwtKeyObj object
- * This type of object should be contained in the ConfigObj
- */
-export interface JwtKeyObj {
-  secretKey: string; // key that used to validate the token
-}
+// COMMENTED OUT: Authentication-related interface definitions
+// /**
+//  * Interface to define jwtKeyObj object
+//  * This type of object should be contained in the ConfigObj
+//  */
+// export interface JwtKeyObj {
+//   secretKey: string; // key that used to validate the token
+// }
 
-/**
- * Interface to define server's domain and path
- * This type of object should be contained in the ConfigObj.
- */
-export interface ServerDomainPathObj {
-  domain: string; // API Server's Domain
-  path?: string; // API Server's path
-}
+// /**
+//  * Interface to define server's domain and path
+//  * This type of object should be contained in the ConfigObj.
+//  */
+// export interface ServerDomainPathObj {
+//   domain: string; // API Server's Domain
+//   path?: string; // API Server's path
+// }
