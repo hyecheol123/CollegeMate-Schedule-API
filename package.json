@@ -41,17 +41,7 @@
     "posttest": "npm run lint",
     "test:local": "cross-env COSMOS_EMULATOR_ENDPOINT=https://localhost:8081 npm test",
     "prestart": "npm run build",
-    "start": "node dist/main.js",
-    "precrawl": "npm run build",
-    "crawl": "node dist/crawlAndUpload.js",
-    "crawl:force": "npm run crawl -- --force",
-    "crawl:debug": "npm run crawl -- --log-level debug",
-    "crawl:multiple": "npm run crawl -- --terms 1244,1242,1232",
-    "crawl:fast": "npm run crawl -- --rate-limit 500 --session-rate-limit 50",
-    "crawl:slow": "npm run crawl -- --rate-limit 2000 --session-rate-limit 300",
-    "crawl:local": "cross-env COSMOS_EMULATOR_ENDPOINT=https://localhost:8081 npm run crawl",
-    "preschedule:crawl": "npm run build",
-    "schedule:crawl": "node dist/scheduledCrawler.js"
+    "start": "node dist/main.js"
   },
   "engines": {
     "node": ">=16"
